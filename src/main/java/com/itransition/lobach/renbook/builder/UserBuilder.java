@@ -2,6 +2,7 @@ package com.itransition.lobach.renbook.builder;
 
 import com.itransition.lobach.renbook.entity.Role;
 import com.itransition.lobach.renbook.entity.User;
+import com.itransition.lobach.renbook.entity.UserInfo;
 
 import java.util.Set;
 
@@ -15,7 +16,8 @@ public class UserBuilder {
                                  String username,
                                  String password,
                                  Set<Role> roleSet,
-                                 Long currentMillis) {
+                                 Long currentMillis,
+                                 UserInfo userInfo) {
         return User.builder()
                 .email(email)
                 .username(username)
@@ -24,6 +26,7 @@ public class UserBuilder {
                 .millisWhenCreated(currentMillis)
                 .millisWhenLastLogin(currentMillis)
                 .blocked(false)
+                .userInfo(userInfo)
                 .build();
     }
 }

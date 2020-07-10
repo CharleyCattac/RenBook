@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RoleService {
-    public static final Long USER_ID = 30L;
-    public static final Long ADMIN_ID = 28L;
+    public static final Long USER_ID = 20L;
+    public static final Long ADMIN_ID = 21L;
 
     @Autowired
     private RoleRepository roleRepository;

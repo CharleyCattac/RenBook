@@ -1,0 +1,16 @@
+.link-light{
+    color: white;
+}
+
+.small-margin {
+    margin: 3px;
+}
+
+.navbar:not(.top-nav-collapse) {
+    background: #37194e;
+}
+
+.background-transparent {
+    background: transparent;
+}
+

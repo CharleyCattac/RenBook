@@ -18,22 +18,7 @@ public class DatabaseLoader implements CommandLineRunner {
     private final RoleService roleService;
 
     @Override
-    public void run(String... strings) throws Exception{
-        /*createAdmin();
-        createUser();*/
-    }
+    public void run(String... strings) throws Exception {
 
-    public void createAdmin() {
-        userService.saveAdmin(
-                "rnbkspprt@gmail.com",
-                "support#1",
-                "digital12345admin");
-    }
-
-    public void createUser() {
-        userService.saveUser(
-                "ren.n.lol.l.sama@gmail.com",
-                "ren shartac",
-                "digital12345user");
     }
 }

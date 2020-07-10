@@ -3,7 +3,7 @@
       xmlns:th="https://www.thymeleaf.org"
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
-    <title th:text="#{error.title}">Title</title>
+    <title th:text="#{success.title}">Title</title>
     <!-- For bootstrap -->
     <!--
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -89,12 +89,12 @@
     <div class="container">
         <div class="main-panel main-panel-light">
             <div class="container" style="padding-top: 10px; padding-bottom: 10px">
-                <h3 th:text="#{error.head}">Head</h3>
-                <td th:if="${error == null}">
-                    <p th:text="#{error.body}">Body</p>
+                <h3 th:text="#{success.head}">Head</h3>
+                <td th:if="${message == null}">
+                    <p th:text="#{success.body}">Body</p>
                 </td>
-                <td th:unless="${error == null}">
-                    <p th:text="${error}">Body</p>
+                <td th:unless="${message == null}">
+                    <p th:text="${message}">Body</p>
                 </td>
             </div>
         </div>
