@@ -15,13 +15,6 @@ import java.util.Locale;
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        //registry.addViewController("/").setViewName("index");
-        registry.addViewController("/auth/login").setViewName("login");
-        //registry.addViewController("/auth/signup").setViewName("signup");
-    }
-
     @Bean
     public LocaleResolver localeResolver() {
         return new CookieLocaleResolver();

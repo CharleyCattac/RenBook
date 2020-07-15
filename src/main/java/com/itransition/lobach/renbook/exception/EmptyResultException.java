@@ -1,6 +1,6 @@
 package com.itransition.lobach.renbook.exception;
 
-public class EmptyResultException extends Exception{
+public class EmptyResultException extends RuntimeException {
 
     public EmptyResultException() {
     }

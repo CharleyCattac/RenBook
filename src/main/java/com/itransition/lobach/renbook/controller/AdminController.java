@@ -13,6 +13,7 @@ import java.util.List;
 @Controller
 @RequestMapping(value = "/admin")
 public class AdminController {
+
     @Autowired
     private UserService userService;
 

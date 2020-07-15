@@ -31,13 +31,13 @@
             </div>
             <ul class="nav navbar-nav">
                 <li>
-                    <a th:text="#{navbar.authors}" href="/">Authors</a>
+                    <a th:text="#{navbar.works}" href="/works">Authors</a>
                 </li>
                 <li>
-                    <a th:text="#{navbar.fanfics}" href="/">Authors</a>
+                    <a th:text="#{navbar.authors}" href="/authors">Authors</a>
                 </li>
                 <li>
-                    <a th:text="#{navbar.rules}" href="/">Authors</a>
+                    <a th:text="#{navbar.rules}" href="/rules">Authors</a>
                 </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -70,11 +70,11 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/" th:text="#{dropdown.news}">News</a></li>
+                            <li><a href="/home/news" th:text="#{dropdown.news}">News</a></li>
                             <li class="divider"></li>
-                            <li><a href="/" th:text="#{dropdown.profile}">Profile</a></li>
-                            <li><a href="/" th:text="#{dropdown.works}">Works</a></li>
-                            <li><a href="/" th:text="#{dropdown.likes}">Likes</a></li>
+                            <li><a href="/home/profile" th:text="#{dropdown.profile}">Profile</a></li>
+                            <li><a href="/home/works" th:text="#{dropdown.works}">Works</a></li>
+                            <li><a href="/home/saved" th:text="#{dropdown.saved}">Likes</a></li>
                             <li class="divider"></li>
                             <li><a href="/logout" th:text="#{dropdown.logout}">Logout</a></li>
                         </ul>

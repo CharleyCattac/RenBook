@@ -3,7 +3,7 @@
       xmlns:th="https://www.thymeleaf.org"
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
-    <title th:text="#{navbar.home}">Title</title>
+    <title th:text="#{navbar.rules}">Title</title>
     <!-- For bootstrap -->
 <!--
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -94,18 +94,12 @@
        <div class="container">
            <div class="main-panel main-panel-light">
                <div class="container" style="padding-top: 10px">
-                   <h2>Full search</h2>
-                   <p>Тот самый полнотекстовый поиск</p>
-               </div>
-               <div class="container" style="padding-top: 10px">
-                   <h2>Топ-5(10) самых популярных работ</h2>
-                   <p>Внизу ссылка на все работы с сортировкой по популярности</p>
-                   <p class="link link-light"><a href="#">Та самая ссылка</a></p>
+                   <h2 th:text="#{navbar.rules}">Топ-5(10)</h2>
+                   <p>No rules!!!!!!!!!!!!!!!!!!1</p>
                </div>
                <div class="container" style="padding-top: 10px; padding-bottom: 10px">
-                   <h2>Топ-5(10) самых новых работ</h2>
-                   <p>Внизу ссылка на все работы с сортировкой по дате добавления</p>
-                   <p class="link link-light"><a href="#">Та самая ссылка</a></p>
+                   <h2>FAQ</h2>
+                   <p>Вопрос-ответ</p>
                </div>
            </div>
        </div>

@@ -1,9 +1,9 @@
 package com.itransition.lobach.renbook.controller;
 
 import com.itransition.lobach.renbook.entity.User;
-import com.itransition.lobach.renbook.exception.EmptyResultException;
 import com.itransition.lobach.renbook.service.UserDetailsServiceImpl;
 import com.itransition.lobach.renbook.service.UserService;
+import com.itransition.lobach.renbook.util.MessageManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +20,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.itransition.lobach.renbook.constants.ControllerConstants.*;
+import static com.itransition.lobach.renbook.constants.MessageConstants.*;
+import static com.itransition.lobach.renbook.constants.OtherConstants.*;
+import static com.itransition.lobach.renbook.constants.PathConstants.*;
+import static com.itransition.lobach.renbook.constants.Attributes.*;
 
 @Controller
 @RequestMapping(value = "/auth")
@@ -37,7 +40,7 @@ public class AuthenticationController {
 
     @GetMapping("/signup")
     public String showSignUp() {
-        return URL_SIGNUP;
+        return SIGNUP;
     }
 
     @PostMapping("/signup")
@@ -51,42 +54,40 @@ public class AuthenticationController {
         User userFromDb = userService.findUserByUsername(username);
 
         if (userFromDb != null) {
-            model.addAttribute(ATTR_ERROR, "user exists");
-            return URL_SIGNUP;
+            model.addAttribute(ERROR, MessageManager.getMessage(SIGNUP_USER_EXISTS));
+            return SIGNUP;
         }
 
         User user = null;
         try {
-            Date birthDate = new SimpleDateFormat("yyyy-MM-dd").parse(birthday);
-            user = userService.saveAdmin(email, username, password, avatarUrl, birthDate, description);
-        } catch (EmptyResultException e) {
-            model.addAttribute(ATTR_ERROR, "fucking " + e.getMessage());
-            return URL_SIGNUP;
+            Date birthDate = new SimpleDateFormat(DATE_PATTERN).parse(birthday);
+            user = userService.saveUser(email, username, password, avatarUrl, birthDate, description);
         } catch (RuntimeException e) {
-            model.addAttribute(ATTR_ERROR, "error during signup");
-            return URL_SIGNUP;
+            model.addAttribute(ERROR, MessageManager.getMessage(SIGNUP_DEFAULT));
+            return SIGNUP;
         } catch (ParseException e) {
-            model.addAttribute(ATTR_ERROR, "invalid birth date");
-            return URL_SIGNUP;
+            model.addAttribute(ERROR, MessageManager.getMessage(SIGNUP_DATE));
+            return SIGNUP;
         }
 
+        //todo: email confirmation (get rid of this peace down here)
         if (user == null) {
-            model.addAttribute(ATTR_ERROR, "signup successful, but failed to retrieve info");
-            return URL_SIGNUP;
-        } //todo: email confirmation (get rid of this peace down here)
+            model.addAttribute(ERROR, "signup successful, but failed to retrieve info");
+            return SIGNUP;
+        }
         try {
             authenticateUser(username, password);
         } catch (RuntimeException e) {
-            model.addAttribute(ATTR_ERROR, "invalid password");
-            return URL_LOGIN_REDIRECT;
+            model.addAttribute(ERROR, MessageManager.getMessage(LOGIN_INVALID_PASSWORD));
+            return LOGIN_REDIRECT;
         }
 
-        return URL_INDEX_REDIRECT;
+        return createUrl(user.getUserInfo().getPreferredLanguage());
     }
 
     @GetMapping("/login")
     public String showLogin() {
-        return URL_LOGIN;
+        return LOGIN;
     }
 
     @PostMapping("/login")
@@ -95,18 +96,18 @@ public class AuthenticationController {
                         Model model) {
         User user = userService.findUserByUsername(username);
         if (user == null) {
-            model.addAttribute(ATTR_ERROR, "user with such username does not exist");
-            return URL_LOGIN;
+            model.addAttribute(ERROR, MessageManager.getMessage(LOGIN_USERNAME_NOT_EXISTS));
+            return LOGIN;
         }
 
         try {
             authenticateUser(username, password);
         } catch (RuntimeException e) {
-            model.addAttribute(ATTR_ERROR, "invalid password");
-            return URL_LOGIN;
+            model.addAttribute(ERROR, MessageManager.getMessage(LOGIN_INVALID_PASSWORD));
+            return LOGIN;
         }
 
-        return URL_INDEX_REDIRECT;
+        return createUrl(user.getUserInfo().getPreferredLanguage());
     }
 
     private void authenticateUser(String username, String password) throws RuntimeException {
@@ -117,5 +118,12 @@ public class AuthenticationController {
         SecurityContextHolder.getContext().setAuthentication(token);
 
         userService.updateLastCheckoutTime(username);
+    }
+
+    private String createUrl(String preferredLanguage) {
+        StringBuilder urlBuilder = new StringBuilder(INDEX_REDIRECT);
+        urlBuilder.append(LANG_PARAM);
+        urlBuilder.append(preferredLanguage);
+        return urlBuilder.toString();
     }
 }

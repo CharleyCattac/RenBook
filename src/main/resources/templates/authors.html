@@ -3,7 +3,7 @@
       xmlns:th="https://www.thymeleaf.org"
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
-    <title th:text="#{error.title}">Title</title>
+    <title th:text="#{navbar.authors}">Title</title>
     <!-- For bootstrap -->
     <!--
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -13,14 +13,17 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <!-- Local css -->
-    <link rel="stylesheet" type="text/css" href="css/base/background.css">
-    <link rel="stylesheet" type="text/css" href="css/base/main_panel.css">
-    <link rel="stylesheet" type="text/css" href="css/base/nav.css">
+    <link rel="stylesheet" type="text/css" href="/css/base/background.css">
+    <link rel="stylesheet" type="text/css" href="/css/base/main_panel.css">
+    <link rel="stylesheet" type="text/css" href="/css/base/nav.css">
+    <!-- Script to load navbar -->
+    <!--<script src="js/csi.js"></script>-->
 
     <meta charset="UTF-8">
 </head>
 <body>
 <div class="bg">
+    <!--<div data-include="/components/navbar.html"></div>-->
     <!-- ---------- -->
     <!-- Navbar -->
     <!-- ---------- -->
@@ -64,9 +67,11 @@
                 <th:block th:unless="${#authentication.getName().equals('anonymousUser')}">
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown"
-                           style="cursor: pointer"
-                           th:text="${#authentication.principal.username}">
-                            Username
+                           th:text="${#authentication.principal.username}"
+                           style="cursor: pointer">
+                            <!--<img th:src="${#authentication.principal.userInfo.avatarUrl}"
+                                 class="img-circle img-responsive"
+                                 th:alt="${#authentication.principal.username}">-->
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
@@ -88,14 +93,22 @@
     <!-- ---------- -->
     <div class="container">
         <div class="main-panel main-panel-light">
-            <div class="container" style="padding-top: 10px; padding-bottom: 10px">
-                <h3 th:text="#{error.head}">Head</h3>
-                <td th:if="${error == null}">
-                    <p th:text="#{error.body}">Body</p>
-                </td>
-                <td th:unless="${error == null}">
-                    <p th:text="${error}">Body</p>
-                </td>
+            <div class="container" style="padding-top: 10px">
+                <h2>Поиск по авторам</h2>
+                <p>По кусочкам имени</p>
+            </div>
+            <div class="container-fluid" style="padding-top: 10px">
+                <h2 th:text="#{authors.popular}">Cat</h2>
+                <th:block th:if="${authors != null}">
+                    <th:block th:if="${authors.size() > 0}">
+                        <ul>
+                            <li th:each="author : ${authors}" th:text="${author.name} : ${author.workCount}">user name</li>
+                        </ul>
+                    </th:block>
+                </th:block>
+                <th:block th:if="${authors == null || authors.size() <= 0}">
+                    <p th:text="#{list.author.empty}">No tags</p>
+                </th:block>
             </div>
         </div>
     </div>

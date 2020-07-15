@@ -1,8 +1,8 @@
 package com.itransition.lobach.renbook.service;
 
 import com.itransition.lobach.renbook.builder.UserInfoBuilder;
-import com.itransition.lobach.renbook.constants.Language;
-import com.itransition.lobach.renbook.constants.Theme;
+import com.itransition.lobach.renbook.enums.Language;
+import com.itransition.lobach.renbook.enums.Theme;
 import com.itransition.lobach.renbook.entity.UserInfo;
 import com.itransition.lobach.renbook.repository.UserInfoRepository;
 import org.apache.commons.lang3.EnumUtils;
@@ -14,7 +14,7 @@ import java.util.Date;
 @Service
 public class UserInfoService {
 
-    private static final String DEFAULT_LANGUAGE = Language.ENGLISH.name();
+    private static final String DEFAULT_LANGUAGE = Language.EN.name();
     private static final String DEFAULT_THEME = Theme.LIGHT.name();
 
     @Autowired

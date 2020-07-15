@@ -21,6 +21,7 @@ public class UserInfo {
     @Column(nullable = false)
     private String avatarUrl;
     private Date birthDate;
+    @Column(length = 500)
     private String description;
 
     @Column(nullable = false)
