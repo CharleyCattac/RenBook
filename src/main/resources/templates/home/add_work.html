@@ -3,7 +3,7 @@
       xmlns:th="https://www.thymeleaf.org"
 >
 <head>
-    <title th:text="#{navbar.signup}">Title</title>
+    <title th:text="#{home.add_fic.label}">Title</title>
 
     <!-- For bootstrap -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="/css/base/background.css">
     <link rel="stylesheet" type="text/css" href="/css/base/main_panel.css">
     <link rel="stylesheet" type="text/css" href="/css/base/nav.css">
-    <link rel="stylesheet" type="text/css" href="/css/auth/sighup.css">
+    <link rel="stylesheet" type="text/css" href="/css/home/add_fic.css">
 
     <meta charset="UTF-8">
 </head>
@@ -91,33 +91,141 @@
             <div class="d-flex justify-content-center">
                 <div class="card" style="width: available; justify-content: center">
                     <div class="card-body">
-                        <a style="color: green"><td th:text="${message}">msg</td></a>
-                        <a style="color: red"><td th:text="${error}">err</td></a>
-                        <p/>
+                        <b th:if="${error}">
+                            <a style="color: red"><td th:text="#{error.something_went_wrong}">err</td></a>
+                        </b>
 
                         <form name="add_work" action="/home/works/add_work" method="post">
 
                             <div class="form-group">
                                 <label for="name" th:text="#{home.add_fic.name}">name</label>
-                                <input type="email" class="form-control" id="name" name="name"
+                                <input type="text" class="form-control" id="name" name="name"
                                        maxlength="255" required>
                             </div>
 
                             <fieldset class="form-group">
                                 <div class="row">
-                                    <legend class="col-form-label col-sm-2 pt-0" th:text="#{home.add_fic.type}">Radios</legend>
+                                    <b class="col-form-label col-sm-2 pt-0" th:text="#{home.add_fic.type}">Radios</b>
                                     <div class="col-sm-10">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1"
+                                            <input class="form-check-input" type="radio" name="fandomType" id="grid1Radios1"
                                                    value="original" checked>
-                                            <label class="form-check-label" for="gridRadios1" th:text="#{work.category.types.original}">
+                                            <label class="form-check-label" for="grid1Radios1" th:text="#{work.category.types.original}">
                                                 First radio
                                             </label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2"
+                                            <input class="form-check-input" type="radio" name="fandomType" id="grid1Radios2"
                                                    value="fandom">
-                                            <label class="form-check-label" for="gridRadios2" th:text="#{home.add_fic.type.fandom}">
+                                            <label class="form-check-label" for="grid1Radios2" th:text="#{home.add_fic.type.fandom}">
+                                                Second radio
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <fieldset class="form-group">
+                                <div class="row">
+                                    <b class="col-form-label col-sm-2 pt-0" th:text="#{home.add_fic.rating}">Radios</b>
+                                    <div class="col-sm-10">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="rating" id="grid2Radios1"
+                                                   value="g" checked>
+                                            <label class="form-check-label" for="grid2Radios1" th:text="#{work.rating.g}">
+                                                First radio
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="rating" id="grid2Radios2"
+                                                   value="pg_13">
+                                            <label class="form-check-label" for="grid2Radios2" th:text="#{work.rating.pg_13}">
+                                                First radio
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="rating" id="grid2Radios3"
+                                                   value="r">
+                                            <label class="form-check-label" for="grid2Radios3" th:text="#{work.rating.r}">
+                                                First radio
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="rating" id="grid2Radios4"
+                                                   value="nc_17">
+                                            <label class="form-check-label" for="grid2Radios1" th:text="#{work.rating.nc_17}">
+                                                First radio
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <fieldset class="form-group">
+                                <div class="row">
+                                    <b class="col-form-label col-sm-2 pt-0" th:text="#{home.add_fic.category}">Radios</b>
+                                    <div class="col-sm-10">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="category" id="grid3Radios1"
+                                                   value="gen" checked>
+                                            <label class="form-check-label" for="grid3Radios1" th:text="#{work.category.gen}">
+                                                First radio
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="category" id="grid3Radios2"
+                                                   value="f_f">
+                                            <label class="form-check-label" for="grid3Radios2" th:text="#{work.category.f_f}">
+                                                First radio
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="category" id="grid3Radios3"
+                                                   value="m_f">
+                                            <label class="form-check-label" for="grid3Radios3" th:text="#{work.category.m_f}">
+                                                First radio
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="category" id="grid3Radios4"
+                                                   value="m_m">
+                                            <label class="form-check-label" for="grid3Radios4" th:text="#{work.category.m_m}">
+                                                First radio
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="category" id="grid3Radios5"
+                                                   value="mixed">
+                                            <label class="form-check-label" for="grid3Radios5" th:text="#{work.category.mixed}">
+                                                First radio
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="category" id="grid3Radios6"
+                                                   value="other">
+                                            <label class="form-check-label" for="grid3Radios6" th:text="#{work.category.other}">
+                                                First radio
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <fieldset class="form-group">
+                                <div class="row">
+                                    <b class="col-form-label col-sm-2 pt-0" th:text="#{profile.language.label}">Radios</b>
+                                    <div class="col-sm-10">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="language" id="grid4Radios1"
+                                                   value="en" checked>
+                                            <label class="form-check-label" for="grid4Radios1" th:text="#{profile.language.en}">
+                                                First radio
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="fandomType" id="grid4Radios2"
+                                                   value="ru">
+                                            <label class="form-check-label" for="grid4Radios2" th:text="#{profile.language.ru}">
                                                 Second radio
                                             </label>
                                         </div>
@@ -126,24 +234,35 @@
                             </fieldset>
 
                             <div class="form-group">
-                                <label for="username" th:text="#{signup.username}">Username</label>
-                                <input type="text" class="form-control" id="username" name="username"
-                                       maxlength="255" required>
+                                <label for="tags" th:text="#{home.add_fic.tags}">Username</label>
+                                <input type="text" class="form-control" id="tags" name="tags" maxlength="150">
                             </div>
 
                             <div class="form-group">
-                                <label for="description" th:text="#{signup.description}">Username</label>
+                                <label for="description" th:text="#{home.add_fic.description}">Username</label>
                                 <!--<input type="text" class="form-control" id="description" name="description"
                                        th:rows="4" th:cols="40" maxlength="500">-->
                                 <textarea class="form-control" id="description" name="description"
-                                          rows="3" cols="20" maxlength="500"
+                                          rows="5" cols="20" maxlength="500" required
                                           onkeyup="textCounter(this, 'descriptionCounter', 500)"></textarea>
                                 <label for="descriptionCounter" th:text="#{signup.characters_left}"
                                        style="font-weight: normal">Left</label>
                                 <input disabled  maxlength="3" size="3" value="500" id="descriptionCounter">
                             </div>
 
-                            <button type="submit" class="btn btn-primary" th:text="#{signup.button}">S</button>
+                            <div class="form-group">
+                                <label for="comment" th:text="#{home.add_fic.comment}">Username</label>
+                                <!--<input type="text" class="form-control" id="description" name="description"
+                                       th:rows="4" th:cols="40" maxlength="500">-->
+                                <textarea class="form-control" id="comment" name="comment"
+                                          rows="5" cols="20" maxlength="350"
+                                          onkeyup="textCounter(this, 'commentCounter', 350)"></textarea>
+                                <label for="commentCounter" th:text="#{signup.characters_left}"
+                                       style="font-weight: normal">Left</label>
+                                <input disabled  maxlength="3" size="3" value="350" id="commentCounter">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" th:text="#{home.add_fic.save}">S</button>
                         </form>
                     </div>
                 </div>

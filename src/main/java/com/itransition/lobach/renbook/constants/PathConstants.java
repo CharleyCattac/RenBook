@@ -27,4 +27,7 @@ public class PathConstants {
     public static final String HOME_WORKS_REDIRECT  = "redirect:/home/my_works";
 
     public static final String HOME_ADD_WORK = "home/add_work";
+    public static final String HOME_ADD_WORK_REDIRECT = "redirect:/home/add_work/done";
+
+    public static final String HOME_ADD_CHAPTER = "home/add_chapter";
 }

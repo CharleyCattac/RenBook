@@ -1,0 +1,17 @@
+.form-check-input, .form-check-label {
+    cursor: pointer;
+}
+
+.form-check-label {
+    font-weight: normal;
+}
+
+textarea {
+    resize: none;
+    overflow: hidden;
+    min-height: 50px;
+}
+
+.textarea-big {
+    min-height: 150px;
+}

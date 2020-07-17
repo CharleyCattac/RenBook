@@ -18,7 +18,7 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 150)
     private String name;
 
     @ManyToMany(mappedBy = "tags", cascade = CascadeType.ALL)

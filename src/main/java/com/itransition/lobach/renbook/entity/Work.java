@@ -5,7 +5,6 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "work")
@@ -30,11 +29,11 @@ public class Work {
     @Column(nullable = false, length = 500)
     private String description;
 
-    @Column(length = 500)
+    @Column(length = 350)
     private String comment;
 
     @ManyToMany(mappedBy = "works", cascade = CascadeType.ALL)
-    private Set<Fandom> fandoms;
+    private List<Fandom> fandoms;
 
     @Column(nullable = false)
     private String state;
@@ -43,16 +42,18 @@ public class Work {
     @Column(nullable = false)
     private String category;
     @Column(nullable = false)
+    private String type;
+    @Column(nullable = false)
     private String language;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "work_tag",
             joinColumns = @JoinColumn(name = "work_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private Set<Tag> tags;
+    private List<Tag> tags;
 
-    @OneToMany(mappedBy = "work", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<WorkText> content = new ArrayList<>();
+    @OneToMany(mappedBy = "work", cascade = CascadeType.ALL)
+    private List<Chapter> content = new ArrayList<>();
 
     private Long lastUpdateMillis;
 }

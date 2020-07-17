@@ -3,17 +3,18 @@ package com.itransition.lobach.renbook.repository;
 import com.itransition.lobach.renbook.entity.User;
 import com.itransition.lobach.renbook.entity.Work;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface WorkRepository extends JpaRepository<Work, Long> {
 
+    Work findByName(String name);
     // returns all works
-    Page<Work> getAllBy(PageRequest pageRequest);
+    Page<Work> findAllBy(Pageable pageable);
     // returns all works, which belong to a particular user
-    Page<Work> getAllByAuthor(User author, PageRequest pageRequest);
+    Page<Work> findAllByAuthor(User author, Pageable pageable);
 
     // returns all works on a particular fandom
 

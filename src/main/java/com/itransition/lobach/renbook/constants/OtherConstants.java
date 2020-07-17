@@ -10,4 +10,8 @@ public class OtherConstants {
     public static final String LANG_PARAM = "?lang=";
 
     public static final String FANDOM_CODE = "work.category.types.";
+
+    public static final Integer WORKS_PER_PAGE = 20;
+
+    public static final String SORT_PARAM_LAST_UPDATE = "lastUpdateMillis";
 }

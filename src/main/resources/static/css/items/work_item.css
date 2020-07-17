@@ -1,0 +1,40 @@
+.item-panel {
+    margin-top: 1%;
+    margin-bottom: 1.5%;
+    padding: 1%;
+    border-radius: 5px;
+}
+
+@media (min-width: 740px) {
+
+}
+
+.item-panel-light {
+    background-color: #f5f3fa;
+    color: #3f1d5a;
+}
+
+.item-panel-dark {
+    background-color: #331b47;
+    color: #ffe9ff;
+}
+
+.work-element {
+    margin: 1%;
+}
+
+.text-element {
+    font-weight: normal;
+    font-size: 25px;
+}
+
+
+.btn-purple {
+    color: #ffe9ff;
+    background-color: #542678;
+}
+
+.btn-purple:hover {
+    color: rgba(227, 201, 245, 0.82);
+    background-color: rgba(84, 38, 120, 0.87);
+}

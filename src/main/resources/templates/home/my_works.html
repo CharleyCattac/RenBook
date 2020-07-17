@@ -5,9 +5,8 @@
 <head>
     <title th:text="#{dropdown.works}">Title</title>
     <!-- For bootstrap -->
-    <!--
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    -->
+    <script src="https://rawgit.com/jackmoore/autosize/master/dist/autosize.min.js"></script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -16,6 +15,8 @@
     <link rel="stylesheet" type="text/css" href="/css/base/background.css">
     <link rel="stylesheet" type="text/css" href="/css/base/main_panel.css">
     <link rel="stylesheet" type="text/css" href="/css/base/nav.css">
+    <link rel="stylesheet" type="text/css" href="/css/items/work_item.css">
+    <link rel="stylesheet" type="text/css" href="/css/type/fic_typo.css">
     <!-- Script to load navbar -->
     <!--<script src="js/csi.js"></script>-->
 
@@ -92,26 +93,106 @@
     <!-- Main panel -->
     <!-- ---------- -->
     <div class="container">
-        <div class="main-panel main-panel-light">
-            <div class="container" style="padding-top: 10px">
+        <div class="main-panel main-panel-light" style="padding: 1%">
+            <div class="container">
+                <b th:if="${error}">
+                    <a style="color: red"><td th:text="#{error.something_went_wrong}">err</td></a>
+                </b>
                 <div class="row">
                     <div class="col-sm-10">
+                        <h2 th:text="#{dropdown.works}" style="margin-top: 1%">Cat</h2>
                     </div>
-                    <div class="col-sm-2" style="align-items: flex-end">
-                        <p class="link link-light"><a href="/home/works/add_work" th:text="#{home.works.add_fic}">Add</a></p>
+                    <div class="col-sm-2" style="margin-top: 0.5%">
+                        <a href="/home/works/add_work">
+                            <button class="btn btn-purple" th:text="#{home.works.add_fic}">B</button>
+                        </a>
                     </div>
                 </div>
             </div>
             <div class="container-fluid">
-                <h2 th:text="#{dropdown.works}">Cat</h2>
                 <th:block th:if="${myWorks != null}">
                     <th:block th:if="${myWorks.size() > 0}">
-                        <ul>
-                            <li th:each="work : ${myWorks}" th:text="${work.name}">user name</li>
-                        </ul>
+                        <th:block th:each="work : ${myWorks}">
+                            <div class="item-panel item-panel-light">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-sm-11">
+                                            <h4 style="font-weight: bold">
+                                                <a href="/home/works" th:text="${work.getName()}">Add</a>
+                                            </h4>
+                                            <p class="work-element" style="margin-bottom: -1%">
+                                                <label for="fandom" th:text="#{home.add_fic.type.fandom} + ':'">F</label>
+                                                <th:block th:if="${work.getFandomType().equals('ORIGINAL')}">
+                                                    <a th:text="#{work.category.types.original}" id="fandom">Type</a>
+                                                </th:block>
+                                            </p>
+                                            <p class="work-element" style="margin-bottom: -1%">
+                                                <label for="category" th:text="#{work.category}">F</label>
+                                                <a th:text="#{'work.category.' + ${work.getCategory().toLowerCase()}}" id="category">Type</a>
+                                            </p>
+                                            <p class="work-element" style="margin-bottom: -1%">
+                                                <label for="rating" th:text="#{work.rating}">F</label>
+                                                <a th:text="${work.getRating()}" id="rating"
+                                                   data-toggle="tooltip" data-placement="right" th:title="#{'work.rating.' + ${work.getRating().toLowerCase()}}">
+                                                </a>
+                                            </p>
+                                            <p class="work-element" style="margin-bottom: -1%">
+                                                <label for="status" th:text="#{work.state}">F</label>
+                                                <th:block th:if="${work.getState().equals('IN_PROGRESS')}">
+                                                    <a th:text="#{work.state.in_progress}" id="status" style="color: red">Type</a>
+                                                </th:block>
+                                                <th:block th:if="${work.getState().equals('COMPLETE')}">
+                                                    <a th:text="#{work.state.complete}" id="status" style="color: green;">Type</a>
+                                                </th:block>
+                                            </p>
+
+                                            <p class="work-element" style="margin-bottom: -1%">
+                                                <label for="chapters" th:text="#{home.works.chapters} + ':'">F</label>
+                                                <a id="chapters">
+                                                    <div class="column">
+                                                        <p th:each="chapter : ${work.getChapters()}" th:text="${chapter}">Ch</p>
+                                                        <form id="my_form" action="/home/works/add_chapter" method="get">
+                                                            <!-- Your Form -->
+                                                            <a href="/home/works/add_chapter" onclick="document.getElementById('my_form').submit(); return false;"
+                                                               th:text="#{home.works.add_chapter}">submit</a>
+                                                            <input type="hidden" name="workName" th:value="${work.getName()}"/>
+                                                        </form>
+                                                    </div>
+                                                </a>
+                                            </p>
+                                            <th:block th:if="${work.getTags().size() > 0}">
+                                                <p class="work-element" style="margin-bottom: -1%">
+                                                    <label for="tags" th:text="#{work.tags} + ':'">F</label>
+                                                    <a th:each="tag : ${work.getTags()}" id="tags">
+                                                        <a th:text="${tag}">Tag</a>
+                                                    </a>
+                                                </p>
+                                            </th:block>
+                                            <p class="work-element text-element">
+                                                <p th:text="${work.getDescription()}" id="description">Type</p>
+                                            </p>
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <a href="/home/works/add_work">
+                                                <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-pencil" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" d="M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z"/>
+                                                    <path fill-rule="evenodd" d="M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z"/>
+                                                </svg>
+                                            </a>
+                                            <a href="/home/works/add_work">
+                                                <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </th:block>
                     </th:block>
                 </th:block>
                 <th:block th:if="${myWorks == null || myWorks.size() <= 0}">
+                    <p></p>
                     <p th:text="#{list.work.my_works.empty}">No tags</p>
                 </th:block>
             </div>

@@ -27,6 +27,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/**").hasAuthority("ADMIN")
                 .anyRequest().permitAll()
                 .and()
+                .formLogin().loginPage("/auth/login") //todo: replace with a filter (for admin violation won't work)
+                .and()
                 .logout()
                 .permitAll();
         http.csrf().disable();

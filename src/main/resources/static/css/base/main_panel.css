@@ -13,10 +13,6 @@
     color: #ffe9ff;
 }
 
-@media (min-width: 740px) {
-
-}
-
 .link {
     font-size: medium;
     cursor: pointer;

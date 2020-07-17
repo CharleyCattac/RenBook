@@ -7,12 +7,12 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WorkTextDto {
+public class ChapterDto {
 
     //null if there-s only one text
     private String name;
     private String text;
-    private String comment;
+    private String notes;
 
     private Long postTimeMillis;
 }

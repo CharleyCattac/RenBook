@@ -142,7 +142,8 @@
                                        th:rows="4" th:cols="40" maxlength="500">-->
                                 <textarea class="form-control" id="description" name="description"
                                           rows="3" cols="20" maxlength="500"
-                                          onkeyup="textCounter(this, 'descriptionCounter', 500)"></textarea>
+                                          onkeyup="textCounter(this, 'descriptionCounter', 500)"
+                                          oninput="auto_grow(this)"></textarea>
                                 <label for="descriptionCounter" th:text="#{signup.characters_left}"
                                        style="font-weight: normal">Left</label>
                                 <input disabled  maxlength="3" size="3" value="500" id="descriptionCounter">
@@ -167,6 +168,13 @@
         } else {
             countfield.value = maxlimit - field.value.length;
         }
+    }
+</script>
+
+<script>
+    function auto_grow(element) {
+        element.style.height = "5px";
+        element.style.height = (element.scrollHeight)+"px";
     }
 </script>
 

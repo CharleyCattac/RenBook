@@ -5,26 +5,27 @@ import lombok.*;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "work_text")
+@Table(name = "chapter")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WorkText {
+public class Chapter {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
     @Lob @Basic(fetch = FetchType.LAZY)
-    @Column(nullable = false, length = 15728640) // ~15 MB
+    @Column(nullable = false, length = 67108864) // ~8 MB
     private String text;
 
-    @Column(length = 500)
-    private String comment;
+    @Column(length = 350)
+    private String notes;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "work_id", referencedColumnName = "id")
