@@ -60,12 +60,12 @@ public class HomeController {
         return HOME_WORKS;
     }
 
-    @GetMapping(value = "/works/add_work")
+    @GetMapping(value = "/works/add")
     public String getAddWork(Model model) {
         return HOME_ADD_WORK;
     }
 
-    @PostMapping(value = "/works/add_work")
+    @PostMapping(value = "/works/add")
     public String performAddWork(@RequestParam(name = "name") String name,
                               @RequestParam(name = "fandomType") String fandomType,
                               @RequestParam(name = "rating") String rating,
@@ -79,16 +79,60 @@ public class HomeController {
             model.addAttribute(ERROR, ERROR);
             return HOME_ADD_WORK;
         }
-        return HOME_WORKS_REDIRECT;
+        return INDEX_REDIRECT; //todo fix redirects
     }
 
-    @RequestMapping(value = "/works/add_work/done")
-    public String postConfirmation() {
-        return HOME_WORKS;
+    //todo CREATE KEYS TO PUT IN URL INSTEAD OF NAMES
+
+    @GetMapping(value = "/works/{workName}/edit")
+    public String showEditWork(@PathVariable(name = "workName") String workName,
+                               Model model) {
+        Work work = workService.findByName(workName);
+        if (work == null) {
+            model.addAttribute(ERROR, ERROR);
+            return HOME_WORKS;
+        }
+        model.addAttribute(EDITABLE_WORK, EntityToDtoConverter.convertWorkBasic(work));
+        return HOME_EDIT_WORK;
     }
 
-    @GetMapping(value = "/works/add_chapter")
-    public String showAddChapter(@RequestParam(name = "workName") String name,
+    @PostMapping(value = "/works/{name}/edit")
+    public String performEditWork(@PathVariable(name = "name") String workName,
+                                  @RequestParam(name = "fandomType") String fandomType,
+                                  @RequestParam(name = "rating") String rating,
+                                  @RequestParam(name = "category") String category,
+                                  @RequestParam(name = "status") String status,
+                                  @RequestParam(name = "language") String language,
+                                  @RequestParam(name = "description") String description,
+                                  @RequestParam(name = "comment") String comment,
+                                  Model model) {
+        Work work = workService.findByName(workName);
+        if (work == null) {
+            work = workService.addNewWork(workName, fandomType, rating, category, language, description, comment);
+        } else {
+            work = workService.updateWork(work, workName, fandomType, rating, category, status, language, description, comment);
+        }
+        if (work == null) {
+            model.addAttribute(ERROR, ERROR);
+            return HOME_EDIT_WORK;
+        }
+        return INDEX_REDIRECT; //todo fix redirects
+    }
+
+    @PostMapping(value = "/works/{workName}/delete")
+    public String deleteWork(@PathVariable(name = "workName") String workName,
+                             Model model) {
+        Work work = workService.findByName(workName);
+        if (work == null) {
+            model.addAttribute(ERROR, ERROR);
+            return HOME_WORKS;
+        }
+        workService.deleteWork(work);
+        return INDEX_REDIRECT; //todo fix redirects
+    }
+
+    @GetMapping(value = "/works/{workName}/add")
+    public String showAddChapter(@PathVariable(name = "workName") String name,
                                  Model model) {
         Work work = workService.findByName(name);
         if (work == null) {
@@ -100,8 +144,8 @@ public class HomeController {
         return HOME_ADD_CHAPTER;
     }
 
-    @PostMapping(value = "/works/add_chapter")
-    public String performAddChapter(@RequestParam(name = "workName") String workName,
+    @PostMapping(value = "/works/{workName}/add")
+    public String performAddChapter(@PathVariable(name = "workName") String workName,
                                     @RequestParam(name = "chapterName") String chapterName,
                                     @RequestParam(name = "chapterText") String chapterText,
                                     @RequestParam(name = "notes") String notes,
@@ -120,6 +164,55 @@ public class HomeController {
         workService.addNewChapter(work, newChapter);
         workService.updateStatus(work, status);
 
-        return HOME_WORKS_REDIRECT;
+        return INDEX_REDIRECT; //todo fix redirects
+    }
+
+    @GetMapping(value = "/works/{workName}/{chapterName}/edit")
+    public String showEditChapter(@PathVariable(name = "workName") String workName,
+                                  @PathVariable(name = "chapterName") String chapterName,
+                                  Model model) {
+        Work work = workService.findByName(workName);
+        Chapter chapter = chapterService.findByWorkAndName(work, chapterName);
+        if (chapter == null) {
+            model.addAttribute(ERROR, ERROR);
+            return HOME_WORKS;
+        }
+        model.addAttribute(EDITABLE_CHAPTER, EntityToDtoConverter.convertChapter(chapter));
+
+        return HOME_EDIT_CHAPTER;
+    }
+
+    @PostMapping(value = "/works/{workName}/{chapterName}/edit")
+    public String performEditChapter(@PathVariable(name = "workName") String workName,
+                                     @PathVariable(name = "chapterName") String chapterName,
+                                     @RequestParam(name = "chapterText") String chapterText,
+                                     @RequestParam(name = "notes") String notes,
+                                     Model model) {
+        Work work = workService.findByName(workName);
+        Chapter chapter = chapterService.findByWorkAndName(work, chapterName);
+        if (chapter == null) {
+            chapter = chapterService.saveChapter(work, chapterName, chapterText, notes);
+        } else {
+            chapter = chapterService.updateChapter(chapter, chapterName, chapterText, notes);
+        }
+        if (chapter == null) {
+            model.addAttribute(ERROR, ERROR);
+            return HOME_EDIT_CHAPTER;
+        }
+        return INDEX_REDIRECT; //todo fix redirects
+    }
+
+    @PostMapping(value = "/works/{workName}/{chapterName}/delete")
+    public String deleteChapter(@PathVariable(name = "workName") String workName,
+                                @PathVariable(name = "chapterName") String chapterName,
+                                Model model) {
+        Work work = workService.findByName(workName);
+        Chapter chapter = chapterService.findByWorkAndName(work, chapterName);
+        if (chapter == null) {
+            model.addAttribute(ERROR, ERROR);
+            return HOME_WORKS;
+        }
+        chapterService.deleteChapter(chapter);
+        return INDEX_REDIRECT; //todo fix redirects
     }
 }

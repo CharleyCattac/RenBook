@@ -3,7 +3,7 @@
       xmlns:th="https://www.thymeleaf.org"
 >
 <head>
-    <title th:text="#{home.add_fic.label}">Title</title>
+    <title th:text="#{home.edit.label}">Title</title>
 
     <!-- For bootstrap -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -95,12 +95,12 @@
                             <a style="color: red"><td th:text="#{error.something_went_wrong}">err</td></a>
                         </b>
 
-                        <form name="add_work" action="/home/works/add" method="post">
+                        <form name="add_work" th:action="'/home/works/' + ${editWork.getName()} + '/edit'" method="post">
 
                             <div class="form-group">
                                 <label for="name" th:text="#{home.add_fic.name}">name</label>
                                 <input type="text" class="form-control" id="name" name="name"
-                                       maxlength="100" required>
+                                       maxlength="100" th:value="${editWork.getName()}" disabled>
                             </div>
 
                             <fieldset class="form-group">
@@ -109,14 +109,14 @@
                                     <div class="col-sm-10">
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="fandomType" id="grid1Radios1"
-                                                   value="original" checked>
+                                                   value="original" th:checked="${editWork.getFandomType().equals('ORIGINAL')}">
                                             <label class="form-check-label" for="grid1Radios1" th:text="#{work.category.types.original}">
                                                 First radio
                                             </label>
                                         </div>
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="fandomType" id="grid1Radios2"
-                                                   value="fandom">
+                                                   value="fandom" th:checked="${!editWork.getFandomType().equals('ORIGINAL')}">
                                             <label class="form-check-label" for="grid1Radios2" th:text="#{home.add_fic.type.fandom}">
                                                 Second radio
                                             </label>
@@ -131,28 +131,28 @@
                                     <div class="col-sm-10">
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="rating" id="grid2Radios1"
-                                                   value="g" checked>
+                                                   value="g" th:checked="${editWork.getRating().equals('G')}">
                                             <label class="form-check-label" for="grid2Radios1" th:text="#{work.rating.g}">
                                                 First radio
                                             </label>
                                         </div>
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="rating" id="grid2Radios2"
-                                                   value="pg_13">
+                                                   value="pg_13" th:checked="${editWork.getRating().equals('PG_13')}">
                                             <label class="form-check-label" for="grid2Radios2" th:text="#{work.rating.pg_13}">
                                                 First radio
                                             </label>
                                         </div>
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="rating" id="grid2Radios3"
-                                                   value="r">
+                                                   value="r" th:checked="${editWork.getRating().equals('R')}">
                                             <label class="form-check-label" for="grid2Radios3" th:text="#{work.rating.r}">
                                                 First radio
                                             </label>
                                         </div>
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="rating" id="grid2Radios4"
-                                                   value="nc_17">
+                                                   value="nc_17" th:checked="${editWork.getRating().equals('NC_17')}">
                                             <label class="form-check-label" for="grid2Radios1" th:text="#{work.rating.nc_17}">
                                                 First radio
                                             </label>
@@ -167,42 +167,42 @@
                                     <div class="col-sm-10">
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="category" id="grid3Radios1"
-                                                   value="gen" checked>
+                                                   value="gen" th:checked="${editWork.getCategory().equals('GEN')}">
                                             <label class="form-check-label" for="grid3Radios1" th:text="#{work.category.gen}">
                                                 First radio
                                             </label>
                                         </div>
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="category" id="grid3Radios2"
-                                                   value="f_f">
+                                                   value="f_f" th:checked="${editWork.getCategory().equals('F_F')}">
                                             <label class="form-check-label" for="grid3Radios2" th:text="#{work.category.f_f}">
                                                 First radio
                                             </label>
                                         </div>
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="category" id="grid3Radios3"
-                                                   value="m_f">
+                                                   value="m_f" th:checked="${editWork.getCategory().equals('M_F')}">
                                             <label class="form-check-label" for="grid3Radios3" th:text="#{work.category.m_f}">
                                                 First radio
                                             </label>
                                         </div>
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="category" id="grid3Radios4"
-                                                   value="m_m">
+                                                   value="m_m" th:checked="${editWork.getCategory().equals('M_M')}">
                                             <label class="form-check-label" for="grid3Radios4" th:text="#{work.category.m_m}">
                                                 First radio
                                             </label>
                                         </div>
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="category" id="grid3Radios5"
-                                                   value="mixed">
+                                                   value="mixed" th:checked="${editWork.getCategory().equals('MIXED')}">
                                             <label class="form-check-label" for="grid3Radios5" th:text="#{work.category.mixed}">
                                                 First radio
                                             </label>
                                         </div>
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="category" id="grid3Radios6"
-                                                   value="other">
+                                                   value="other" th:checked="${editWork.getCategory().equals('OTHER')}">
                                             <label class="form-check-label" for="grid3Radios6" th:text="#{work.category.other}">
                                                 First radio
                                             </label>
@@ -217,14 +217,14 @@
                                     <div class="col-sm-10">
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="language" id="grid4Radios1"
-                                                   value="en" checked>
+                                                   value="en" th:checked="${editWork.getLanguage().equals('EN')}">
                                             <label class="form-check-label" for="grid4Radios1" th:text="#{profile.language.en}">
                                                 First radio
                                             </label>
                                         </div>
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="language" id="grid4Radios2"
-                                                   value="ru">
+                                                   value="ru" th:checked="${editWork.getLanguage().toUpperCase().equals('RU')}">
                                             <label class="form-check-label" for="grid4Radios2" th:text="#{profile.language.ru}">
                                                 Second radio
                                             </label>
@@ -244,7 +244,8 @@
                                        th:rows="4" th:cols="40" maxlength="500">-->
                                 <textarea class="form-control" id="description" name="description"
                                           rows="5" cols="20" maxlength="500" required
-                                          onkeyup="textCounter(this, 'descriptionCounter', 500)"></textarea>
+                                          onkeyup="textCounter(this, 'descriptionCounter', 500)"
+                                ><th:block th:text="${editWork.getDescription()}">R</th:block></textarea>
                                 <label for="descriptionCounter" th:text="#{signup.characters_left}"
                                        style="font-weight: normal">Left</label>
                                 <input disabled  maxlength="3" size="3" value="500" id="descriptionCounter">
@@ -256,11 +257,34 @@
                                        th:rows="4" th:cols="40" maxlength="500">-->
                                 <textarea class="form-control" id="comment" name="comment"
                                           rows="5" cols="20" maxlength="350"
-                                          onkeyup="textCounter(this, 'commentCounter', 350)"></textarea>
+                                          onkeyup="textCounter(this, 'commentCounter', 350)"
+                                ><th:block th:text="${editWork.getComment()}">R</th:block></textarea>
                                 <label for="commentCounter" th:text="#{signup.characters_left}"
                                        style="font-weight: normal">Left</label>
                                 <input disabled  maxlength="3" size="3" value="350" id="commentCounter">
                             </div>
+
+                            <fieldset class="form-group">
+                                <div class="row">
+                                    <b class="col-form-label col-sm-2 pt-0" th:text="#{home.add_chapter.status}">Radios</b>
+                                    <div class="col-sm-10">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="status" id="grid5Radios1"
+                                                   value="in_progress" th:checked="${editWork.getStatus().equals('IN_PROGRESS')}">
+                                            <label class="form-check-label" for="grid5Radios1" th:text="#{work.state.in_progress}">
+                                                First radio
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="status" id="grid5Radios2"
+                                                   value="complete" th:checked="${editWork.getStatus().equals('COMPLETE')}">
+                                            <label class="form-check-label" for="grid5Radios2" th:text="#{work.state.complete}">
+                                                First radio
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
 
                             <button type="submit" class="btn btn-primary" th:text="#{home.add_fic.save}">S</button>
                         </form>

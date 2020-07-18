@@ -15,13 +15,14 @@ public class WorkDtoBasic {
 
     protected String name;
     protected String description;
+    protected String comment;
 
     protected Double averageAssessment;
     protected Integer assessmentCount;
 
     protected List<FandomDto> fandoms;
     protected List<String> tags;
-    protected String state;
+    protected String status;
     protected String fandomType;
     protected String category;
     protected String rating;

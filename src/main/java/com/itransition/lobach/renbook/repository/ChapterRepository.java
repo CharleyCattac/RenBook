@@ -11,4 +11,6 @@ import java.util.List;
 public interface ChapterRepository extends JpaRepository<Chapter, Long> {
 
     List<Chapter> getAllByWorkOrderByPostTimeMillisAsc(Work work);
+
+    Chapter findByWorkAndName(Work work, String name);
 }

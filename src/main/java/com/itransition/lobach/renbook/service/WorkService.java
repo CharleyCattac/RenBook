@@ -35,24 +35,62 @@ public class WorkService {
                            String language,
                            String description,
                            String comment) {
+        return saveWork(null, name, fandomType, rating, category, Status.IN_PROGRESS.name(), language, description, comment);
+    }
+
+    public Work updateWork(Work work,
+                           String name,
+                           String fandomType,
+                           String rating,
+                           String category,
+                           String status,
+                           String language,
+                           String description,
+                           String comment) {
+        return saveWork(work, name, fandomType, rating, category, status, language, description, comment);
+    }
+
+    private Work saveWork(Work work,
+                          String name,
+                          String fandomType,
+                          String rating,
+                          String category,
+                          String status,
+                          String language,
+                          String description,
+                          String comment) {
         if (name != null && EnumUtils.isValidEnum(FandomType.class, fandomType.toUpperCase())
                 && EnumUtils.isValidEnum(Rating.class, rating.toUpperCase())
                 && EnumUtils.isValidEnum(Category.class, category.toUpperCase())
                 && EnumUtils.isValidEnum(Language.class, language.toUpperCase())
+                && EnumUtils.isValidEnum(Status.class, status.toUpperCase())
                 && description != null) {
             User author = getLoggedUser();
-            return workRepository.save(Work.builder()
-                    .name(name)
-                    .type(fandomType.toUpperCase())
-                    .rating(rating.toUpperCase())
-                    .category(category.toUpperCase())
-                    .language(language)
-                    .description(description)
-                    .comment(comment)
-                    .state(State.IN_PROGRESS.name())
-                    .lastUpdateMillis(System.currentTimeMillis())
-                    .author(author)
-                    .build());
+            if (work == null) {
+                return workRepository.save(Work.builder()
+                        .name(name)
+                        .type(fandomType.toUpperCase())
+                        .rating(rating.toUpperCase())
+                        .category(category.toUpperCase())
+                        .language(language.toUpperCase())
+                        .description(description)
+                        .comment(comment)
+                        .status(status)
+                        .lastUpdateMillis(System.currentTimeMillis())
+                        .author(author)
+                        .build());
+            } else {
+                work.setName(name);
+                work.setType(fandomType.toUpperCase());
+                work.setRating(rating.toUpperCase());
+                work.setCategory(category.toUpperCase());
+                work.setLanguage(language);
+                work.setDescription(description);
+                work.setComment(comment);
+                work.setStatus(status.toUpperCase());
+                work.setLastUpdateMillis(System.currentTimeMillis());
+                return workRepository.save(work);
+            }
         }
         return null;
     }
@@ -85,9 +123,15 @@ public class WorkService {
     }
 
     public void updateStatus(Work work, String newStatus) {
-        if (EnumUtils.isValidEnum(State.class, newStatus.toUpperCase())) {
-            work.setState(newStatus.toUpperCase());
+        if (EnumUtils.isValidEnum(Status.class, newStatus.toUpperCase())) {
+            work.setStatus(newStatus.toUpperCase());
             workRepository.save(work);
+        }
+    }
+
+    public void deleteWork(Work work) {
+        if (work != null) {
+            workRepository.delete(work);
         }
     }
 

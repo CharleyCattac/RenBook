@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title th:text="${viewedWork.getName()}">Title</title>
+    <!-- For bootstrap -->
+    <script src="https://rawgit.com/jackmoore/autosize/master/dist/autosize.min.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- Local css -->
+    <link rel="stylesheet" type="text/css" href="/css/base/background.css">
+    <link rel="stylesheet" type="text/css" href="/css/base/main_panel.css">
+    <link rel="stylesheet" type="text/css" href="/css/base/nav.css">
+    <link rel="stylesheet" type="text/css" href="/css/items/work_item.css">
+    <link rel="stylesheet" type="text/css" href="/css/items/chapter_item.css">
+    <!-- Script to load navbar -->
+    <!--<script src="js/csi.js"></script>-->
+
+    <meta charset="UTF-8">
+</head>
+<body>
+<div class="bg">
+    <!--<div data-include="/components/navbar.html"></div>-->
+    <!-- ---------- -->
+    <!-- Navbar -->
+    <!-- ---------- -->
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">RenBook</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li>
+                    <a th:text="#{navbar.works}" href="/works">Authors</a>
+                </li>
+                <li>
+                    <a th:text="#{navbar.authors}" href="/authors">Authors</a>
+                </li>
+                <li>
+                    <a th:text="#{navbar.rules}" href="/rules">Authors</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <th:block th:if="${#authentication.getName().equals('anonymousUser')}">
+                    <li>
+                        <a href="/auth/signup">
+                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-bar-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M10.146 4.646a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L12.793 8l-2.647-2.646a.5.5 0 0 1 0-.708z"/>
+                                <path fill-rule="evenodd" d="M6 8a.5.5 0 0 1 .5-.5H13a.5.5 0 0 1 0 1H6.5A.5.5 0 0 1 6 8zm-2.5 6a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 1 0v11a.5.5 0 0 1-.5.5z"/>
+                            </svg>
+                            <th:block th:text="#{navbar.signup}">S</th:block>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/auth/login">
+                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-person" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M13 14s1 0 1-1-1-4-6-4-6 3-6 4 1 1 1 1h10zm-9.995-.944v-.002.002zM3.022 13h9.956a.274.274 0 0 0 .014-.002l.008-.002c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664a1.05 1.05 0 0 0 .022.004zm9.974.056v-.002.002zM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                            </svg>
+                            <th:block th:text="#{navbar.login}">L</th:block>
+                        </a>
+                    </li>
+                </th:block>
+
+                <th:block th:unless="${#authentication.getName().equals('anonymousUser')}">
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown"
+                           th:text="${#authentication.principal.username}"
+                           style="cursor: pointer">
+                            <!--<img th:src="${#authentication.principal.userInfo.avatarUrl}"
+                                 class="img-circle img-responsive"
+                                 th:alt="${#authentication.principal.username}">-->
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/home/news" th:text="#{dropdown.news}">News</a></li>
+                            <li class="divider"></li>
+                            <li><a href="/home/profile" th:text="#{dropdown.profile}">Profile</a></li>
+                            <li><a href="/home/works" th:text="#{dropdown.works}">Works</a></li>
+                            <li><a href="/home/saved" th:text="#{dropdown.saved}">Likes</a></li>
+                            <li class="divider"></li>
+                            <li><a href="/logout" th:text="#{dropdown.logout}">Logout</a></li>
+                        </ul>
+                    </li>
+                </th:block>
+            </ul>
+        </div>
+    </nav>
+    <!-- ---------- -->
+    <!-- Main panel -->
+    <!-- ---------- -->
+    <div class="container">
+        <div class="main-panel main-panel-light" style="padding: 1%">
+            <div class="container">
+                <b th:if="${error}">
+                    <a style="color: red"><td th:text="#{error.something_went_wrong}">err</td></a>
+                </b>
+            </div>
+            <div class="container-fluid">
+                <th:block th:if="${viewedWork != null}">
+                    <div class="item-panel item-panel-light">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h3 th:text="${viewedWork.getName()}" style="margin-top: -0.01%; font-weight: bold">L</h3>
+                                    <p class="work-element" style="margin-top: -0.5%; margin-bottom: -1%">
+                                        <label for="fandom" th:text="#{home.add_fic.type.fandom} + ':'">F</label>
+                                        <th:block th:if="${viewedWork.getFandomType().equals('ORIGINAL')}">
+                                            <a th:text="#{work.category.types.original}" id="fandom">Type</a>
+                                        </th:block>
+                                    </p>
+                                    <p class="work-element" style="margin-bottom: -1%">
+                                        <label for="category" th:text="#{work.category}">F</label>
+                                        <a th:text="#{'work.category.' + ${viewedWork.getCategory().toLowerCase()}}" id="category">Type</a>
+                                    </p>
+                                    <p class="work-element" style="margin-bottom: -1%">
+                                        <label for="rating" th:text="#{work.rating}">F</label>
+                                        <a th:text="${viewedWork.getRating()}" id="rating"
+                                           data-toggle="tooltip" data-placement="right" th:title="#{'work.rating.' + ${viewedWork.getRating().toLowerCase()}}">
+                                        </a>
+                                    </p>
+                                    <p class="work-element" style="margin-bottom: -1%">
+                                        <label for="status" th:text="#{work.state}">F</label>
+                                        <th:block th:if="${viewedWork.getStatus().equals('IN_PROGRESS')}">
+                                            <a th:text="#{work.state.in_progress}" id="status" style="color: red">Type</a>
+                                        </th:block>
+                                        <th:block th:if="${viewedWork.getStatus().equals('COMPLETE')}">
+                                            <a th:text="#{work.state.complete}" id="status" style="color: green;">Type</a>
+                                        </th:block>
+                                    </p>
+                                    <p class="work-element" style="margin-bottom: -1%">
+                                        <label for="language" th:text="#{profile.language.label} + ':'">F</label>
+                                        <a th:text="#{'profile.language.' + ${viewedWork.getLanguage().toLowerCase()}}" id="language">Type</a>
+                                    </p>
+                                    <p class="work-element" style="margin-bottom: -1%">
+                                        <label for="size" th:text="#{work.size} + ':'">F</label>
+                                        <label th:text="#{work.size.chapters} + ': ' + ${viewedWork.getChapters().size()} + ', ' + #{work.size.words} + ': ' + ${viewedWork.getWordsCount()}"
+                                               id="size" style="font-weight: normal">Type</label>
+                                    </p>
+                                    <th:block th:if="${viewedWork.getTags().size() > 0}">
+                                        <p class="work-element" style="margin-bottom: -1%">
+                                            <label for="tags" th:text="#{work.tags} + ':'">F</label>
+                                            <a th:each="tag : ${viewedWork.getTags()}" id="tags">
+                                                <a th:text="${tag}">Tag</a>
+                                            </a>
+                                        </p>
+                                    </th:block>
+                                </div>
+                                <div class="col-sm-6">
+                                    <p>
+                                        <h4 th:text="#{home.add_fic.description} + ':'" style="font-weight: bold">H</h4>
+                                        <p th:text="${viewedWork.getDescription()}" id="description">
+                                            Type
+                                        </p>
+                                    </p>
+                                    <p>
+                                        <h4 th:text="#{home.add_fic.comment} + ':'" style="font-weight: bold">H</h4>
+                                        <p th:text="${viewedWork.getComment()}" id="comment">
+                                            Type
+                                        </p>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-panel item-panel-light">
+                        <div class="container-fluid">
+                            <th:block th:if="${viewedWork.getChapters().size() == 0}">
+                                <p th:text="#{list.chapters.empty}">C</p>
+                            </th:block>
+                            <th:block th:if="${viewedWork.getChapters().size() == 1}">
+                                <div>
+                                    <p class="text-output" th:text="${viewedWork.getChapters().get(0).getText()}">C</p>
+                                    <th:block th:if="${!viewedWork.getChapters().get(0).getNotes().isBlank()}">
+                                        <h5 th:text="#{home.add_chapter.notes} + ':'" style="font-weight: bold">G</h5>
+                                        <p class="text-output" th:text="${viewedWork.getChapters().get(0).getNotes()}">C</p>
+                                    </th:block>
+                                </div>
+                            </th:block>
+                            <th:block th:if="${viewedWork.getChapters().size() > 1}">
+                                <h4 th:text="#{list.chapters.contents}" style="font-weight: bold">C</h4>
+                                <div th:each="chapter : ${viewedWork.getChapters()}" style="margin-left: 3%">
+                                    <form th:id="'show_chapter_form' + ${viewedWork.getChapters().indexOf(chapter)}"
+                                          th:action="'/works/view/' + ${viewedWork.getName()} + '/' + ${chapter.getName()}" method="get">
+                                        <a class="link" style="margin-right: 2%;"
+                                           onclick="document.getElementById(this.parentNode.id).submit(); return false;"
+                                           th:text="${chapter.getName()}">
+                                            S
+                                        </a>
+                                    </form>
+                                </div>
+                            </th:block>
+                        </div>
+                    </div>
+                </th:block>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<!-- For bootstrap -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</html>

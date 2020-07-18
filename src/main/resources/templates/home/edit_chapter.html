@@ -3,7 +3,7 @@
       xmlns:th="https://www.thymeleaf.org"
 >
 <head>
-    <title th:text="#{home.works.add_chapter}">Title</title>
+    <title th:text="#{home.edit.label}">Title</title>
 
     <!-- For bootstrap -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -94,15 +94,16 @@
                         <b th:if="${error}">
                             <a style="color: red"><td th:text="#{error.something_went_wrong}">err</td></a>
                         </b>
-                        <h3 th:text="#{home.add_chapter.label} + ' ' + '&#171' + ${workName} + '&#187'" style="margin-bottom: 2%">Head</h3>
+                        <h3 th:text="#{home.edit.chapter.a} + ' ' + '&#171' + ${editChapter.getName()} + '&#187' + ' ' + #{home.edit.chapter.b} + ' ' + '&#171' + ${workName} + '&#187'" style="margin-bottom: 2%">Head</h3>
 
-                        <form name="add_chapter" th:action="'/home/works/' + ${workName} + '/add'" method="post">
+                        <form name="edit_chapter" th:action="'/home/works/' + ${workName} + '/' + ${editChapter.getName()} + '/edit'" method="post">
                             <div class="form-group">
                                 <label for="chapterName" th:text="#{home.add_chapter.name}">name</label>
                                 <input type="text" class="form-control" id="chapterName" name="chapterName"
                                        maxlength="100"
-                                       th:placeholder="#{home.add_chapter.default_name} + ${chaptersCount + 1}"
-                                       data-toggle="tooltip" data-placement="right" th:title="#{home.add_chapter.default_name.hint}">
+                                       th:value="${editChapter.getName()}"
+                                       data-toggle="tooltip" data-placement="right"
+                                       disabled>
                             </div>
 
                             <div class="form-group">
@@ -110,40 +111,20 @@
                                 <textarea class="form-control textarea-big" id="chapterText" name="chapterText"
                                           cols="20" maxlength="67108864" required
                                           onkeyup="textCounter(this, 'chapterTextCounter', 67108864)"
-                                          oninput="auto_grow(this)"></textarea>
+                                          oninput="auto_grow(this)"
+                                ><th:block th:text="${editChapter.getText()}">R</th:block></textarea>
                                 <label for="chapterTextCounter" th:text="#{signup.characters_left}"
                                        style="font-weight: normal">Left</label>
                                 <input disabled  maxlength="9" size="9" value="67108864" id="chapterTextCounter">
                             </div>
-
-                            <fieldset class="form-group">
-                                <div class="row">
-                                    <b class="col-form-label col-sm-2 pt-0" th:text="#{home.add_chapter.status}">Radios</b>
-                                    <div class="col-sm-10">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="status" id="grid1Radios1"
-                                                   value="in_progress" checked>
-                                            <label class="form-check-label" for="grid1Radios1" th:text="#{work.state.in_progress}">
-                                                First radio
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="status" id="grid1Radios2"
-                                                   value="complete">
-                                            <label class="form-check-label" for="grid1Radios2" th:text="#{work.state.complete}">
-                                                First radio
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </fieldset>
 
                             <div class="form-group">
                                 <label for="notes" th:text="#{home.add_chapter.notes}">Username</label>
                                 <textarea class="form-control" id="notes" name="notes"
                                           cols="20" maxlength="350"
                                           onkeyup="textCounter(this, 'noteCounter', 350)"
-                                          oninput="auto_grow(this)"></textarea>
+                                          oninput="auto_grow(this)"
+                                ><th:block th:text="${editChapter.getNotes()}">R</th:block></textarea>
                                 <label for="noteCounter" th:text="#{signup.characters_left}"
                                        style="font-weight: normal">Left</label>
                                 <input disabled  maxlength="3" size="3" value="350" id="noteCounter">

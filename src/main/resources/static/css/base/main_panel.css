@@ -14,8 +14,16 @@
 }
 
 .link {
-    font-size: medium;
     cursor: pointer;
+    white-space: nowrap;
+}
+
+.link-medium {
+    font-size: medium;
+}
+
+.link-large {
+    font-size: large;
 }
 
 .link-light {

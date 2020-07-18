@@ -20,4 +20,13 @@ public class Attributes {
 
     public static final String WORK_NAME = "workName";
     public static final String CHAPTERS_COUNT = "chaptersCount";
+
+    public static final String EDITABLE_WORK = "editWork";
+    public static final String EDITABLE_CHAPTER = "editChapter";
+    public static final String CURRENT_STATUS = "currentStatus";
+
+    public static final String VIEWED_WORK = "viewedWork";
+    public static final String VIEWED_CHAPTER = "viewedChapter";
+    public static final String PREV_CHAPTER = "prevChapter";
+    public static final String NEXT_CHAPTER = "nextChapter";
 }

@@ -1,10 +1,10 @@
 package com.itransition.lobach.renbook.controller;
 
+import com.itransition.lobach.renbook.entity.Chapter;
+import com.itransition.lobach.renbook.entity.Work;
 import com.itransition.lobach.renbook.enums.FandomType;
 import com.itransition.lobach.renbook.enums.Language;
-import com.itransition.lobach.renbook.service.FandomService;
-import com.itransition.lobach.renbook.service.TagService;
-import com.itransition.lobach.renbook.service.UserService;
+import com.itransition.lobach.renbook.service.*;
 import com.itransition.lobach.renbook.util.MessageManager;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,10 @@ import static com.itransition.lobach.renbook.util.EntityToDtoConverter.*;
 public class MainController {
 
     @Autowired
-    private UserService userService;
+    private WorkService workService;
+
+    @Autowired
+    private ChapterService chapterService;
 
     @Autowired
     private FandomService fandomService;
@@ -55,6 +58,42 @@ public class MainController {
             model.addAttribute(ERROR, FANDOM_TYPE_UNDEFINED);
             return WORKS;
         }
+    }
+
+    @GetMapping(value = "/works/view/{workName}")
+    public String showWork(@PathVariable("workName") String workName,
+                           Model model) {
+        Work work = workService.findByName(workName);
+        if (work == null) {
+            model.addAttribute(ERROR, ERROR);
+            return WORKS;
+        }
+        model.addAttribute(VIEWED_WORK, convertWorkFull(work));
+        return WORK_VIEW;
+    }
+
+    @GetMapping(value = "/works/view/{workName}/{chapterName}")
+    public String showChapter(@PathVariable("workName") String workName,
+                              @PathVariable("chapterName") String chapterName,
+                              Model model) {
+        Work work = workService.findByName(workName);
+        Chapter chapter = chapterService.findByWorkAndName(work, chapterName);
+        if (chapter == null) {
+            model.addAttribute(ERROR, ERROR);
+            return WORKS;
+        }
+        model.addAttribute(VIEWED_WORK, convertWorkBasic(work));
+        model.addAttribute(VIEWED_CHAPTER, convertChapter(chapter));
+        if (work.getContent().size() > 1) {
+            int chapterIndex = work.getContent().indexOf(chapter);
+            if (chapterIndex != 0) {
+                model.addAttribute(PREV_CHAPTER, work.getContent().get(chapterIndex - 1).getName());
+            }
+            if (chapterIndex != work.getContent().size() - 1) {
+                model.addAttribute(NEXT_CHAPTER, work.getContent().get(chapterIndex + 1).getName());
+            }
+        }
+        return CHAPTER_VIEW;
     }
 
     @GetMapping(value = "/authors")

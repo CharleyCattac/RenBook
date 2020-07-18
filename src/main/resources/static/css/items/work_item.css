@@ -28,6 +28,9 @@
     font-size: 25px;
 }
 
+.text-output {
+    white-space: pre-wrap;
+}
 
 .btn-purple {
     color: #ffe9ff;
@@ -37,4 +40,8 @@
 .btn-purple:hover {
     color: rgba(227, 201, 245, 0.82);
     background-color: rgba(84, 38, 120, 0.87);
+}
+
+form {
+    display: inline-block;
 }

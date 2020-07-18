@@ -1,5 +1,5 @@
 package com.itransition.lobach.renbook.enums;
 
-public enum State {
+public enum Status {
     COMPLETE, IN_PROGRESS;
 }

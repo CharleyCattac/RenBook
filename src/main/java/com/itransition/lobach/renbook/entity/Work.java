@@ -23,7 +23,7 @@ public class Work {
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     private User author = new User();
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String name;
 
     @Column(nullable = false, length = 500)
@@ -36,7 +36,7 @@ public class Work {
     private List<Fandom> fandoms;
 
     @Column(nullable = false)
-    private String state;
+    private String status;
     @Column(nullable = false)
     private String rating;
     @Column(nullable = false)

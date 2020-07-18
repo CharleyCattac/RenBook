@@ -18,16 +18,51 @@ public class ChapterService {
                                String chapterName,
                                String chapterText,
                                String notes) {
+        return saveChapter(null, work, chapterName, chapterText, notes);
+    }
+
+    public Chapter updateChapter(Chapter chapter,
+                                 String chapterName,
+                                 String chapterText,
+                                 String notes) {
+        return saveChapter(chapter, chapter.getWork(), chapterName, chapterText, notes);
+    }
+
+    private Chapter saveChapter(Chapter chapter,
+                                Work work,
+                                String chapterName,
+                                String chapterText,
+                                String notes) {
         if (!chapterName.isBlank() && !chapterText.isBlank()) {
-            return chapterRepository.save(Chapter.builder()
-                    .work(work)
-                    .name(chapterName)
-                    .text(chapterText)
-                    .notes(notes)
-                    .postTimeMillis(System.currentTimeMillis())
-                    .build());
+            if (chapter == null) {
+                return chapterRepository.save(Chapter.builder()
+                        .work(work)
+                        .name(chapterName)
+                        .text(chapterText)
+                        .notes(notes)
+                        .postTimeMillis(System.currentTimeMillis())
+                        .build());
+            } else {
+                chapter.setName(chapterName);
+                chapter.setText(chapterText);
+                chapter.setNotes(notes);
+                return chapterRepository.save(chapter);
+            }
         }
         return null;
+    }
+
+    public Chapter findByWorkAndName(Work work, String name) {
+        if (work != null && name != null) {
+            return chapterRepository.findByWorkAndName(work, name);
+        }
+        return null;
+    }
+
+    public void deleteChapter(Chapter chapter) {
+        if (chapter != null) {
+            chapterRepository.delete(chapter);
+        }
     }
 
     public List<Chapter> findAllByWork(Work work) {

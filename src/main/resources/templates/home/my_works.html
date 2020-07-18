@@ -16,7 +16,6 @@
     <link rel="stylesheet" type="text/css" href="/css/base/main_panel.css">
     <link rel="stylesheet" type="text/css" href="/css/base/nav.css">
     <link rel="stylesheet" type="text/css" href="/css/items/work_item.css">
-    <link rel="stylesheet" type="text/css" href="/css/type/fic_typo.css">
     <!-- Script to load navbar -->
     <!--<script src="js/csi.js"></script>-->
 
@@ -103,7 +102,7 @@
                         <h2 th:text="#{dropdown.works}" style="margin-top: 1%">Cat</h2>
                     </div>
                     <div class="col-sm-2" style="margin-top: 0.5%">
-                        <a href="/home/works/add_work">
+                        <a href="/home/works/add">
                             <button class="btn btn-purple" th:text="#{home.works.add_fic}">B</button>
                         </a>
                     </div>
@@ -112,15 +111,18 @@
             <div class="container-fluid">
                 <th:block th:if="${myWorks != null}">
                     <th:block th:if="${myWorks.size() > 0}">
-                        <th:block th:each="work : ${myWorks}">
+                        <div th:each="work : ${myWorks}">
                             <div class="item-panel item-panel-light">
                                 <div class="container-fluid">
                                     <div class="row">
                                         <div class="col-sm-11">
-                                            <h4 style="font-weight: bold">
-                                                <a href="/home/works" th:text="${work.getName()}">Add</a>
-                                            </h4>
-                                            <p class="work-element" style="margin-bottom: -1%">
+                                            <form id="open_work_form" th:action="'/works/view/' + ${work.getName()}" method="get">
+                                                <h4 style="font-weight: bold">
+                                                    <a class="link link-large" onclick="document.getElementById('open_work_form').submit(); return false;"
+                                                       th:text="${work.getName()}">submit</a>
+                                                </h4>
+                                            </form>
+                                            <p class="work-element" style="margin-top: -0.5%; margin-bottom: -1%">
                                                 <label for="fandom" th:text="#{home.add_fic.type.fandom} + ':'">F</label>
                                                 <th:block th:if="${work.getFandomType().equals('ORIGINAL')}">
                                                     <a th:text="#{work.category.types.original}" id="fandom">Type</a>
@@ -138,28 +140,53 @@
                                             </p>
                                             <p class="work-element" style="margin-bottom: -1%">
                                                 <label for="status" th:text="#{work.state}">F</label>
-                                                <th:block th:if="${work.getState().equals('IN_PROGRESS')}">
+                                                <th:block th:if="${work.getStatus().equals('IN_PROGRESS')}">
                                                     <a th:text="#{work.state.in_progress}" id="status" style="color: red">Type</a>
                                                 </th:block>
-                                                <th:block th:if="${work.getState().equals('COMPLETE')}">
+                                                <th:block th:if="${work.getStatus().equals('COMPLETE')}">
                                                     <a th:text="#{work.state.complete}" id="status" style="color: green;">Type</a>
                                                 </th:block>
                                             </p>
-
                                             <p class="work-element" style="margin-bottom: -1%">
+                                                <label for="language" th:text="#{profile.language.label} + ':'">F</label>
+                                                <a th:text="#{'profile.language.' + ${work.getLanguage().toLowerCase()}}" id="language">Type</a>
+                                            </p>
+                                            <div class="work-element" style="display: flex; ">
                                                 <label for="chapters" th:text="#{home.works.chapters} + ':'">F</label>
-                                                <a id="chapters">
-                                                    <div class="column">
-                                                        <p th:each="chapter : ${work.getChapters()}" th:text="${chapter}">Ch</p>
-                                                        <form id="my_form" action="/home/works/add_chapter" method="get">
-                                                            <!-- Your Form -->
-                                                            <a href="/home/works/add_chapter" onclick="document.getElementById('my_form').submit(); return false;"
-                                                               th:text="#{home.works.add_chapter}">submit</a>
-                                                            <input type="hidden" name="workName" th:value="${work.getName()}"/>
+                                                <div class="column" style="margin-left:2%;">
+                                                    <form id="add_chapter_form" th:action="'/home/works/' + ${work.getName()} + '/add'" method="get">
+                                                        <a class="link" onclick="document.getElementById('add_chapter_form').submit(); return false;"
+                                                           th:text="#{home.works.add_chapter}">submit</a>
+                                                    </form>
+                                                    <div class="row" id="chapters" th:each="chapter : ${work.getChapters()}" style="margin-left: 1%; width: max-content">
+                                                        <form th:id="'show_chapter_form' + ${work.getChapters().indexOf(chapter)}"
+                                                              th:action="'/works/view/' + ${work.getName()} + '/' + ${chapter}" method="get">
+                                                            <a class="link" style="margin-right: 2%;"
+                                                               onclick="document.getElementById(this.parentNode.id).submit(); return false;"
+                                                               th:text="${chapter}">
+                                                                S
+                                                            </a>
+                                                        </form>
+                                                        <form th:id="'edit_chapter_form' + ${work.getChapters().indexOf(chapter)}"
+                                                              th:action="'/home/works/' + ${work.getName()} + '/' + ${chapter} + '/edit'" method="get">
+                                                            <a class="link" onclick="document.getElementById(this.parentNode.id).submit(); return false;">
+                                                                <svg width="15px" height="15px" viewBox="0 0 16 16" class="bi bi-pencil" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path fill-rule="evenodd" d="M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z"/>
+                                                                    <path fill-rule="evenodd" d="M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z"/>
+                                                                </svg>
+                                                            </a>
+                                                        </form>
+                                                        <form th:id="'delete_chapter_form' + ${work.getChapters().indexOf(chapter)}"
+                                                              th:action="'/home/works/' + ${work.getName()} + '/' + ${chapter} + '/delete'" method="post">
+                                                            <a class="link" onclick="return formSubmitter(this.parentNode.id)">
+                                                                <svg width="15px" height="15px" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
+                                                                </svg>
+                                                            </a>
                                                         </form>
                                                     </div>
-                                                </a>
-                                            </p>
+                                                </div>
+                                            </div>
                                             <th:block th:if="${work.getTags().size() > 0}">
                                                 <p class="work-element" style="margin-bottom: -1%">
                                                     <label for="tags" th:text="#{work.tags} + ':'">F</label>
@@ -169,21 +196,29 @@
                                                 </p>
                                             </th:block>
                                             <p class="work-element text-element">
-                                                <p th:text="${work.getDescription()}" id="description">Type</p>
+                                                <p th:text="${work.getDescription()}" class="text-output" id="description">
+                                                    Type
+                                                </p>
                                             </p>
                                         </div>
                                         <div class="col-sm-1">
-                                            <a href="/home/works/add_work">
-                                                <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-pencil" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd" d="M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z"/>
-                                                    <path fill-rule="evenodd" d="M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z"/>
-                                                </svg>
-                                            </a>
-                                            <a href="/home/works/add_work">
-                                                <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
-                                                </svg>
-                                            </a>
+                                            <form th:id="'edit_work_form' + ${myWorks.indexOf(work)}"
+                                                  th:action="'/home/works/' + ${work.getName()} + '/edit'" method="get">
+                                                <a class="link" onclick="document.getElementById(this.parentNode.id).submit(); return false;">
+                                                    <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-pencil" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" d="M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z"/>
+                                                        <path fill-rule="evenodd" d="M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z"/>
+                                                    </svg>
+                                                </a>
+                                            </form>
+                                            <form th:id="'delete_work_form' + ${myWorks.indexOf(work)}"
+                                                  th:action="'/home/works/' + ${work.getName()} + '/delete'" method="post">
+                                                <a class="link" onclick="return formSubmitter(this.parentNode.id)">
+                                                    <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
+                                                    </svg>
+                                                </a>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -196,10 +231,21 @@
                     <p th:text="#{list.work.my_works.empty}">No tags</p>
                 </th:block>
             </div>
+            <input type="hidden" id="question" th:value="#{home.delete.question}">
         </div>
     </div>
 </div>
 </body>
+
+<script>
+    function formSubmitter(formName) {
+        if (confirm(document.getElementById('question').value)) {
+            document.getElementById(formName).submit(); return false;
+        } else {
+            return false;
+        }
+    }
+</script>
 
 <!-- For bootstrap -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
