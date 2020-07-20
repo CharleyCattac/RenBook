@@ -18,6 +18,91 @@
     <link rel="stylesheet" type="text/css" href="/css/home/add_fic.css">
 
     <meta charset="UTF-8">
+
+    <script>
+        function createHiddenInput(hiddenInputName, itemValue) {
+            var newHiddenInput = document.createElement('INPUT');
+            newHiddenInput.setAttribute("type", "hidden");
+            newHiddenInput.setAttribute("name", hiddenInputName);
+            newHiddenInput.setAttribute("value", itemValue);
+            return newHiddenInput;
+        }
+
+        function addCloseableItem(itemName, targetListId, hiddenInputName) {
+            var aimList = document.getElementById(targetListId);
+            var newLink = document.createElement('LI');
+            newLink.id = 'li_' + itemName;
+            var newA = document.createElement('A');
+            newA.className = 'link';
+            newA.id = 'a_' + itemName;
+            newA.textContent = itemName;
+            newA.style.textDecoration = 'none';
+            var tagSpan = document.createElement('SPAN');
+            tagSpan.className = 'close';
+            tagSpan.textContent = 'x';
+            tagSpan.addEventListener("click", function () {
+                var initialTagId = this.parentElement.id.substr(3);
+                var oldLi = document.getElementById('old_li' + initialTagId);
+                if (oldLi !== null) {
+                    oldLi.style.display = "";
+                }
+                this.parentElement.remove();
+            });
+
+            newLink.appendChild(newA);
+            newLink.appendChild(tagSpan);
+            newLink.appendChild(createHiddenInput(hiddenInputName, itemName));
+
+            if (hiddenInputName.toString() === "fandoms") {
+                var fandomType;
+                if (document.getElementById('fandomTypeSelect') !== null) {
+                    fandomType = document.getElementById('fandomTypeSelect').value;
+                }
+                newLink.appendChild(createHiddenInput('fandomTypes', fandomType));
+            }
+
+            aimList.appendChild(newLink);
+        }
+
+        function removeExistingItems(targetList) {
+            var workTagList = document.getElementById(targetList);
+            var tagName, tagFromWholeList;
+            var i;
+            for (i = 0; i < workTagList.getElementsByTagName('li').length; i++) {
+                tagName = workTagList.getElementsByTagName('li')[i].id.substr(3);
+                tagFromWholeList = document.getElementById('old_li' + tagName);
+                if (tagFromWholeList !== null) {
+                    tagFromWholeList.style.display = "none";
+                }
+            }
+        }
+
+        function createNewCloseableItem(inputField, targetListId, hiddenInputName, fandomTypeName) {
+            var input = document.getElementById(inputField);
+            if (input !== null) {
+                if (input.value.length > 0 && input.value.match("^[a-zA-Zа-яА-Я0-9()& ]+")) {
+                    addCloseableItem(input.value, targetListId, hiddenInputName, fandomTypeName);
+                    input.value = '';
+                } else {
+                    input.style.borderColor = "red";
+                }
+            }
+        }
+
+        function manageSearchFandomsPanelView() {
+            var workType = document.getElementById('workTypeSelect');
+            var fandomSearchDiv = document.getElementById('fandomSearchField');
+            var workFandoms = document.getElementById('workFandoms');
+
+            if (workType.value === 'original') {
+                fandomSearchDiv.style.display = "none";
+                workFandoms.style.display = "none";
+            } else {
+                fandomSearchDiv.style.display = "";
+                workFandoms.style.display = "";
+            }
+        }
+    </script>
 </head>
 <body>
 <div class="bg">

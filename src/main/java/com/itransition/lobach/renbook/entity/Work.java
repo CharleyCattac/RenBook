@@ -32,7 +32,10 @@ public class Work {
     @Column(length = 350)
     private String comment;
 
-    @ManyToMany(mappedBy = "works", cascade = CascadeType.ALL)
+    @ManyToMany
+    @JoinTable(name = "fandom_work",
+            joinColumns = @JoinColumn(name = "work_id"),
+            inverseJoinColumns = @JoinColumn(name = "fandom_id"))
     private List<Fandom> fandoms;
 
     @Column(nullable = false)
@@ -46,7 +49,7 @@ public class Work {
     @Column(nullable = false)
     private String language;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "work_tag",
             joinColumns = @JoinColumn(name = "work_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))

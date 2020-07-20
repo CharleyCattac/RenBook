@@ -18,6 +18,91 @@
     <link rel="stylesheet" type="text/css" href="/css/home/add_fic.css">
 
     <meta charset="UTF-8">
+
+    <script>
+        function createHiddenInput(hiddenInputName, itemValue) {
+            var newHiddenInput = document.createElement('INPUT');
+            newHiddenInput.setAttribute("type", "hidden");
+            newHiddenInput.setAttribute("name", hiddenInputName);
+            newHiddenInput.setAttribute("value", itemValue);
+            return newHiddenInput;
+        }
+
+        function addCloseableItem(itemName, targetListId, hiddenInputName) {
+            var aimList = document.getElementById(targetListId);
+            var newLink = document.createElement('LI');
+            newLink.id = 'li_' + itemName;
+            var newA = document.createElement('A');
+            newA.className = 'link';
+            newA.id = 'a_' + itemName;
+            newA.textContent = itemName;
+            newA.style.textDecoration = 'none';
+            var tagSpan = document.createElement('SPAN');
+            tagSpan.className = 'close';
+            tagSpan.textContent = 'x';
+            tagSpan.addEventListener("click", function () {
+                var initialTagId = this.parentElement.id.substr(3);
+                var oldLi = document.getElementById('old_li' + initialTagId);
+                if (oldLi !== null) {
+                    oldLi.style.display = "";
+                }
+                this.parentElement.remove();
+            });
+
+            newLink.appendChild(newA);
+            newLink.appendChild(tagSpan);
+            newLink.appendChild(createHiddenInput(hiddenInputName, itemName));
+
+            if (hiddenInputName.toString() === "fandoms") {
+                var fandomType;
+                if (document.getElementById('fandomTypeSelect') !== null) {
+                    fandomType = document.getElementById('fandomTypeSelect').value;
+                }
+                newLink.appendChild(createHiddenInput('fandomTypes', fandomType));
+            }
+
+            aimList.appendChild(newLink);
+        }
+
+        function removeExistingItems(targetList) {
+            var workTagList = document.getElementById(targetList);
+            var tagName, tagFromWholeList;
+            var i;
+            for (i = 0; i < workTagList.getElementsByTagName('li').length; i++) {
+                tagName = workTagList.getElementsByTagName('li')[i].id.substr(3);
+                tagFromWholeList = document.getElementById('old_li' + tagName);
+                if (tagFromWholeList !== null) {
+                    tagFromWholeList.style.display = "none";
+                }
+            }
+        }
+
+        function createNewCloseableItem(inputField, targetListId, hiddenInputName, fandomTypeName) {
+            var input = document.getElementById(inputField);
+            if (input !== null) {
+                if (input.value.length > 0 && input.value.match("^[a-zA-Zа-яА-Я0-9()& ]+")) {
+                    addCloseableItem(input.value, targetListId, hiddenInputName, fandomTypeName);
+                    input.value = '';
+                } else {
+                    input.style.borderColor = "red";
+                }
+            }
+        }
+
+        function manageSearchFandomsPanelView() {
+            var workType = document.getElementById('workTypeSelect');
+            var fandomSearchDiv = document.getElementById('fandomSearchField');
+            var workFandoms = document.getElementById('workFandoms');
+
+            if (workType.value === 'original') {
+                fandomSearchDiv.style.display = "none";
+                workFandoms.style.display = "none";
+            } else {
+                fandomSearchDiv.style.display = "";
+                workFandoms.style.display = "";
+            }
+        }
+    </script>
 </head>
 <body>
 <div class="bg">
@@ -92,39 +177,71 @@
                 <div class="card" style="width: available; justify-content: center">
                     <div class="card-body">
                         <b th:if="${error}">
-                            <a style="color: red"><td th:text="#{error.something_went_wrong}">err</td></a>
+                            <p style="color: red"><td th:text="#{error.something_went_wrong}">err</td></p>
                         </b>
 
                         <form name="add_work" action="/home/works/add" method="post">
-
+                            <!-- name -->
                             <div class="form-group">
                                 <label for="name" th:text="#{home.add_fic.name}">name</label>
                                 <input type="text" class="form-control" id="name" name="name"
                                        maxlength="100" required>
                             </div>
-
+                            <!-- fandom -->
                             <fieldset class="form-group">
-                                <div class="row">
-                                    <b class="col-form-label col-sm-2 pt-0" th:text="#{home.add_fic.type}">Radios</b>
-                                    <div class="col-sm-10">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="fandomType" id="grid1Radios1"
-                                                   value="original" checked>
-                                            <label class="form-check-label" for="grid1Radios1" th:text="#{work.category.types.original}">
-                                                First radio
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="fandomType" id="grid1Radios2"
-                                                   value="fandom">
-                                            <label class="form-check-label" for="grid1Radios2" th:text="#{home.add_fic.type.fandom}">
-                                                Second radio
-                                            </label>
+                                <label for="workFandoms" th:text="#{home.add_fic.type}">Username</label>
+                                <ul id="workFandoms">
+                                </ul>
+                                <input type="hidden" name="fandoms" value="">
+                                <input type="hidden" name="fandomTypes" value="">
+
+                                <div class="form-group">
+                                    <select class="form-control" id="workTypeSelect" name="workType"
+                                            onchange="manageSearchFandomsPanelView();"
+                                            data-toggle="tooltip" data-placement="top" th:title="#{home.add_fic.type.fandom.hint}">
+                                        <option th:text="#{home.add_fic.type.fandom}" th:value="fandom">1</option>
+                                        <option th:text="#{work.category.types.original}" th:value="original">1</option>
+                                    </select>
+                                    <div id="fandomSearchField">
+                                        <input type="text" class="form-control" id="fandomInput" maxlength="150"
+                                               th:placeholder="#{home.add_fic.type.fandom.search}"
+                                               onkeyup="searchBoxControl('fandomInput', 'fandomList', 'addFandomLink')"
+                                               onclick="showItemList('fandomList'); return false;"
+                                               data-toggle="tooltip" data-placement="top" th:title="#{home.add_fic.tags_and_fandoms.pattern}">
+                                        <ul id="fandomList" style="display: none">
+                                            <li th:each="fandom : ${fandoms}" th:id="'old_li' + ${fandom.getName()}">
+                                                <a href="#" th:id="'old_a' + ${fandom.getName()}" th:name="${fandom.getName()}"
+                                                   onclick="moveItemToCloseableList(this.id, 'workFandoms', 'fandoms'); return false;">
+                                                    <th:block th:text="${fandom.getName()}" style="margin-right: 2.5%">T</th:block>
+                                                </a>
+                                                <span style="" th:id="${fandom.getType().toLowerCase()}"> </span>
+                                            </li>
+                                        </ul>
+                                        <div class="row" id="addFandomLink" style="display: none; margin-top: 1%">
+                                            <a class="link" onclick="createNewCloseableItem('fandomInput', 'workFandoms', 'fandoms'); return false;"
+                                               th:text="#{home.add_fic.type.fandom.add}">D</a>
+                                            <div class="form-group">
+                                                <select class="form-control" id="fandomTypeSelect" style="min-width: max-content; max-width: max-content"
+                                                        data-toggle="tooltip" data-placement="top" th:title="#{home.add_fic.type.fandom.hint}">
+                                                    <option th:text="#{work.category.types.anime_and_manga}" th:value="anime_and_manga">1</option>
+                                                    <option th:text="#{work.category.types.cartoons_and_comic_books}" th:value="cartoons_and_comic_books">1</option>
+                                                    <option th:text="#{work.category.types.games}" th:value="games">1</option>
+                                                    <option th:text="#{work.category.types.books}" th:value="books">1</option>
+                                                    <option th:text="#{work.category.types.movies_and_series}" th:value="movies_and_series">1</option>
+                                                    <option th:text="#{work.category.types.theater_and_musicals}" th:value="theater_and_musicals">1</option>
+                                                    <option th:text="#{work.category.types.real_people}" th:value="real_people">1</option>
+                                                    <option th:text="#{work.category.types.other}" th:value="other">1</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                                <script>
+                                    manageSearchFandomsPanelView();
+                                    removeExistingItems('workFandoms');
+                                </script>
                             </fieldset>
-
+                            <!-- rating -->
                             <fieldset class="form-group">
                                 <div class="row">
                                     <b class="col-form-label col-sm-2 pt-0" th:text="#{home.add_fic.rating}">Radios</b>
@@ -160,7 +277,7 @@
                                     </div>
                                 </div>
                             </fieldset>
-
+                            <!-- category -->
                             <fieldset class="form-group">
                                 <div class="row">
                                     <b class="col-form-label col-sm-2 pt-0" th:text="#{home.add_fic.category}">Radios</b>
@@ -210,7 +327,7 @@
                                     </div>
                                 </div>
                             </fieldset>
-
+                            <!-- language -->
                             <fieldset class="form-group">
                                 <div class="row">
                                     <b class="col-form-label col-sm-2 pt-0" th:text="#{profile.language.label}">Radios</b>
@@ -232,31 +349,51 @@
                                     </div>
                                 </div>
                             </fieldset>
-
+                            <!-- tags -->
                             <div class="form-group">
-                                <label for="tags" th:text="#{home.add_fic.tags}">Username</label>
-                                <input type="text" class="form-control" id="tags" name="tags" maxlength="150">
-                            </div>
+                                <label for="tagInput" th:text="#{home.add_fic.tags}">Username</label>
+                                <ul id="workTags">
+                                </ul>
+                                <input type="hidden" name="tags" value="">
 
+                                <input type="text" class="form-control" id="tagInput" maxlength="150"
+                                       th:placeholder="#{home.add_fic.tags.search}"
+                                       onkeyup="searchBoxControl('tagInput', 'tagList', 'addTagLink')"
+                                       onclick="showItemList('tagList'); return false;"
+                                       data-toggle="tooltip" data-placement="top" th:title="#{home.add_fic.tags_and_fandoms.pattern}">
+                                <ul id="tagList" style="display: none">
+                                    <li th:each="tag : ${tags}" th:id="'old_li' + ${tag.getName()}">
+                                        <a href="#" th:id="'old_a' + ${tag.getName()}" th:name="${tag.getName()}"
+                                           onclick="moveItemToCloseableList(this.id, 'workTags', 'tags'); return false;">
+                                            <th:block th:text="${tag.getName()}" style="margin-right: 2.5%">T</th:block>
+                                            <span class="badge" style="" th:text="${tag.getWorkCount()}">3</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                                <script>
+                                    removeExistingItems('workTags');
+                                </script>
+                                <a class="link" id="addTagLink" onclick="createNewCloseableItem('tagInput', 'workTags', 'tags'); return false;"
+                                   th:text="#{home.add_fic.tags.add}" style="display: none; margin-top: 1%">D</a>
+                            </div>
+                            <!-- description -->
                             <div class="form-group">
                                 <label for="description" th:text="#{home.add_fic.description}">Username</label>
-                                <!--<input type="text" class="form-control" id="description" name="description"
-                                       th:rows="4" th:cols="40" maxlength="500">-->
                                 <textarea class="form-control" id="description" name="description"
                                           rows="5" cols="20" maxlength="500" required
-                                          onkeyup="textCounter(this, 'descriptionCounter', 500)"></textarea>
+                                          onkeyup="textCounter(this, 'descriptionCounter', 500)"
+                                ></textarea>
                                 <label for="descriptionCounter" th:text="#{signup.characters_left}"
                                        style="font-weight: normal">Left</label>
                                 <input disabled  maxlength="3" size="3" value="500" id="descriptionCounter">
                             </div>
-
+                            <!-- comment -->
                             <div class="form-group">
                                 <label for="comment" th:text="#{home.add_fic.comment}">Username</label>
-                                <!--<input type="text" class="form-control" id="description" name="description"
-                                       th:rows="4" th:cols="40" maxlength="500">-->
                                 <textarea class="form-control" id="comment" name="comment"
                                           rows="5" cols="20" maxlength="350"
-                                          onkeyup="textCounter(this, 'commentCounter', 350)"></textarea>
+                                          onkeyup="textCounter(this, 'commentCounter', 350)"
+                                ></textarea>
                                 <label for="commentCounter" th:text="#{signup.characters_left}"
                                        style="font-weight: normal">Left</label>
                                 <input disabled  maxlength="3" size="3" value="350" id="commentCounter">
@@ -271,6 +408,57 @@
     </div>
 </div>
 </body>
+
+<script>
+    function moveItemToCloseableList(oldAId, targetListName, hiddenInputName) {
+        var oldA = document.getElementById(oldAId);
+        oldA.parentElement.style.display = 'none';
+        var tagName = oldAId.substr(5);
+
+        addCloseableItem(tagName, targetListName, hiddenInputName); //itemName, targetListName, hiddenInputName
+    }
+
+    function showItemList(itemListId) {
+        var itemList = document.getElementById(itemListId);
+        itemList.style.display = "";
+    }
+</script>
+
+<script>
+    function searchBoxControl(inputFieldId, ulListId, addNewId) {
+        var input, filter, ul, li, a, i, txtValue;
+        input = document.getElementById(inputFieldId);
+        input.style.borderColor = "";
+        filter = input.value.toUpperCase();
+        ul = document.getElementById(ulListId);
+        li = ul.getElementsByTagName('li');
+
+        var printedCount = li.length;
+        var newLiId, newLi;
+
+        // Loop through all list items, and hide those who don't match the search query
+        for (i = 0; i < li.length; i++) {
+            newLiId = 'li_' + li[i].id.substr(6);
+            newLi = document.getElementById(newLiId);
+            a = li[i].getElementsByTagName("a")[0];
+            txtValue = a.innerText; //a.textContent || a.innerText;
+            if (txtValue.toUpperCase().includes(filter)) {
+                if (newLi === null) {
+                    li[i].style.display = "";
+                }
+            } else {
+                li[i].style.display = "none";
+                printedCount--;
+            }
+        }
+
+        if (printedCount === 0) {
+            document.getElementById(addNewId).style.display = "block";
+        } else {
+            document.getElementById(addNewId).style.display = "none";
+        }
+    }
+</script>
 
 <script>
     function textCounter(field, field2, maxlimit) {

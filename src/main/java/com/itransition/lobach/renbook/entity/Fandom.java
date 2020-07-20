@@ -18,7 +18,7 @@ public class Fandom {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     //for url
@@ -28,9 +28,6 @@ public class Fandom {
     @Column(nullable = false)
     private String type;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "fandom_work",
-            joinColumns = @JoinColumn(name = "fandom_id"),
-            inverseJoinColumns = @JoinColumn(name = "work_id"))
+    @ManyToMany(mappedBy = "fandoms")
     private Set<Work> works;
 }

@@ -99,17 +99,20 @@
                 </b>
                 <h2 th:text="#{work.category.types}">Cat</h2>
                 <div class="row">
-                    <div class="col-sm-6">
-                        <p class="link link-light"><a href="/works/anime_and_manga" th:text="#{work.category.types.anime_and_manga}">С</a></p>
-                        <p class="link link-light"><a href="/works/books" th:text="#{work.category.types.books}">С</a></p>
-                        <p class="link link-light"><a href="/works/cartoons_and_comic_books" th:text="#{work.category.types.cartoons_and_comic_books}">С</a></p>
-                        <p class="link link-light"><a href="/works/games" th:text="#{work.category.types.games}">С</a></p>
+                    <div class="col-sm-4">
+                        <p class="link link-medium"><a href="/works/anime_and_manga" th:text="#{work.category.types.anime_and_manga}">С</a></p>
+                        <p class="link link-medium"><a href="/works/cartoons_and_comic_books" th:text="#{work.category.types.cartoons_and_comic_books}">С</a></p>
+                        <p class="link link-medium"><a href="/works/games" th:text="#{work.category.types.games}">С</a></p>
                     </div>
-                    <div class="col-sm-6">
-                        <p class="link link-light"><a href="/works/theater_and_musicals" th:text="#{work.category.types.theater_and_musicals}">С</a></p>
-                        <p class="link link-light"><a href="/works/real_people" th:text="#{work.category.types.real_people}">С</a></p>
-                        <p class="link link-light"><a href="/works/original" th:text="#{work.category.types.original}">С</a></p>
-                        <p class="link link-light"><a href="/works/other" th:text="#{work.category.types.other}">С</a></p>
+                    <div class="col-sm-4">
+                        <p class="link link-medium"><a href="/works/books" th:text="#{work.category.types.books}">С</a></p>
+                        <p class="link link-medium"><a href="/works/movies_and_series" th:text="#{work.category.types.movies_and_series}">С</a></p>
+                        <p class="link link-medium"><a href="/works/theater_and_musicals" th:text="#{work.category.types.theater_and_musicals}">С</a></p>
+                                            </div>
+                    <div class="col-sm-4">
+                        <p class="link link-medium"><a href="/works/real_people" th:text="#{work.category.types.real_people}">С</a></p>
+                        <p class="link link-medium"><a href="/works/original" th:text="#{work.category.types.original}">С</a></p>
+                        <p class="link link-medium"><a href="/works/other" th:text="#{work.category.types.other}">С</a></p>
                     </div>
                 </div>
             </div>
@@ -118,7 +121,12 @@
                 <th:block th:if="${tags != null}">
                     <th:block th:if="${tags.size() > 0}">
                         <ul>
-                            <li th:each="tag : ${tags}" th:text="${tag.name} : ${tag.workCount}">user name</li>
+                            <li th:each="tag : ${tags}">
+                                <a href="#" class="link link-medium" th:id="'a_' + ${tag.getName()}">
+                                    <th:block th:text="${tag.getName()}" style="margin-right: 2.5%">T</th:block>
+                                    <span class="badge" style="" th:text="${tag.getWorkCount()}">3</span>
+                                </a>
+                            </li>
                         </ul>
                         <p class="link link-light" th:if="${tagsTotalAmount > tags.size()}">
                             <a href="#" th:text="#{list.tag.all}">Ссылка на список всех тегов</a>

@@ -116,18 +116,33 @@
                                 <div class="container-fluid">
                                     <div class="row">
                                         <div class="col-sm-11">
-                                            <form id="open_work_form" th:action="'/works/view/' + ${work.getName()}" method="get">
+                                            <form th:id="'open_work_form' + ${work.getName()}" th:action="'/works/view/' + ${work.getName()}" method="get">
                                                 <h4 style="font-weight: bold">
-                                                    <a class="link link-large" onclick="document.getElementById('open_work_form').submit(); return false;"
+                                                    <a class="link link-large" onclick="document.getElementById(this.parentNode.parentNode.id).submit(); return false;"
                                                        th:text="${work.getName()}">submit</a>
                                                 </h4>
                                             </form>
                                             <p class="work-element" style="margin-top: -0.5%; margin-bottom: -1%">
-                                                <label for="fandom" th:text="#{home.add_fic.type.fandom} + ':'">F</label>
+                                                <label th:text="#{work.category.types.fandom} + ':'">F</label>
                                                 <th:block th:if="${work.getFandomType().equals('ORIGINAL')}">
-                                                    <a th:text="#{work.category.types.original}" id="fandom">Type</a>
+                                                    <a th:text="#{work.category.types.original}"
+                                                       data-toggle="tooltip" data-placement="top" th:title="#{'work.category.types.' + ${work.getFandomType().toLowerCase()}}">Type</a>
+                                                </th:block>
+                                                <th:block th:unless="${work.getFandomType().equals('ORIGINAL')}">
+                                                    <a th:each="fandom : ${work.getFandoms()}"
+                                                       data-toggle="tooltip" data-placement="top" th:title="#{'work.category.types.' + ${fandom.getType().toLowerCase()}}">
+                                                        <th:block th:text="${fandom.getName()}">T</th:block>
+                                                    </a>
                                                 </th:block>
                                             </p>
+                                            <th:block th:if="${work.getTags().size() > 0}">
+                                                <p class="work-element" style="margin-bottom: -1%">
+                                                    <label th:text="#{work.tags} + ':'">F</label>
+                                                    <a th:each="tag : ${work.getTags()}">
+                                                        <a th:text="${tag}">Tag</a>
+                                                    </a>
+                                                </p>
+                                            </th:block>
                                             <p class="work-element" style="margin-bottom: -1%">
                                                 <label for="category" th:text="#{work.category}">F</label>
                                                 <a th:text="#{'work.category.' + ${work.getCategory().toLowerCase()}}" id="category">Type</a>
@@ -187,14 +202,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <th:block th:if="${work.getTags().size() > 0}">
-                                                <p class="work-element" style="margin-bottom: -1%">
-                                                    <label for="tags" th:text="#{work.tags} + ':'">F</label>
-                                                    <a th:each="tag : ${work.getTags()}" id="tags">
-                                                        <a th:text="${tag}">Tag</a>
-                                                    </a>
-                                                </p>
-                                            </th:block>
                                             <p class="work-element text-element">
                                                 <p th:text="${work.getDescription()}" class="text-output" id="description">
                                                     Type

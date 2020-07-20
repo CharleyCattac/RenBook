@@ -3,6 +3,8 @@ package com.itransition.lobach.renbook.controller;
 import com.itransition.lobach.renbook.entity.Chapter;
 import com.itransition.lobach.renbook.entity.Work;
 import com.itransition.lobach.renbook.service.ChapterService;
+import com.itransition.lobach.renbook.service.FandomService;
+import com.itransition.lobach.renbook.service.TagService;
 import com.itransition.lobach.renbook.service.WorkService;
 import com.itransition.lobach.renbook.util.EntityToDtoConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,12 @@ public class HomeController {
 
     @Autowired
     private ChapterService chapterService;
+
+    @Autowired
+    private FandomService fandomService;
+
+    @Autowired
+    private TagService tagService;
 
     @GetMapping(value = "/news")
     public String getNews(Model model) {
@@ -62,19 +70,24 @@ public class HomeController {
 
     @GetMapping(value = "/works/add")
     public String getAddWork(Model model) {
+        model.addAttribute(TAGS, EntityToDtoConverter.convertTagList(tagService.findAll()));
+        model.addAttribute(FANDOMS, EntityToDtoConverter.convertFandomList(fandomService.findAll()));
         return HOME_ADD_WORK;
     }
 
     @PostMapping(value = "/works/add")
     public String performAddWork(@RequestParam(name = "name") String name,
-                              @RequestParam(name = "fandomType") String fandomType,
-                              @RequestParam(name = "rating") String rating,
-                              @RequestParam(name = "category") String category,
-                              @RequestParam(name = "language") String language,
-                              @RequestParam(name = "description") String description,
-                              @RequestParam(name = "comment") String comment,
-                              Model model) {
-        Work newWork = workService.addNewWork(name, fandomType, rating, category, language, description, comment);
+                                 @RequestParam(name = "workType") String workType,
+                                 @RequestParam(name = "fandoms") List<String> fandoms,
+                                 @RequestParam(name = "fandomTypes") List<String> fandomsTypes,
+                                 @RequestParam(name = "rating") String rating,
+                                 @RequestParam(name = "category") String category,
+                                 @RequestParam(name = "language") String language,
+                                 @RequestParam(name = "tags") List<String> tags,
+                                 @RequestParam(name = "description") String description,
+                                 @RequestParam(name = "comment") String comment,
+                                 Model model) {
+        Work newWork = workService.addNewWork(name, workType, fandoms, fandomsTypes, rating, category, language, tags, description, comment);
         if (newWork == null) {
             model.addAttribute(ERROR, ERROR);
             return HOME_ADD_WORK;
@@ -93,26 +106,35 @@ public class HomeController {
             return HOME_WORKS;
         }
         model.addAttribute(EDITABLE_WORK, EntityToDtoConverter.convertWorkBasic(work));
+        model.addAttribute(TAGS, EntityToDtoConverter.convertTagList(tagService.findAll()));
+        model.addAttribute(FANDOMS, EntityToDtoConverter.convertFandomList(fandomService.findAll()));
         return HOME_EDIT_WORK;
     }
 
     @PostMapping(value = "/works/{name}/edit")
     public String performEditWork(@PathVariable(name = "name") String workName,
-                                  @RequestParam(name = "fandomType") String fandomType,
+                                  @RequestParam(name = "workType") String workType,
+                                  @RequestParam(name = "fandoms") List<String> fandoms,
+                                  @RequestParam(name = "fandomTypes") List<String> fandomsTypes,
                                   @RequestParam(name = "rating") String rating,
                                   @RequestParam(name = "category") String category,
                                   @RequestParam(name = "status") String status,
                                   @RequestParam(name = "language") String language,
+                                  @RequestParam(name = "tags") List<String> tags,
                                   @RequestParam(name = "description") String description,
                                   @RequestParam(name = "comment") String comment,
                                   Model model) {
         Work work = workService.findByName(workName);
         if (work == null) {
-            work = workService.addNewWork(workName, fandomType, rating, category, language, description, comment);
+            work = workService.addNewWork(workName, workType, fandoms, fandomsTypes, rating, category, language, tags, description, comment);
         } else {
-            work = workService.updateWork(work, workName, fandomType, rating, category, status, language, description, comment);
+            work = workService.updateWork(work, workName, workType, fandoms, fandomsTypes, rating, category, status, language, tags, description, comment);
         }
         if (work == null) {
+            model.addAttribute(EDITABLE_WORK, EntityToDtoConverter.convertWorkBasic(workService.findByName(workName)));
+            model.addAttribute(TAGS, EntityToDtoConverter.convertTagList(tagService.findAll()));
+            model.addAttribute(FANDOMS, EntityToDtoConverter.convertFandomList(fandomService.findAll()));
+
             model.addAttribute(ERROR, ERROR);
             return HOME_EDIT_WORK;
         }

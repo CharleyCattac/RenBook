@@ -98,7 +98,7 @@
                 <th:block th:if="${fandoms != null}">
                     <th:block th:if="${fandoms.size() > 0}">
                         <ul>
-                            <li th:each="fandom : ${fandoms}" th:text="${fandom.name} : ${tag.workCount}">user name</li>
+                            <li th:each="fandom : ${fandoms}" th:text="${fandom.getName()} + ' : ' + ${fandom.getWorkCount()}">user name</li>
                         </ul>
                     </th:block>
                 </th:block>

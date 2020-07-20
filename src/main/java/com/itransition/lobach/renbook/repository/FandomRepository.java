@@ -9,7 +9,8 @@ import java.util.List;
 @Repository
 public interface FandomRepository extends JpaRepository<Fandom, Long> {
 
+    Fandom findByName(String name);
+
+    List<Fandom> getAllByOrderByNameAsc();
     List<Fandom> getAllByTypeOrderByNameAsc(String type);
-    List<Fandom> getAllByNameStartingWith(String s);
-    List<Fandom> getAllByNameContaining(String s);
 }

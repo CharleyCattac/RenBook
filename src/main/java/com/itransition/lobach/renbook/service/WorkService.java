@@ -1,8 +1,6 @@
 package com.itransition.lobach.renbook.service;
 
-import com.itransition.lobach.renbook.entity.Chapter;
-import com.itransition.lobach.renbook.entity.User;
-import com.itransition.lobach.renbook.entity.Work;
+import com.itransition.lobach.renbook.entity.*;
 import com.itransition.lobach.renbook.enums.*;
 import com.itransition.lobach.renbook.repository.WorkRepository;
 import org.apache.commons.lang3.EnumUtils;
@@ -13,6 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
 
 import static com.itransition.lobach.renbook.constants.OtherConstants.*;
 
@@ -26,40 +27,57 @@ public class WorkService {
     private ChapterService chapterService;
 
     @Autowired
+    private FandomService fandomService;
+
+    @Autowired
+    private TagService tagService;
+
+    @Autowired
     private WorkRepository workRepository;
 
     public Work addNewWork(String name,
-                           String fandomType,
+                           String workType,
+                           List<String> fandoms,
+                           List<String> fandomTypes,
                            String rating,
                            String category,
                            String language,
+                           List<String> tags,
                            String description,
                            String comment) {
-        return saveWork(null, name, fandomType, rating, category, Status.IN_PROGRESS.name(), language, description, comment);
+        return saveWork(null, name, workType, fandoms, fandomTypes, rating, category, Status.IN_PROGRESS.name(), language, tags, description, comment);
     }
 
     public Work updateWork(Work work,
                            String name,
-                           String fandomType,
+                           String workType,
+                           List<String> fandoms,
+                           List<String> fandomTypes,
                            String rating,
                            String category,
                            String status,
                            String language,
+                           List<String> tags,
                            String description,
                            String comment) {
-        return saveWork(work, name, fandomType, rating, category, status, language, description, comment);
+        return saveWork(work, name, workType, fandoms, fandomTypes, rating, category, status, language, tags, description, comment);
     }
 
     private Work saveWork(Work work,
                           String name,
-                          String fandomType,
+                          String workType,
+                          List<String> fandomNames,
+                          List<String> fandomTypes,
                           String rating,
                           String category,
                           String status,
                           String language,
+                          List<String> tagNames,
                           String description,
                           String comment) {
-        if (name != null && EnumUtils.isValidEnum(FandomType.class, fandomType.toUpperCase())
+        List<Fandom> fandoms = fandomService.saveFandomList(fandomNames, fandomTypes);
+        List<Tag> tags = tagService.saveTagList(tagNames);
+        if (name != null
                 && EnumUtils.isValidEnum(Rating.class, rating.toUpperCase())
                 && EnumUtils.isValidEnum(Category.class, category.toUpperCase())
                 && EnumUtils.isValidEnum(Language.class, language.toUpperCase())
@@ -67,30 +85,39 @@ public class WorkService {
                 && description != null) {
             User author = getLoggedUser();
             if (work == null) {
-                return workRepository.save(Work.builder()
+                work = Work.builder()
                         .name(name)
-                        .type(fandomType.toUpperCase())
                         .rating(rating.toUpperCase())
                         .category(category.toUpperCase())
                         .language(language.toUpperCase())
+                        .tags(tags)
                         .description(description)
                         .comment(comment)
                         .status(status)
                         .lastUpdateMillis(System.currentTimeMillis())
                         .author(author)
-                        .build());
+                        .build();
             } else {
                 work.setName(name);
-                work.setType(fandomType.toUpperCase());
                 work.setRating(rating.toUpperCase());
                 work.setCategory(category.toUpperCase());
                 work.setLanguage(language);
+                work.setTags(tags);
                 work.setDescription(description);
                 work.setComment(comment);
                 work.setStatus(status.toUpperCase());
-                work.setLastUpdateMillis(System.currentTimeMillis());
-                return workRepository.save(work);
+                //work.setLastUpdateMillis(System.currentTimeMillis());
             }
+            if (workType.equalsIgnoreCase(FandomType.ORIGINAL.name())) {
+                work.setType(FandomType.ORIGINAL.name());
+                work.setFandoms(Collections.emptyList());
+            } else if (!fandoms.isEmpty()){
+                work.setType(FandomType.FANDOM.name());
+                work.setFandoms(fandoms);
+            } else {
+                return null;
+            }
+            return workRepository.save(work);
         }
         return null;
     }
@@ -139,10 +166,10 @@ public class WorkService {
         if (work != null && newChapter != null) {
             work.getContent().add(newChapter);
             workRepository.save(work);
-            if (newChapter.getPostTimeMillis() > work.getLastUpdateMillis()) {
+            /*if (newChapter.getPostTimeMillis() > work.getLastUpdateMillis()) {
                 work.setLastUpdateMillis(newChapter.getPostTimeMillis());
                 workRepository.save(work);
-            }
+            }*/
         }
     }
 

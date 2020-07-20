@@ -142,7 +142,7 @@
                                     <th:block th:if="${viewedWork.getTags().size() > 0}">
                                         <p class="work-element" style="margin-bottom: -1%">
                                             <label for="tags" th:text="#{work.tags} + ':'">F</label>
-                                            <a th:each="tag : ${viewedWork.getTags()}" id="tags">
+                                            <a th:each="tag : ${viewedWork.getTags()}" id="tagInput">
                                                 <a th:text="${tag}">Tag</a>
                                             </a>
                                         </p>

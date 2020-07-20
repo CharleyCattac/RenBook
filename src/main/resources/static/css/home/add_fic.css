@@ -15,3 +15,79 @@ textarea {
 .textarea-big {
     min-height: 150px;
 }
+
+#tagInput , #fandomInput{
+    width: 100%; /* Full-width */
+    padding: 12px 20px 12px 40px; /* Add some padding */
+    border: 1px solid #ddd; /* Add a grey border */
+    margin-bottom: 12px; /* Add some space below the input */
+}
+
+#tagList, #fandomList {
+    /* Remove default list styling */
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+
+    max-height: 240px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#tagList li a, #fandomList li a {
+    border: 1px solid #ddd; /* Add a border to all links */
+    border-radius: 5px;
+    margin: 1px;
+    background-color: #f6f6f6; /* Grey background color */
+    padding: 0.5% 1%;
+    text-decoration: none; /* Remove default text underline */
+    color: black; /* Add a black text color */
+    display: inline-block; /* Make it into a block element to fill the whole list */
+}
+
+#tagList li a:hover:not(.header), #fandomList li a:hover:not(.header) {
+    background-color: #eee; /* Add a hover effect to all links, except for headers */
+}
+
+/* CHOSEN TAG/FANDOM ELEMENT */
+
+/* Style the list (remove margins and bullets, etc) */
+#workTags, #workFandoms {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 1%;
+    display: table;
+    overflow: auto;
+    width: 100%;
+}
+
+/* Style the list items */
+#workTags li, #workFandoms li {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 4px;
+    background-color: #f6f6f6;
+    padding: 0.5%;
+    text-decoration: none;
+    color: black;
+    position: relative;
+    min-width: max-content;
+    max-width: max-content;
+    display: inline-flex;
+}
+
+/* Add a light grey background color on hover */
+#workTags li:hover, #workFandoms li:hover {
+    background-color: #eee;
+}
+
+/* Style the close button (span) */
+.close {
+    cursor: pointer;
+    position: relative;
+    margin-left: 3px;
+    margin-top: -2px;
+    align-self: center;
+}
+
+.close:hover {background: #bbb;}

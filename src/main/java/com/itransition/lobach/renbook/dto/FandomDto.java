@@ -10,5 +10,6 @@ import lombok.*;
 public class FandomDto {
 
     String name;
+    String type;
     Integer workCount;
 }

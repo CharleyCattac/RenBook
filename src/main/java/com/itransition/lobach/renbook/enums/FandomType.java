@@ -8,6 +8,7 @@ public enum FandomType {
     MOVIES_AND_SERIES,
     THEATER_AND_MUSICALS,
     REAL_PEOPLE,
-    ORIGINAL,
-    OTHER
+    ORIGINAL, // <- key type #1
+    OTHER,
+    FANDOM    // <- key type #2
 }

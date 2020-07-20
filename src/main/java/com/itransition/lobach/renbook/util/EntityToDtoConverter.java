@@ -33,6 +33,7 @@ public class EntityToDtoConverter {
     public static FandomDto convertFandom(Fandom fandom) {
         return FandomDto.builder()
                 .name(fandom.getName())
+                .type(fandom.getType())
                 .workCount(fandom.getWorks().size())
                 .build();
     }
