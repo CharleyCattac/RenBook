@@ -90,12 +90,15 @@
         <div class="main-panel main-panel-light">
             <div class="container" style="padding-top: 10px; padding-bottom: 10px">
                 <h3 th:text="#{error.head}">Head</h3>
-                <td th:if="${error == null}">
-                    <p th:text="#{error.body}">Body</p>
-                </td>
-                <td th:unless="${error == null}">
-                    <p th:text="${error}">Body</p>
-                </td>
+                <div class="alert alert-danger"
+                     style="padding: 1%; width: min-content; white-space: nowrap; display: none; align-self: center">
+                    <td th:if="${error == null}">
+                        <a th:text="#{error.body}">Body</a>
+                    </td>
+                    <td th:unless="${error == null}">
+                        <a th:text="${error}">Body</a>
+                    </td>
+                </div>
             </div>
         </div>
     </div>

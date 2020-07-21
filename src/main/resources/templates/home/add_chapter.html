@@ -15,7 +15,10 @@
     <link rel="stylesheet" type="text/css" href="/css/base/background.css">
     <link rel="stylesheet" type="text/css" href="/css/base/main_panel.css">
     <link rel="stylesheet" type="text/css" href="/css/base/nav.css">
-    <link rel="stylesheet" type="text/css" href="/css/home/add_fic.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/links.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/buttons.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/textarea.css">
+    <link rel="stylesheet" type="text/css" href="/css/home/work_edit.css">
 
     <meta charset="UTF-8">
 </head>
@@ -92,8 +95,9 @@
                 <div class="card" style="width: available; justify-content: center">
                     <div class="card-body">
                         <b th:if="${error}">
-                            <a style="color: red"><td th:text="#{error.something_went_wrong}">err</td></a>
+                            <div class="alert alert-danger" th:text="#{error.something_went_wrong}">Y</div>
                         </b>
+
                         <h3 th:text="#{home.add_chapter.label} + ' ' + '&#171' + ${workName} + '&#187'" style="margin-bottom: 2%">Head</h3>
 
                         <form name="add_chapter" th:action="'/home/works/' + ${workName} + '/add'" method="post">
@@ -141,12 +145,12 @@
                             <div class="form-group">
                                 <label for="notes" th:text="#{home.add_chapter.notes}">Username</label>
                                 <textarea class="form-control" id="notes" name="notes"
-                                          cols="20" maxlength="350"
-                                          onkeyup="textCounter(this, 'noteCounter', 350)"
+                                          cols="20" maxlength="500"
+                                          onkeyup="textCounter(this, 'noteCounter', 500)"
                                           oninput="auto_grow(this)"></textarea>
                                 <label for="noteCounter" th:text="#{signup.characters_left}"
                                        style="font-weight: normal">Left</label>
-                                <input disabled  maxlength="3" size="3" value="350" id="noteCounter">
+                                <input disabled  maxlength="3" size="3" value="500" id="noteCounter">
                             </div>
 
                             <input type="hidden" name="workName" th:value="${workName}">

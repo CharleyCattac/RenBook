@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WorkRepository extends JpaRepository<Work, Long> {
 
+    // find by work name (unique)
     Work findByName(String name);
     // returns all works
     Page<Work> findAllBy(Pageable pageable);

@@ -23,6 +23,6 @@ public class Role {
         this.name = s;
     }
 
-    @ManyToMany(mappedBy = "roles", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "roles")
     private Set<User> users = new HashSet<>();
 }

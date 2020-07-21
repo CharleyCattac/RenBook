@@ -3,13 +3,13 @@ package com.itransition.lobach.renbook.service;
 import com.itransition.lobach.renbook.entity.*;
 import com.itransition.lobach.renbook.enums.*;
 import com.itransition.lobach.renbook.repository.WorkRepository;
+import com.itransition.lobach.renbook.util.SecurityHelper;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -35,7 +35,8 @@ public class WorkService {
     @Autowired
     private WorkRepository workRepository;
 
-    public Work addNewWork(String name,
+    public Work addNewWork(User author,
+                           String name,
                            String workType,
                            List<String> fandoms,
                            List<String> fandomTypes,
@@ -45,10 +46,11 @@ public class WorkService {
                            List<String> tags,
                            String description,
                            String comment) {
-        return saveWork(null, name, workType, fandoms, fandomTypes, rating, category, Status.IN_PROGRESS.name(), language, tags, description, comment);
+        return saveWork(author, null, name, workType, fandoms, fandomTypes, rating, category, Status.IN_PROGRESS.name(), language, tags, description, comment);
     }
 
-    public Work updateWork(Work work,
+    public Work updateWork(User author,
+                           Work work,
                            String name,
                            String workType,
                            List<String> fandoms,
@@ -60,10 +62,11 @@ public class WorkService {
                            List<String> tags,
                            String description,
                            String comment) {
-        return saveWork(work, name, workType, fandoms, fandomTypes, rating, category, status, language, tags, description, comment);
+        return saveWork(author, work, name, workType, fandoms, fandomTypes, rating, category, status, language, tags, description, comment);
     }
 
-    private Work saveWork(Work work,
+    private Work saveWork(User author,
+                          Work work,
                           String name,
                           String workType,
                           List<String> fandomNames,
@@ -83,7 +86,6 @@ public class WorkService {
                 && EnumUtils.isValidEnum(Language.class, language.toUpperCase())
                 && EnumUtils.isValidEnum(Status.class, status.toUpperCase())
                 && description != null) {
-            User author = getLoggedUser();
             if (work == null) {
                 work = Work.builder()
                         .name(name)
@@ -122,22 +124,31 @@ public class WorkService {
         return null;
     }
 
-    public Page<Work> findAllOwnWorks(int pageNumber) {
-        User author = getLoggedUser();
-        Pageable workRequest = PageRequest.of(pageNumber, WORKS_PER_PAGE, Sort.by(SORT_PARAM_LAST_UPDATE).descending());
-        return workRepository.findAllByAuthor(author, workRequest);
-    }
-
-    public Page<Work> findAllByAuthorName(String authorName, int pageNumber) {
-        if (authorName != null) {
-            User author = userService.findUserByUsername(authorName);
+    public Page<Work> findAllByAuthor(User author, int pageNumber) {
+        if (author != null) {
             Pageable workRequest = PageRequest.of(pageNumber, WORKS_PER_PAGE, Sort.by(SORT_PARAM_LAST_UPDATE).descending());
             return workRepository.findAllByAuthor(author, workRequest);
         }
         return null;
     }
 
-    public Page<Work> findAll(int pageNumber) {
+    public Integer countAllNonEmptyWorks() {
+        int nonEmptyWorksCount = 0;
+        List<Work> workList = workRepository.findAll();
+        for (Work work : workList) {
+            if (!work.getContent().isEmpty()) {
+                nonEmptyWorksCount++;
+            }
+        }
+        return nonEmptyWorksCount;
+    }
+
+    public List<Work> findTop5ByLastUpdate() {
+        Pageable workRequest = PageRequest.of(0, 5, Sort.by(SORT_PARAM_LAST_UPDATE).descending());
+        return workRepository.findAllBy(workRequest).getContent();
+    }
+
+    public Page<Work> findAllByLastUpdate(int pageNumber) {
         Pageable workRequest = PageRequest.of(pageNumber, WORKS_PER_PAGE, Sort.by(SORT_PARAM_LAST_UPDATE).descending());
         return workRepository.findAllBy(workRequest);
     }
@@ -171,10 +182,5 @@ public class WorkService {
                 workRepository.save(work);
             }*/
         }
-    }
-
-    private User getLoggedUser() {
-        org.springframework.security.core.userdetails.User author = (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userService.findUserByUsername(author.getUsername());
     }
 }

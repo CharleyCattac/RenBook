@@ -93,9 +93,12 @@
             <div class="d-flex justify-content-center">
                 <div class="card" style="width: available; justify-content: center">
                     <div class="card-body">
-                        <a style="color: green"><td th:text="${message}">msg</td></a>
-                        <a style="color: red"><td th:text="${error}">err</td></a>
-                        <p/>
+                        <b th:if="${message}">
+                            <div class="alert alert-success" th:text="${message}">Y</div>
+                        </b>
+                        <b th:if="${error}">
+                            <div class="alert alert-danger" th:text="${error}">Y</div>
+                        </b>
 
                         <form name="signup" action="/auth/signup" method="post" autocomplete="off">
 

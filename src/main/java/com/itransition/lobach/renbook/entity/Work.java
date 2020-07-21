@@ -29,7 +29,7 @@ public class Work {
     @Column(nullable = false, length = 500)
     private String description;
 
-    @Column(length = 350)
+    @Column(length = 500)
     private String comment;
 
     @ManyToMany

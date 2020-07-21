@@ -13,32 +13,3 @@
     background-color: #261236;
     color: #ffe9ff;
 }
-
-.link {
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.link-medium {
-    font-size: medium;
-}
-
-.link-large {
-    font-size: large;
-}
-
-.link-light {
-    color: #6e3c97;
-}
-
-.link-light:hover {
-    color: rgba(63, 29, 90, 0.76);
-}
-
-.link-dark {
-    color: #c294e8;
-}
-
-.link-dark:hover {
-    color: #a36dd0;
-}

@@ -15,7 +15,10 @@
     <link rel="stylesheet" type="text/css" href="/css/base/background.css">
     <link rel="stylesheet" type="text/css" href="/css/base/main_panel.css">
     <link rel="stylesheet" type="text/css" href="/css/base/nav.css">
-    <link rel="stylesheet" type="text/css" href="/css/home/add_fic.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/links.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/buttons.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/textareas.css">
+    <link rel="stylesheet" type="text/css" href="/css/home/work_edit.css">
 
     <meta charset="UTF-8">
 
@@ -177,7 +180,7 @@
                 <div class="card" style="width: available; justify-content: center">
                     <div class="card-body">
                         <b th:if="${error}">
-                            <p style="color: red"><td th:text="#{error.something_went_wrong}">err</td></p>
+                            <div class="alert alert-danger" th:text="#{error.something_went_wrong}">Y</div>
                         </b>
 
                         <form name="edit_work" th:action="'/home/works/' + ${editWork.getName()} + '/edit'" method="post">
@@ -408,12 +411,12 @@
                             <div class="form-group">
                                 <label for="comment" th:text="#{home.add_fic.comment}">Username</label>
                                 <textarea class="form-control" id="comment" name="comment"
-                                          rows="5" cols="20" maxlength="350"
-                                          onkeyup="textCounter(this, 'commentCounter', 350)"
+                                          rows="5" cols="20" maxlength="500"
+                                          onkeyup="textCounter(this, 'commentCounter', 500)"
                                 ><th:block th:text="${editWork.getComment()}">R</th:block></textarea>
                                 <label for="commentCounter" th:text="#{signup.characters_left}"
                                        style="font-weight: normal">Left</label>
-                                <input disabled  maxlength="3" size="3" value="350" id="commentCounter">
+                                <input disabled  maxlength="3" size="3" value="500" id="commentCounter">
                             </div>
                             <!-- status -->
                             <fieldset class="form-group">

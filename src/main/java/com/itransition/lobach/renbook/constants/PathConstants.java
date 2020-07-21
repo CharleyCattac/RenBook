@@ -9,15 +9,14 @@ public class PathConstants {
     public static final String INDEX = "index";
     public static final String INDEX_REDIRECT = "redirect:/";
 
+    public static final String ERROR_URL = "error";
+
     public static final String WORKS = "works";
     public static final String WORK_VIEW = "work/work_view";
     public static final String CHAPTER_VIEW = "work/chapter_view";
 
     public static final String AUTHORS = "authors";
     public static final String RULES = "rules";
-
-    public static final String URL_SUCCESS = "success";
-    public static final String URL_SUCCESS_REDIRECT = "redirect:/success";
 
     public static final String LOGIN = "auth/login";
     public static final String LOGIN_REDIRECT = "redirect:/auth/login";

@@ -1,13 +1,12 @@
 package com.itransition.lobach.renbook.util;
 
 import com.itransition.lobach.renbook.dto.*;
-import com.itransition.lobach.renbook.entity.Fandom;
-import com.itransition.lobach.renbook.entity.Tag;
-import com.itransition.lobach.renbook.entity.Work;
-import com.itransition.lobach.renbook.entity.Chapter;
+import com.itransition.lobach.renbook.entity.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EntityToDtoConverter {
 
@@ -118,10 +117,13 @@ public class EntityToDtoConverter {
     }
 
     public static ChapterDto convertChapter(Chapter chapter) {
+        List<CommentDto> commentDtos = convertCommentList(chapter.getComments());
+        Collections.reverse(commentDtos);
         return ChapterDto.builder()
                 .name(chapter.getName())
                 .text(chapter.getText())
                 .notes(chapter.getNotes())
+                .comments(commentDtos)
                 .postTimeMillis(chapter.getPostTimeMillis())
                 .build();
     }
@@ -130,6 +132,23 @@ public class EntityToDtoConverter {
         List<ChapterDto> dtos = new ArrayList<>();
         for (Chapter chapter: chapters) {
             dtos.add(convertChapter(chapter));
+        }
+        return dtos;
+    }
+
+    public static CommentDto convertComment(Comment comment) {
+        return CommentDto.builder()
+                .id(comment.getId())
+                .authorName(comment.getAuthor().getUsername())
+                .text(comment.getText())
+                .postTime(comment.getPostTimeMillis())
+                .build();
+    }
+
+    public static List<CommentDto> convertCommentList(List<Comment> comments) {
+        List<CommentDto> dtos = new ArrayList<>();
+        for (Comment comment : comments) {
+            dtos.add(convertComment(comment));
         }
         return dtos;
     }

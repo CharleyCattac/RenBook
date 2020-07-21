@@ -15,94 +15,12 @@
     <link rel="stylesheet" type="text/css" href="/css/base/background.css">
     <link rel="stylesheet" type="text/css" href="/css/base/main_panel.css">
     <link rel="stylesheet" type="text/css" href="/css/base/nav.css">
-    <link rel="stylesheet" type="text/css" href="/css/home/add_fic.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/links.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/buttons.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/textareas.css">
+    <link rel="stylesheet" type="text/css" href="/css/home/work_edit.css">
 
     <meta charset="UTF-8">
-
-    <script>
-        function createHiddenInput(hiddenInputName, itemValue) {
-            var newHiddenInput = document.createElement('INPUT');
-            newHiddenInput.setAttribute("type", "hidden");
-            newHiddenInput.setAttribute("name", hiddenInputName);
-            newHiddenInput.setAttribute("value", itemValue);
-            return newHiddenInput;
-        }
-
-        function addCloseableItem(itemName, targetListId, hiddenInputName) {
-            var aimList = document.getElementById(targetListId);
-            var newLink = document.createElement('LI');
-            newLink.id = 'li_' + itemName;
-            var newA = document.createElement('A');
-            newA.className = 'link';
-            newA.id = 'a_' + itemName;
-            newA.textContent = itemName;
-            newA.style.textDecoration = 'none';
-            var tagSpan = document.createElement('SPAN');
-            tagSpan.className = 'close';
-            tagSpan.textContent = 'x';
-            tagSpan.addEventListener("click", function () {
-                var initialTagId = this.parentElement.id.substr(3);
-                var oldLi = document.getElementById('old_li' + initialTagId);
-                if (oldLi !== null) {
-                    oldLi.style.display = "";
-                }
-                this.parentElement.remove();
-            });
-
-            newLink.appendChild(newA);
-            newLink.appendChild(tagSpan);
-            newLink.appendChild(createHiddenInput(hiddenInputName, itemName));
-
-            if (hiddenInputName.toString() === "fandoms") {
-                var fandomType;
-                if (document.getElementById('fandomTypeSelect') !== null) {
-                    fandomType = document.getElementById('fandomTypeSelect').value;
-                }
-                newLink.appendChild(createHiddenInput('fandomTypes', fandomType));
-            }
-
-            aimList.appendChild(newLink);
-        }
-
-        function removeExistingItems(targetList) {
-            var workTagList = document.getElementById(targetList);
-            var tagName, tagFromWholeList;
-            var i;
-            for (i = 0; i < workTagList.getElementsByTagName('li').length; i++) {
-                tagName = workTagList.getElementsByTagName('li')[i].id.substr(3);
-                tagFromWholeList = document.getElementById('old_li' + tagName);
-                if (tagFromWholeList !== null) {
-                    tagFromWholeList.style.display = "none";
-                }
-            }
-        }
-
-        function createNewCloseableItem(inputField, targetListId, hiddenInputName, fandomTypeName) {
-            var input = document.getElementById(inputField);
-            if (input !== null) {
-                if (input.value.length > 0 && input.value.match("^[a-zA-Zа-яА-Я0-9()& ]+")) {
-                    addCloseableItem(input.value, targetListId, hiddenInputName, fandomTypeName);
-                    input.value = '';
-                } else {
-                    input.style.borderColor = "red";
-                }
-            }
-        }
-
-        function manageSearchFandomsPanelView() {
-            var workType = document.getElementById('workTypeSelect');
-            var fandomSearchDiv = document.getElementById('fandomSearchField');
-            var workFandoms = document.getElementById('workFandoms');
-
-            if (workType.value === 'original') {
-                fandomSearchDiv.style.display = "none";
-                workFandoms.style.display = "none";
-            } else {
-                fandomSearchDiv.style.display = "";
-                workFandoms.style.display = "";
-            }
-        }
-    </script>
 </head>
 <body>
 <div class="bg">
@@ -177,8 +95,9 @@
                 <div class="card" style="width: available; justify-content: center">
                     <div class="card-body">
                         <b th:if="${error}">
-                            <a style="color: red"><td th:text="#{error.something_went_wrong}">err</td></a>
+                            <div class="alert alert-danger" th:text="#{error.something_went_wrong}">Y</div>
                         </b>
+
                         <h3 th:text="#{home.edit.chapter.a} + ' ' + '&#171' + ${editChapter.getName()} + '&#187' + ' ' + #{home.edit.chapter.b} + ' ' + '&#171' + ${workName} + '&#187'" style="margin-bottom: 2%">Head</h3>
 
                         <form name="edit_chapter" th:action="'/home/works/' + ${workName} + '/' + ${editChapter.getName()} + '/edit'" method="post">
@@ -194,7 +113,7 @@
                             <div class="form-group">
                                 <label for="chapterText" th:text="#{home.add_chapter.text}">Username</label>
                                 <textarea class="form-control textarea-big" id="chapterText" name="chapterText"
-                                          cols="20" maxlength="67108864" required
+                                          cols="20" maxlength="67108864" contenteditable="true" required
                                           onkeyup="textCounter(this, 'chapterTextCounter', 67108864)"
                                           oninput="auto_grow(this)"
                                 ><th:block th:text="${editChapter.getText()}">R</th:block></textarea>
@@ -206,14 +125,22 @@
                             <div class="form-group">
                                 <label for="notes" th:text="#{home.add_chapter.notes}">Username</label>
                                 <textarea class="form-control" id="notes" name="notes"
-                                          cols="20" maxlength="350"
-                                          onkeyup="textCounter(this, 'noteCounter', 350)"
+                                          cols="20" maxlength="500" contenteditable="true"
+                                          onkeyup="textCounter(this, 'noteCounter', 500)"
                                           oninput="auto_grow(this)"
                                 ><th:block th:text="${editChapter.getNotes()}">R</th:block></textarea>
                                 <label for="noteCounter" th:text="#{signup.characters_left}"
                                        style="font-weight: normal">Left</label>
-                                <input disabled  maxlength="3" size="3" value="350" id="noteCounter">
+                                <input disabled  maxlength="3" size="3" value="500" id="noteCounter">
                             </div>
+
+                            <!--<script>
+                                $(function() {
+                                    $('textarea').each(function() {
+                                        $(this).height($(this).prop('scrollHeight'));
+                                    });
+                                });
+                            </script>-->
 
                             <input type="hidden" name="workName" th:value="${workName}">
                             <button type="submit" class="btn btn-primary" th:text="#{home.add_fic.save}"

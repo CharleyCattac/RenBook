@@ -1,12 +1,14 @@
 package com.itransition.lobach.renbook.controller;
 
 import com.itransition.lobach.renbook.entity.Chapter;
+import com.itransition.lobach.renbook.entity.User;
 import com.itransition.lobach.renbook.entity.Work;
 import com.itransition.lobach.renbook.service.ChapterService;
 import com.itransition.lobach.renbook.service.FandomService;
 import com.itransition.lobach.renbook.service.TagService;
 import com.itransition.lobach.renbook.service.WorkService;
 import com.itransition.lobach.renbook.util.EntityToDtoConverter;
+import com.itransition.lobach.renbook.util.SecurityHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -17,10 +19,14 @@ import java.util.List;
 
 import static com.itransition.lobach.renbook.constants.PathConstants.*;
 import static com.itransition.lobach.renbook.constants.Attributes.*;
+import static com.itransition.lobach.renbook.constants.MessageConstants.*;
 
 @Controller
 @RequestMapping(value = "/home")
 public class HomeController {
+
+    @Autowired
+    private SecurityHelper securityHelper;
 
     @Autowired
     private WorkService workService;
@@ -45,17 +51,41 @@ public class HomeController {
     }
 
     @GetMapping(value = "/works")
-    public String getMyWorks(String pageNumber,
-                             Model model) {
+    public String getMyWorks(Model model) {
         int pageNumInt = 0;
+        User author = securityHelper.getLoggedUser();
+        Page<Work> workPage = workService.findAllByAuthor(author, pageNumInt);
+        model.addAttribute(PAGE_COUNT, workPage.getTotalPages());
+        model.addAttribute(CUR_PAGE,1);
+        if (1 < workPage.getTotalPages()) {
+            model.addAttribute(NEXT_PAGE,2);
+        }
+        List<Work> works = workPage.toList();
+        model.addAttribute(MY_WORKS, EntityToDtoConverter.convertWorkBasicList(works));
+
+        return HOME_WORKS;
+    }
+
+    @GetMapping(value = "/works/{pageNumber}")
+    public String getMyWorks(@PathVariable(name = "pageNumber") String pageNumber,
+                             Model model) {
+        int pageNumInt = 1;
         if (pageNumber != null) {
             try {
                 pageNumInt = Integer.parseInt(pageNumber);
             } catch (NumberFormatException ignored) {
             }
         }
-        Page<Work> workPage = workService.findAllOwnWorks(pageNumInt);
+        User author = securityHelper.getLoggedUser();
+        Page<Work> workPage = workService.findAllByAuthor(author, pageNumInt - 1);
         model.addAttribute(PAGE_COUNT, workPage.getTotalPages());
+        if (pageNumInt > 1) {
+            model.addAttribute(PREV_PAGE,pageNumInt - 1);
+        }
+        model.addAttribute(CUR_PAGE, pageNumInt);
+        if (pageNumInt < workPage.getTotalPages()) {
+            model.addAttribute(NEXT_PAGE,pageNumInt + 1);
+        }
 
         List<Work> works = workPage.toList();
         model.addAttribute(MY_WORKS, EntityToDtoConverter.convertWorkBasicList(works));
@@ -69,7 +99,7 @@ public class HomeController {
     }
 
     @GetMapping(value = "/works/add")
-    public String getAddWork(Model model) {
+    public String showAddWork(Model model) {
         model.addAttribute(TAGS, EntityToDtoConverter.convertTagList(tagService.findAll()));
         model.addAttribute(FANDOMS, EntityToDtoConverter.convertFandomList(fandomService.findAll()));
         return HOME_ADD_WORK;
@@ -87,7 +117,8 @@ public class HomeController {
                                  @RequestParam(name = "description") String description,
                                  @RequestParam(name = "comment") String comment,
                                  Model model) {
-        Work newWork = workService.addNewWork(name, workType, fandoms, fandomsTypes, rating, category, language, tags, description, comment);
+        User author = securityHelper.getLoggedUser();
+        Work newWork = workService.addNewWork(author, name, workType, fandoms, fandomsTypes, rating, category, language, tags, description, comment);
         if (newWork == null) {
             model.addAttribute(ERROR, ERROR);
             return HOME_ADD_WORK;
@@ -105,6 +136,12 @@ public class HomeController {
             model.addAttribute(ERROR, ERROR);
             return HOME_WORKS;
         }
+        if (!securityHelper.isUserTheLoggedOne(work.getAuthor().getUsername())
+                && !securityHelper.isLoggedUserAdmin()) {
+            model.addAttribute(ERROR, INVALID_ACCESS);
+            return ERROR_URL;
+        }
+
         model.addAttribute(EDITABLE_WORK, EntityToDtoConverter.convertWorkBasic(work));
         model.addAttribute(TAGS, EntityToDtoConverter.convertTagList(tagService.findAll()));
         model.addAttribute(FANDOMS, EntityToDtoConverter.convertFandomList(fandomService.findAll()));
@@ -126,10 +163,21 @@ public class HomeController {
                                   Model model) {
         Work work = workService.findByName(workName);
         if (work == null) {
-            work = workService.addNewWork(workName, workType, fandoms, fandomsTypes, rating, category, language, tags, description, comment);
-        } else {
-            work = workService.updateWork(work, workName, workType, fandoms, fandomsTypes, rating, category, status, language, tags, description, comment);
+            model.addAttribute(EDITABLE_WORK, EntityToDtoConverter.convertWorkBasic(workService.findByName(workName)));
+            model.addAttribute(TAGS, EntityToDtoConverter.convertTagList(tagService.findAll()));
+            model.addAttribute(FANDOMS, EntityToDtoConverter.convertFandomList(fandomService.findAll()));
+
+            model.addAttribute(ERROR, ERROR);
+            return HOME_EDIT_WORK;
         }
+        if (!securityHelper.isUserTheLoggedOne(work.getAuthor().getUsername())
+                && !securityHelper.isLoggedUserAdmin()) {
+            model.addAttribute(ERROR, INVALID_ACCESS);
+            return ERROR_URL;
+        }
+
+        User author = securityHelper.getLoggedUser();
+        work = workService.updateWork(author, work, workName, workType, fandoms, fandomsTypes, rating, category, status, language, tags, description, comment);
         if (work == null) {
             model.addAttribute(EDITABLE_WORK, EntityToDtoConverter.convertWorkBasic(workService.findByName(workName)));
             model.addAttribute(TAGS, EntityToDtoConverter.convertTagList(tagService.findAll()));
@@ -138,6 +186,7 @@ public class HomeController {
             model.addAttribute(ERROR, ERROR);
             return HOME_EDIT_WORK;
         }
+
         return INDEX_REDIRECT; //todo fix redirects
     }
 
@@ -149,6 +198,12 @@ public class HomeController {
             model.addAttribute(ERROR, ERROR);
             return HOME_WORKS;
         }
+        if (!securityHelper.isUserTheLoggedOne(work.getAuthor().getUsername())
+                && !securityHelper.isLoggedUserAdmin()) {
+            model.addAttribute(ERROR, INVALID_ACCESS);
+            return ERROR_URL;
+        }
+
         workService.deleteWork(work);
         return INDEX_REDIRECT; //todo fix redirects
     }
@@ -161,6 +216,12 @@ public class HomeController {
             model.addAttribute(ERROR, ERROR);
             return HOME_WORKS;
         }
+        if (!securityHelper.isUserTheLoggedOne(work.getAuthor().getUsername())
+                && !securityHelper.isLoggedUserAdmin()) {
+            model.addAttribute(ERROR, INVALID_ACCESS);
+            return ERROR_URL;
+        }
+
         model.addAttribute(WORK_NAME, work.getName());
         model.addAttribute(CHAPTERS_COUNT, work.getContent().size());
         return HOME_ADD_CHAPTER;
@@ -176,9 +237,15 @@ public class HomeController {
         Work work = workService.findByName(workName);
         if (work == null) {
             model.addAttribute(ERROR, ERROR);
-            return HOME_ADD_CHAPTER;
+            return HOME_WORKS;
         }
-        Chapter newChapter = chapterService.saveChapter(work, chapterName, chapterText, notes);
+        if (!securityHelper.isUserTheLoggedOne(work.getAuthor().getUsername())
+                && !securityHelper.isLoggedUserAdmin()) {
+            model.addAttribute(ERROR, INVALID_ACCESS);
+            return ERROR_URL;
+        }
+
+        Chapter newChapter = chapterService.addNewChapter(work, chapterName, chapterText, notes);
         if (newChapter == null) {
             model.addAttribute(ERROR, ERROR);
             return HOME_ADD_CHAPTER;
@@ -194,6 +261,16 @@ public class HomeController {
                                   @PathVariable(name = "chapterName") String chapterName,
                                   Model model) {
         Work work = workService.findByName(workName);
+        if (work == null) {
+            model.addAttribute(ERROR, ERROR);
+            return HOME_WORKS;
+        }
+        if (!securityHelper.isUserTheLoggedOne(work.getAuthor().getUsername())
+                && !securityHelper.isLoggedUserAdmin()) {
+            model.addAttribute(ERROR, INVALID_ACCESS);
+            return ERROR_URL;
+        }
+
         Chapter chapter = chapterService.findByWorkAndName(work, chapterName);
         if (chapter == null) {
             model.addAttribute(ERROR, ERROR);
@@ -211,16 +288,27 @@ public class HomeController {
                                      @RequestParam(name = "notes") String notes,
                                      Model model) {
         Work work = workService.findByName(workName);
+        if (work == null) {
+            model.addAttribute(ERROR, ERROR);
+            return HOME_WORKS;
+        }
+        if (!securityHelper.isUserTheLoggedOne(work.getAuthor().getUsername())
+                && !securityHelper.isLoggedUserAdmin()) {
+            model.addAttribute(ERROR, INVALID_ACCESS);
+            return ERROR_URL;
+        }
+
         Chapter chapter = chapterService.findByWorkAndName(work, chapterName);
         if (chapter == null) {
-            chapter = chapterService.saveChapter(work, chapterName, chapterText, notes);
-        } else {
-            chapter = chapterService.updateChapter(chapter, chapterName, chapterText, notes);
+            model.addAttribute(ERROR, ERROR);
+            return HOME_WORKS;
         }
+        chapter = chapterService.updateChapter(chapter, chapterName, chapterText, notes);
         if (chapter == null) {
             model.addAttribute(ERROR, ERROR);
             return HOME_EDIT_CHAPTER;
         }
+
         return INDEX_REDIRECT; //todo fix redirects
     }
 
@@ -229,12 +317,23 @@ public class HomeController {
                                 @PathVariable(name = "chapterName") String chapterName,
                                 Model model) {
         Work work = workService.findByName(workName);
+        if (work == null) {
+            model.addAttribute(ERROR, ERROR);
+            return HOME_WORKS;
+        }
+        if (!securityHelper.isUserTheLoggedOne(work.getAuthor().getUsername())
+                && !securityHelper.isLoggedUserAdmin()) {
+            model.addAttribute(ERROR, INVALID_ACCESS);
+            return ERROR_URL;
+        }
+
         Chapter chapter = chapterService.findByWorkAndName(work, chapterName);
         if (chapter == null) {
             model.addAttribute(ERROR, ERROR);
             return HOME_WORKS;
         }
         chapterService.deleteChapter(chapter);
+
         return INDEX_REDIRECT; //todo fix redirects
     }
 }

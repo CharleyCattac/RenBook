@@ -1,0 +1,38 @@
+.comment-panel {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #401d5a;
+    color: #ffe9ff;
+}
+
+.comment-item {
+    margin-top: 1%;
+    border-radius: 8px;
+    border-color: #401d5a;
+    border-style: solid;
+    background-color: rgba(196, 131, 245, 0.33);
+}
+
+.comment-head {
+    border-bottom-style: solid;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+
+    background-color: #401d5a;
+    padding: 0.5% 1%;
+    width: 100%;
+}
+
+.primary-text {
+    color: #fcfcfc;
+}
+
+.secondary-text {
+    color: rgba(252, 252, 252, 0.55);
+}
+
+.comment-body {
+    padding: 1% 2%;
+}

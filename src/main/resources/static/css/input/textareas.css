@@ -1,0 +1,9 @@
+textarea {
+    resize: none;
+    overflow: hidden;
+    min-height: 50px;
+}
+
+.textarea-big {
+    min-height: 150px;
+}

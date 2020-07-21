@@ -1,0 +1,19 @@
+.btn-purple {
+    color: #ffe9ff;
+    background-color: #542678;
+}
+
+.btn-purple:hover {
+    color: rgba(227, 201, 245, 0.82);
+    background-color: rgba(84, 38, 120, 0.87);
+}
+
+.btn-purple-light {
+    color: #ffe9ff;
+    background-color: #8545bf;
+}
+
+.btn-purple-light:hover {
+    color: rgba(227, 201, 245, 0.82);
+    background-color: rgba(133, 69, 191, 0.76);
+}

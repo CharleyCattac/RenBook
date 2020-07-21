@@ -16,6 +16,7 @@
     <link rel="stylesheet" type="text/css" href="/css/base/background.css">
     <link rel="stylesheet" type="text/css" href="/css/base/main_panel.css">
     <link rel="stylesheet" type="text/css" href="/css/base/nav.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/links.css">
     <!-- Script to load navbar -->
     <!--<script src="js/csi.js"></script>-->
 
@@ -95,8 +96,9 @@
         <div class="main-panel main-panel-light">
             <div class="container-fluid" style="padding-top: 10px">
                 <b th:if="${error}">
-                    <a style="color: red"><td th:text="#{work.fandom_type.undefined}">err</td></a>
+                    <div class="alert alert-danger"th:text="#{error.something_went_wrong}">Y</div>
                 </b>
+
                 <h2 th:text="#{work.category.types}">Cat</h2>
                 <div class="row">
                     <div class="col-sm-4">

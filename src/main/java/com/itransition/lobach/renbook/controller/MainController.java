@@ -36,7 +36,9 @@ public class MainController {
     private TagService tagService;
 
     @GetMapping(value = "/")
-    public String showIndex() {
+    public String showIndex(Model model) {
+        model.addAttribute(WORKS_COUNT, workService.countAllNonEmptyWorks());
+        model.addAttribute(TOP_WORKS_BY_UPDATE, convertWorkBasicList(workService.findTop5ByLastUpdate()));
         return INDEX;
     }
 
@@ -69,6 +71,8 @@ public class MainController {
             return WORKS;
         }
         model.addAttribute(VIEWED_WORK, convertWorkFull(work));
+        /*model.addAttribute(COMMENTS_COUNT, 0);
+        model.addAttribute(COMMENTS, 0);*/
         return WORK_VIEW;
     }
 

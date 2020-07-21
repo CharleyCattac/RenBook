@@ -3,6 +3,7 @@ package com.itransition.lobach.renbook.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "chapter")
@@ -24,12 +25,15 @@ public class Chapter {
     @Column(nullable = false, length = 67108864) // ~8 MB
     private String text;
 
-    @Column(length = 350)
+    @Column(length = 500)
     private String notes;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "work_id", referencedColumnName = "id")
     private Work work = new Work();
+
+    @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
+    private List<Comment> comments;
 
     private Long postTimeMillis;
 }

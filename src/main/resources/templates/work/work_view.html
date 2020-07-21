@@ -11,16 +11,44 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+
+    <script src="https://momentjs.com/downloads/moment.min.js"></script>
     <!-- Local css -->
     <link rel="stylesheet" type="text/css" href="/css/base/background.css">
     <link rel="stylesheet" type="text/css" href="/css/base/main_panel.css">
     <link rel="stylesheet" type="text/css" href="/css/base/nav.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/links.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/buttons.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/textareas.css">
     <link rel="stylesheet" type="text/css" href="/css/items/work_item.css">
-    <link rel="stylesheet" type="text/css" href="/css/items/chapter_item.css">
-    <!-- Script to load navbar -->
-    <!--<script src="js/csi.js"></script>-->
+    <link rel="stylesheet" type="text/css" href="/css/items/comment_item.css">
+    <!-- Scripts -->
+    <!--<script src="/js/app.js"></script>-->
+    <script src="/js/moment.min.js"></script>
 
     <meta charset="UTF-8">
+
+    <script>
+        var stompClient = null;
+
+        function connect(workName, chapterName) {
+            var socket = new SockJS('/gs-guide-websocket');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                //var subscribePostfix = '/works/view/' + workName + '/' + chapterName;
+                var subscribePostfix = '/works/view/' + workName + '?';
+                //console.log('subscribe postfix: ' + subscribePostfix);
+                stompClient.subscribe(subscribePostfix, function (comment) {
+                    showComment(comment)
+                });
+            });
+        }
+    </script>
 </head>
 <body>
 <div class="bg">
@@ -68,7 +96,7 @@
                 <th:block th:unless="${#authentication.getName().equals('anonymousUser')}">
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown"
-                           th:text="${#authentication.principal.username}"
+                           th:text="${#authentication.getName()}"
                            style="cursor: pointer">
                             <!--<img th:src="${#authentication.principal.userInfo.avatarUrl}"
                                  class="img-circle img-responsive"
@@ -94,113 +122,270 @@
     <!-- ---------- -->
     <div class="container">
         <div class="main-panel main-panel-light" style="padding: 1%">
-            <div class="container">
-                <b th:if="${error}">
-                    <a style="color: red"><td th:text="#{error.something_went_wrong}">err</td></a>
-                </b>
-            </div>
-            <div class="container-fluid">
-                <th:block th:if="${viewedWork != null}">
-                    <div class="item-panel item-panel-light">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <h3 th:text="${viewedWork.getName()}" style="margin-top: -0.01%; font-weight: bold">L</h3>
-                                    <p class="work-element" style="margin-top: -0.5%; margin-bottom: -1%">
-                                        <label for="fandom" th:text="#{home.add_fic.type.fandom} + ':'">F</label>
-                                        <th:block th:if="${viewedWork.getFandomType().equals('ORIGINAL')}">
-                                            <a th:text="#{work.category.types.original}" id="fandom">Type</a>
-                                        </th:block>
-                                    </p>
+            <b th:if="${error}">
+                <div class="alert alert-danger" th:text="#{error.something_went_wrong}">Y</div>
+            </b>
+
+            <th:block th:if="${viewedWork != null}">
+                <!-- work description -->
+                <div class="item-panel item-panel-light">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <h3 th:text="${viewedWork.getName()}" style="margin-top: -0.01%; font-weight: bold">L</h3>
+                                <p class="work-element" style="margin-top: -0.5%; margin-bottom: -1%">
+                                    <label for="fandom" th:text="#{home.add_fic.type.fandom} + ':'">F</label>
+                                    <th:block th:if="${viewedWork.getFandomType().equals('ORIGINAL')}">
+                                        <a th:text="#{work.category.types.original}" id="fandom">Type</a>
+                                    </th:block>
+                                </p>
+                                <p class="work-element" style="margin-bottom: -1%">
+                                    <label for="category" th:text="#{work.category}">F</label>
+                                    <a th:text="#{'work.category.' + ${viewedWork.getCategory().toLowerCase()}}" id="category">Type</a>
+                                </p>
+                                <p class="work-element" style="margin-bottom: -1%">
+                                    <label for="rating" th:text="#{work.rating}">F</label>
+                                    <a th:text="${viewedWork.getRating()}" id="rating"
+                                       data-toggle="tooltip" data-placement="right" th:title="#{'work.rating.' + ${viewedWork.getRating().toLowerCase()}}">
+                                    </a>
+                                </p>
+                                <p class="work-element" style="margin-bottom: -1%">
+                                    <label for="status" th:text="#{work.state}">F</label>
+                                    <th:block th:if="${viewedWork.getStatus().equals('IN_PROGRESS')}">
+                                        <a th:text="#{work.state.in_progress}" id="status" style="color: red">Type</a>
+                                    </th:block>
+                                    <th:block th:if="${viewedWork.getStatus().equals('COMPLETE')}">
+                                        <a th:text="#{work.state.complete}" id="status" style="color: green;">Type</a>
+                                    </th:block>
+                                </p>
+                                <p class="work-element" style="margin-bottom: -1%">
+                                    <label for="language" th:text="#{profile.language.label} + ':'">F</label>
+                                    <a th:text="#{'profile.language.' + ${viewedWork.getLanguage().toLowerCase()}}" id="language">Type</a>
+                                </p>
+                                <p class="work-element" style="margin-bottom: -1%">
+                                    <label for="size" th:text="#{work.size} + ':'">F</label>
+                                    <label th:text="#{work.size.chapters} + ': ' + ${viewedWork.getChapters().size()} + ', ' + #{work.size.words} + ': ' + ${viewedWork.getWordsCount()}"
+                                           id="size" style="font-weight: normal">Type</label>
+                                </p>
+                                <th:block th:if="${viewedWork.getTags().size() > 0}">
                                     <p class="work-element" style="margin-bottom: -1%">
-                                        <label for="category" th:text="#{work.category}">F</label>
-                                        <a th:text="#{'work.category.' + ${viewedWork.getCategory().toLowerCase()}}" id="category">Type</a>
-                                    </p>
-                                    <p class="work-element" style="margin-bottom: -1%">
-                                        <label for="rating" th:text="#{work.rating}">F</label>
-                                        <a th:text="${viewedWork.getRating()}" id="rating"
-                                           data-toggle="tooltip" data-placement="right" th:title="#{'work.rating.' + ${viewedWork.getRating().toLowerCase()}}">
+                                        <label for="tags" th:text="#{work.tags} + ':'">F</label>
+                                        <a th:each="tag : ${viewedWork.getTags()}" id="tags">
+                                            <a th:text="${tag}">Tag</a>
                                         </a>
                                     </p>
-                                    <p class="work-element" style="margin-bottom: -1%">
-                                        <label for="status" th:text="#{work.state}">F</label>
-                                        <th:block th:if="${viewedWork.getStatus().equals('IN_PROGRESS')}">
-                                            <a th:text="#{work.state.in_progress}" id="status" style="color: red">Type</a>
-                                        </th:block>
-                                        <th:block th:if="${viewedWork.getStatus().equals('COMPLETE')}">
-                                            <a th:text="#{work.state.complete}" id="status" style="color: green;">Type</a>
-                                        </th:block>
+                                </th:block>
+                            </div>
+                            <div class="col-sm-6">
+                                <p>
+                                    <h4 th:text="#{home.add_fic.description} + ':'" style="font-weight: bold">H</h4>
+                                    <p th:text="${viewedWork.getDescription()}" id="description">
+                                        Type
                                     </p>
-                                    <p class="work-element" style="margin-bottom: -1%">
-                                        <label for="language" th:text="#{profile.language.label} + ':'">F</label>
-                                        <a th:text="#{'profile.language.' + ${viewedWork.getLanguage().toLowerCase()}}" id="language">Type</a>
+                                </p>
+                                <p>
+                                    <h4 th:text="#{home.add_fic.comment} + ':'" style="font-weight: bold">H</h4>
+                                    <p th:text="${viewedWork.getComment()}">
+                                        Type
                                     </p>
-                                    <p class="work-element" style="margin-bottom: -1%">
-                                        <label for="size" th:text="#{work.size} + ':'">F</label>
-                                        <label th:text="#{work.size.chapters} + ': ' + ${viewedWork.getChapters().size()} + ', ' + #{work.size.words} + ': ' + ${viewedWork.getWordsCount()}"
-                                               id="size" style="font-weight: normal">Type</label>
-                                    </p>
-                                    <th:block th:if="${viewedWork.getTags().size() > 0}">
-                                        <p class="work-element" style="margin-bottom: -1%">
-                                            <label for="tags" th:text="#{work.tags} + ':'">F</label>
-                                            <a th:each="tag : ${viewedWork.getTags()}" id="tagInput">
-                                                <a th:text="${tag}">Tag</a>
-                                            </a>
-                                        </p>
-                                    </th:block>
-                                </div>
-                                <div class="col-sm-6">
-                                    <p>
-                                        <h4 th:text="#{home.add_fic.description} + ':'" style="font-weight: bold">H</h4>
-                                        <p th:text="${viewedWork.getDescription()}" id="description">
-                                            Type
-                                        </p>
-                                    </p>
-                                    <p>
-                                        <h4 th:text="#{home.add_fic.comment} + ':'" style="font-weight: bold">H</h4>
-                                        <p th:text="${viewedWork.getComment()}" id="comment">
-                                            Type
-                                        </p>
-                                    </p>
-                                </div>
+                                </p>
                             </div>
                         </div>
                     </div>
+                </div>
+                <!-- chapter -->
+                <div class="item-panel item-panel-light">
+                    <div class="container-fluid">
+                        <th:block th:if="${viewedWork.getChapters().size() == 0}">
+                            <p th:text="#{list.chapters.empty}">C</p>
+                        </th:block>
+                        <th:block th:if="${viewedWork.getChapters().size() == 1}">
+                            <div>
+                                <p class="text-output" th:text="${viewedWork.getChapters().get(0).getText()}">C</p>
+                                <th:block th:if="${!viewedWork.getChapters().get(0).getNotes().isBlank()}">
+                                    <h5 th:text="#{home.add_chapter.notes} + ':'" style="font-weight: bold">G</h5>
+                                    <p class="text-output" th:text="${viewedWork.getChapters().get(0).getNotes()}">C</p>
+                                </th:block>
+                            </div>
+                        </th:block>
+                        <th:block th:if="${viewedWork.getChapters().size() > 1}">
+                            <h4 th:text="#{list.chapters.contents}" style="font-weight: bold">C</h4>
+                            <div th:each="chapter : ${viewedWork.getChapters()}" style="margin-left: 3%">
+                                <form th:id="'show_chapter_form' + ${viewedWork.getChapters().indexOf(chapter)}"
+                                      th:action="'/works/view/' + ${viewedWork.getName()} + '/' + ${chapter.getName()}" method="get">
+                                    <a class="link" style="margin-right: 2%;"
+                                       onclick="document.getElementById(this.parentNode.id).submit(); return false;"
+                                       th:text="${chapter.getName()}">
+                                        S
+                                    </a>
+                                </form>
+                            </div>
+                        </th:block>
+                    </div>
+                </div>
+                <!-- comments -->
+                <th:block th:if="${viewedWork.getChapters().size() == 1}">
                     <div class="item-panel item-panel-light">
                         <div class="container-fluid">
-                            <th:block th:if="${viewedWork.getChapters().size() == 0}">
-                                <p th:text="#{list.chapters.empty}">C</p>
+                            <h4 th:text="#{comment.comments} + ':'" style="font-weight: bold">H</h4>
+                            <div sec:authorize="isAuthenticated()">
+                                <form id="post_comment_form" style="width: 100%">
+                                    <div class="container-fluid comment-panel">
+                                        <h4 th:text="${#authentication.getName()}" style="font-weight: bold">H</h4>
+                                        <textarea class="form-control" id="comment" name="comment"
+                                                  rows="5" cols="20" maxlength="1000"
+                                                  th:placeholder="#{comment.form.placeholder}"
+                                                  onkeyup="textCounter(this, 'commentCounter', 1000)"
+                                        ></textarea>
+
+                                        <div class="row" style="margin-top: 10px; vertical-align: center">
+                                            <div class="col-sm-2">
+                                                <label for="commentCounter" th:text="#{signup.characters_left}"
+                                                       style="font-weight: normal;">Left</label>
+                                                <input disabled  maxlength="4" size="4" value="1000" id="commentCounter" style="color: #3f1d5a;">
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <div id="emptyCommentAlert" class="alert alert-danger"
+                                                     style="padding: 1%; width: min-content; white-space: nowrap; display: none; align-self: center"
+                                                     th:text="#{comment.form.nonempty}">Y</div>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button id="saveComment" class="btn btn-purple-light" type="submit" style="float: right;"
+                                                        th:text="#{comment.form.save}">B</button>
+                                            </div>
+                                        </div>
+
+                                        <input type="hidden" id="workName" th:value="${viewedWork.getName()}">
+                                        <input type="hidden" id="chapterCount" th:value="${viewedWork.getChapters().size()}">
+                                        <input type="hidden" id="chapterName" th:value="${viewedWork.getChapters().get(0).getName()}">
+                                    </div>
+                                </form>
+                                <script>
+                                    var workName = document.getElementById('workName').value;
+                                    var chapterName = document.getElementById('chapterName').value;
+                                    connect(workName, chapterName);
+
+                                    $("form").on('submit', function (e) {
+                                        e.preventDefault();
+                                    });
+
+                                    $( "#saveComment" ).click(function() {
+                                        sendCommentToDB();
+                                    });
+
+                                    function sendCommentToDB() {
+                                        var commentText = $("#comment").val();
+                                        if (commentText === '') {
+                                            document.getElementById('emptyCommentAlert').style.display = "";
+                                            return;
+                                        } else {
+                                            document.getElementById('comment').value = "";
+                                            document.getElementById('commentCounter').value = "1000";
+                                        }
+
+                                        stompClient.send("/dst/comment", {}, JSON.stringify({
+                                                'workName': $("#workName").val(),
+                                                'chapterName': $("#chapterName").val(),
+                                                'chapterCount': $("#chapterCount").val(),
+                                                'commentText': commentText
+                                            }
+                                        ));
+                                    }
+
+                                    function showComment(comment) {
+                                        //console.log('comment body: ' + comment);
+                                        if (comment != null) {
+                                            $("#newComments").append(createNewComment(JSON.parse(comment.body).id,
+                                                                                    JSON.parse(comment.body).authorName,
+                                                                                    JSON.parse(comment.body).postTime,
+                                                                                    JSON.parse(comment.body).text));
+                                            if (document.getElementById('noComments') !== null) {
+                                                document.getElementById('noComments').style.display = "none";
+                                            }
+                                        } else {
+                                            $("#newComments").append("<p>NULL COMMENT RECEIVED</p>");
+                                        }
+                                    }
+
+                                    function createNewComment(commentId, authorName, postTime, commentText) {
+                                        var mainItem = document.createElement("DIV");
+                                        mainItem.id = 'comment_' + commentId;
+                                        mainItem.setAttribute("class", "comment-item");
+                                        var container = document.createElement("DIV");
+                                        container.setAttribute("class", "container-fluid");
+                                        var headDiv = document.createElement("DIV");
+                                        headDiv.setAttribute("class", "comment-head");
+                                        var rowDiv = document.createElement("DIV");
+                                        rowDiv.setAttribute("class", "row");
+                                        var authorNameDiv = document.createElement("DIV");
+                                        authorNameDiv.setAttribute("class", "col-sm-6 primary-text");
+                                        authorNameDiv.textContent = authorName;
+                                        var dateTimeDiv = document.createElement("DIV");
+                                        dateTimeDiv.setAttribute("class", "col-sm-6 secondary-text");
+                                        dateTimeDiv.style.float = "right";
+                                        dateTimeDiv.textContent = moment(postTime).format('DD.MM.YYYY HH:mm:ss');
+                                        var commentBodyDiv = document.createElement("DIV");
+                                        commentBodyDiv.setAttribute("class", "comment-body");
+                                        commentBodyDiv.textContent = commentText;
+
+                                        rowDiv.appendChild(authorNameDiv);
+                                        rowDiv.appendChild(dateTimeDiv);
+
+                                        headDiv.appendChild(rowDiv);
+
+                                        container.appendChild(headDiv);
+                                        container.appendChild(commentBodyDiv);
+
+                                        mainItem.appendChild(container);
+                                        return mainItem;
+                                    }
+                                </script>
+                            </div>
+
+                            <div id="newComments">
+                            </div>
+
+                            <th:block th:if="${viewedWork.getChapters().get(0).getComments().size() == 0}">
+                                <p id="noComments" th:text="#{comment.comments.empty}">C</p>
                             </th:block>
-                            <th:block th:if="${viewedWork.getChapters().size() == 1}">
-                                <div>
-                                    <p class="text-output" th:text="${viewedWork.getChapters().get(0).getText()}">C</p>
-                                    <th:block th:if="${!viewedWork.getChapters().get(0).getNotes().isBlank()}">
-                                        <h5 th:text="#{home.add_chapter.notes} + ':'" style="font-weight: bold">G</h5>
-                                        <p class="text-output" th:text="${viewedWork.getChapters().get(0).getNotes()}">C</p>
-                                    </th:block>
-                                </div>
-                            </th:block>
-                            <th:block th:if="${viewedWork.getChapters().size() > 1}">
-                                <h4 th:text="#{list.chapters.contents}" style="font-weight: bold">C</h4>
-                                <div th:each="chapter : ${viewedWork.getChapters()}" style="margin-left: 3%">
-                                    <form th:id="'show_chapter_form' + ${viewedWork.getChapters().indexOf(chapter)}"
-                                          th:action="'/works/view/' + ${viewedWork.getName()} + '/' + ${chapter.getName()}" method="get">
-                                        <a class="link" style="margin-right: 2%;"
-                                           onclick="document.getElementById(this.parentNode.id).submit(); return false;"
-                                           th:text="${chapter.getName()}">
-                                            S
-                                        </a>
-                                    </form>
+
+                            <th:block th:unless="${viewedWork.getChapters().get(0).getComments().size() == 0}">
+                                <div class="comment-item" th:each="comment : ${viewedWork.getChapters().get(0).getComments()}">
+                                    <div class="container-fluid">
+                                        <div class="comment-head">
+                                            <div class="row">
+                                                <div class="col-sm-6 primary-text" style=""
+                                                     th:text="${comment.getAuthorName()}">f</div>
+                                                <div class="col-sm-6 secondary-text" style="float: right"
+                                                     th:text="${#dates.format(new java.util.Date(comment.getPostTime()), 'dd.MM.YYYY HH:mm:ss')}">f</div>
+                                            </div>
+                                        </div>
+                                        <div class="comment-body" th:text="${comment.getText()}">f</div>
+                                    </div>
                                 </div>
                             </th:block>
                         </div>
                     </div>
                 </th:block>
-            </div>
+            </th:block>
         </div>
     </div>
 </div>
+
 </body>
+
+<script>
+    function textCounter(field, field2, maxlimit) {
+        document.getElementById('emptyCommentAlert').style.display = "none";
+        var countfield = document.getElementById(field2);
+        if ( field.value.length > maxlimit ) {
+            field.value = field.value.substring( 0, maxlimit);
+            return false;
+        } else {
+            countfield.value = maxlimit - field.value.length;
+        }
+    }
+</script>
 
 <!-- For bootstrap -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

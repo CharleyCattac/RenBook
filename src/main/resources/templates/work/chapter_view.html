@@ -11,11 +11,19 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
     <!-- Local css -->
     <link rel="stylesheet" type="text/css" href="/css/base/background.css">
     <link rel="stylesheet" type="text/css" href="/css/base/main_panel.css">
     <link rel="stylesheet" type="text/css" href="/css/base/nav.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/links.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/buttons.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/textarea.css">
     <link rel="stylesheet" type="text/css" href="/css/items/work_item.css">
+    <link rel="stylesheet" type="text/css" href="/css/items/comment_item.css">
     <!-- Script to load navbar -->
     <!--<script src="js/csi.js"></script>-->
 
@@ -93,11 +101,10 @@
     <!-- ---------- -->
     <div class="container">
         <div class="main-panel main-panel-light" style="padding: 1%">
-            <div class="container">
-                <b th:if="${error}">
-                    <a style="color: red"><td th:text="#{error.something_went_wrong}">err</td></a>
-                </b>
-            </div>
+            <b th:if="${error}">
+                <div class="alert alert-danger" th:text="#{error.something_went_wrong}">Y</div>
+            </b>
+
             <div class="container-fluid">
                 <th:block th:if="${viewedChapter != null}">
                     <div class="item-panel item-panel-light">
@@ -150,16 +157,16 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <p>
-                                    <h4 th:text="#{home.add_fic.description} + ':'" style="font-weight: bold">H</h4>
-                                    <p th:text="${viewedWork.getDescription()}" id="description">
-                                        Type
-                                    </p>
+                                        <h4 th:text="#{home.add_fic.description} + ':'" style="font-weight: bold">H</h4>
+                                        <p th:text="${viewedWork.getDescription()}" id="description">
+                                            Type
+                                        </p>
                                     </p>
                                     <p>
-                                    <h4 th:text="#{home.add_fic.comment} + ':'" style="font-weight: bold">H</h4>
-                                    <p th:text="${viewedWork.getComment()}" id="comment">
-                                        Type
-                                    </p>
+                                        <h4 th:text="#{home.add_fic.comment} + ':'" style="font-weight: bold">H</h4>
+                                        <p th:text="${viewedWork.getComment()}">
+                                            Type
+                                        </p>
                                     </p>
                                 </div>
                             </div>
@@ -197,12 +204,62 @@
                             </th:block>
                         </div>
                     </div>
+                    <div class="item-panel item-panel-light">
+                        <div class="container-fluid" style="min-width: available">
+                            <h4 th:text="#{comment.comments} + ':'" style="font-weight: bold">H</h4>
+                            <!-- comment -->
+                            <div sec:authorize="isAuthenticated()">
+                                <form id="post_comment_form">
+                                    <div class="comment-panel">
+                                        <div class="form-group">
+                                            <textarea class="form-control" id="comment" name="comment"
+                                                      cols="20" maxlength="1000"
+                                                      th:placeholder="#{comment.form.placeholder}"
+                                                      onkeyup="textCounter(this, 'commentCounter', 1000)"
+                                            > </textarea>
+                                            <label for="commentCounter" th:text="#{signup.characters_left}"
+                                                   style="font-weight: normal">Left</label>
+                                            <input disabled  maxlength="4" size="4" value="1000" id="commentCounter">
+                                        </div>
+                                        <div class="row" style="margin-top: 1%">
+                                            <div class="col-sm-10">
+                                                <p id="receiver" th:text="receiver">Cat</p>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button id="saveComment" class="btn btn-purple" type="submit" th:text="#{comment.form.save}">B</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <th:block th:if="${viewedChapter.getComments().size() == 0}">
+                                <p th:text="#{comment.comments.empty}">C</p>
+                            </th:block>
+                            <th:block th:unless="${viewedChapter.getComments().size() == 0}">
+                                <p th:each="comment : ${viewedChapter.getComments()}">
+                                    <p th:text="${comment.getText()}">s</p>
+                                </p>
+                            </th:block>
+                        </div>
+                    </div>
                 </th:block>
             </div>
         </div>
     </div>
 </div>
 </body>
+
+<script>
+    function textCounter(field, field2, maxlimit) {
+        var countfield = document.getElementById(field2);
+        if ( field.value.length > maxlimit ) {
+            field.value = field.value.substring( 0, maxlimit);
+            return false;
+        } else {
+            countfield.value = maxlimit - field.value.length;
+        }
+    }
+</script>
 
 <!-- For bootstrap -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

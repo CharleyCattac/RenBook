@@ -6,16 +6,6 @@
     font-weight: normal;
 }
 
-textarea {
-    resize: none;
-    overflow: hidden;
-    min-height: 50px;
-}
-
-.textarea-big {
-    min-height: 150px;
-}
-
 #tagInput , #fandomInput{
     width: 100%; /* Full-width */
     padding: 12px 20px 12px 40px; /* Add some padding */

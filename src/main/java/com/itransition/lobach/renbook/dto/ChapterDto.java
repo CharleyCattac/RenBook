@@ -2,6 +2,8 @@ package com.itransition.lobach.renbook.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -13,6 +15,7 @@ public class ChapterDto {
     private String name;
     private String text;
     private String notes;
+    private List<CommentDto> comments;
 
     private Long postTimeMillis;
 }

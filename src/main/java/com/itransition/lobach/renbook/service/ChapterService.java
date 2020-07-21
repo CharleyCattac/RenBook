@@ -14,10 +14,10 @@ public class ChapterService {
     @Autowired
     private ChapterRepository chapterRepository;
 
-    public Chapter saveChapter(Work work,
-                               String chapterName,
-                               String chapterText,
-                               String notes) {
+    public Chapter addNewChapter(Work work,
+                                 String chapterName,
+                                 String chapterText,
+                                 String notes) {
         return saveChapter(null, work, chapterName, chapterText, notes);
     }
 
@@ -33,7 +33,7 @@ public class ChapterService {
                                 String chapterName,
                                 String chapterText,
                                 String notes) {
-        if (!chapterName.isBlank() && !chapterText.isBlank()) {
+        if (!chapterName.isBlank() && !chapterText.isBlank() && work != null) {
             if (chapter == null) {
                 return chapterRepository.save(Chapter.builder()
                         .work(work)
@@ -63,12 +63,5 @@ public class ChapterService {
         if (chapter != null) {
             chapterRepository.delete(chapter);
         }
-    }
-
-    public List<Chapter> findAllByWork(Work work) {
-        if (work != null) {
-            return chapterRepository.getAllByWorkOrderByPostTimeMillisAsc(work);
-        }
-        return null;
     }
 }
