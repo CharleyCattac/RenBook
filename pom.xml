@@ -17,6 +17,7 @@
 
     <properties>
         <java.version>11</java.version>
+        <maven.compiler.release>11</maven.compiler.release>
         <spring.version>5.2.2.RELEASE</spring.version>
     </properties>
 
