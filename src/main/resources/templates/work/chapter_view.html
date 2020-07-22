@@ -21,11 +21,12 @@
     <link rel="stylesheet" type="text/css" href="/css/base/nav.css">
     <link rel="stylesheet" type="text/css" href="/css/input/links.css">
     <link rel="stylesheet" type="text/css" href="/css/input/buttons.css">
-    <link rel="stylesheet" type="text/css" href="/css/input/textarea.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/textareas.css">
     <link rel="stylesheet" type="text/css" href="/css/items/work_item.css">
     <link rel="stylesheet" type="text/css" href="/css/items/comment_item.css">
-    <!-- Script to load navbar -->
-    <!--<script src="js/csi.js"></script>-->
+    <!-- Scripts -->
+    <script src="/js/moment.min.js"></script>
+    <script src="/js/app.js"></script>
 
     <meta charset="UTF-8">
 </head>
@@ -107,15 +108,27 @@
 
             <div class="container-fluid">
                 <th:block th:if="${viewedChapter != null}">
+                    <!-- description -->
                     <div class="item-panel item-panel-light">
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col-sm-6">
                                     <h3 th:text="${viewedWork.getName()}" style="margin-top: -0.01%; font-weight: bold">L</h3>
                                     <p class="work-element" style="margin-top: -0.5%; margin-bottom: -1%">
-                                        <label for="fandom" th:text="#{home.add_fic.type.fandom} + ':'">F</label>
+                                        <label for="category" th:text="#{work.author} + ':'">F</label>
+                                        <a th:text="${viewedWork.getAuthorName()}" id="author">Type</a>
+                                    </p>
+                                    <p class="work-element" style="margin-bottom: -1%">
+                                        <label th:text="#{work.category.types.fandom} + ':'">F</label>
                                         <th:block th:if="${viewedWork.getFandomType().equals('ORIGINAL')}">
-                                            <a th:text="#{work.category.types.original}" id="fandom">Type</a>
+                                            <a th:text="#{work.category.types.original}"
+                                               data-toggle="tooltip" data-placement="top" th:title="#{'work.category.types.' + ${viewedWork.getFandomType().toLowerCase()}}">Type</a>
+                                        </th:block>
+                                        <th:block th:unless="${viewedWork.getFandomType().equals('ORIGINAL')}">
+                                            <a th:each="fandom : ${viewedWork.getFandoms()}"
+                                               data-toggle="tooltip" data-placement="top" th:title="#{'work.category.types.' + ${fandom.getType().toLowerCase()}}">
+                                                <th:block th:text="${fandom.getName()}">T</th:block>
+                                            </a>
                                         </th:block>
                                     </p>
                                     <p class="work-element" style="margin-bottom: -1%">
@@ -172,6 +185,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- content -->
                     <div class="item-panel item-panel-light">
                         <div class="container-fluid">
                             <form id="open_work_form" th:action="'/works/view/' + ${viewedWork.getName()}" method="get">
@@ -204,42 +218,97 @@
                             </th:block>
                         </div>
                     </div>
+                    <!-- comment -->
                     <div class="item-panel item-panel-light">
-                        <div class="container-fluid" style="min-width: available">
+                        <div class="container-fluid">
                             <h4 th:text="#{comment.comments} + ':'" style="font-weight: bold">H</h4>
-                            <!-- comment -->
-                            <div sec:authorize="isAuthenticated()">
-                                <form id="post_comment_form">
-                                    <div class="comment-panel">
-                                        <div class="form-group">
-                                            <textarea class="form-control" id="comment" name="comment"
-                                                      cols="20" maxlength="1000"
-                                                      th:placeholder="#{comment.form.placeholder}"
-                                                      onkeyup="textCounter(this, 'commentCounter', 1000)"
-                                            > </textarea>
-                                            <label for="commentCounter" th:text="#{signup.characters_left}"
-                                                   style="font-weight: normal">Left</label>
-                                            <input disabled  maxlength="4" size="4" value="1000" id="commentCounter">
+
+                            <th:block th:if="${viewedChapter.getComments().size() == 0}">
+                                <p id="noComments" th:text="#{comment.comments.empty}">C</p>
+                            </th:block>
+
+                            <th:block th:unless="${viewedChapter.getComments().size() == 0}">
+                                <div class="comment-item" th:each="comment : ${viewedChapter.getComments()}"
+                                     th:id="'comment_' + ${comment.getId()}">
+                                    <div class="container-fluid">
+                                        <div class="comment-head">
+                                            <div class="row" style="padding-left: 5px">
+                                                <div class="col-sm-7 primary-text"
+                                                     th:text="${comment.getAuthorName()}">f</div>
+                                                <div class="col-sm-4 secondary-text"
+                                                     th:text="${#dates.format(new java.util.Date(comment.getPostTime()), 'dd.MM.YYYY HH:mm:ss')}"></div>
+                                                <div class="col-sm-1">
+                                                    <span class="secondary-text close" th:id="'span_' + ${comment.getId()}"
+                                                          style="float: right"
+                                                          sec:authorize="isAuthenticated()">X</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="row" style="margin-top: 1%">
-                                            <div class="col-sm-10">
-                                                <p id="receiver" th:text="receiver">Cat</p>
+                                        <script th:id="'s_' + ${comment.getId()}">
+                                            var commentId = document.currentScript.id.substr(2);
+                                            console.log(commentId);
+                                            var spanElement = document.getElementById('span_' + commentId);
+                                            spanElement.addEventListener("click", function () {
+                                                var commentId = this.id.substr(5);
+                                                deleteComment(commentId);
+                                            });
+                                        </script>
+                                        <div class="comment-body text-output" th:text="${comment.getText()}">f</div>
+                                    </div>
+                                </div>
+                            </th:block>
+
+                            <div id="newComments">
+                            </div>
+
+                            <div sec:authorize="isAuthenticated()">
+                                <form id="post_comment_form" style="width: 100%">
+                                    <div class="container-fluid comment-panel">
+                                        <h4 th:text="${#authentication.getName()}" style="font-weight: bold">H</h4>
+                                        <textarea class="form-control" id="comment" name="comment"
+                                                  rows="5" cols="20" maxlength="1000"
+                                                  th:placeholder="#{comment.form.placeholder}"
+                                                  onkeyup="textCounter(this, 'commentCounter', 1000)"
+                                        ></textarea>
+
+                                        <div class="row" style="margin-top: 10px; vertical-align: center">
+                                            <div class="col-sm-2">
+                                                <label for="commentCounter" th:text="#{signup.characters_left}"
+                                                       style="font-weight: normal;">Left</label>
+                                                <input disabled  maxlength="4" size="4" value="1000" id="commentCounter" style="color: #3f1d5a;">
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <div id="emptyCommentAlert" class="alert alert-danger"
+                                                     style="padding: 1%; width: min-content; white-space: nowrap; display: none; align-self: center"
+                                                     th:text="#{comment.form.nonempty}">Y</div>
                                             </div>
                                             <div class="col-sm-2">
-                                                <button id="saveComment" class="btn btn-purple" type="submit" th:text="#{comment.form.save}">B</button>
+                                                <button id="saveComment" class="btn btn-purple-light" type="submit" style="float: right;"
+                                                        th:text="#{comment.form.save}">B</button>
                                             </div>
                                         </div>
+
+                                        <input type="hidden" id="workName" th:value="${viewedWork.getName()}">
+                                        <input type="hidden" id="chapterCount" th:value="${viewedWork.getChapters().size()}">
+                                        <input type="hidden" id="chapterName" th:value="${viewedChapter.getName()}">
                                     </div>
                                 </form>
+                                <script>
+                                    var workName = document.getElementById('workName').value;
+                                    var chapterName = document.getElementById('chapterName').value;
+                                    var stompClient = null;
+                                    stompClient = connect(stompClient, workName, chapterName);
+
+                                    $("form").on('submit', function (e) {
+                                        e.preventDefault();
+                                    });
+
+                                    $( "#saveComment" ).click(function() {
+                                        sendCommentToDB();
+                                    });
+                                </script>
                             </div>
-                            <th:block th:if="${viewedChapter.getComments().size() == 0}">
-                                <p th:text="#{comment.comments.empty}">C</p>
-                            </th:block>
-                            <th:block th:unless="${viewedChapter.getComments().size() == 0}">
-                                <p th:each="comment : ${viewedChapter.getComments()}">
-                                    <p th:text="${comment.getText()}">s</p>
-                                </p>
-                            </th:block>
+
                         </div>
                     </div>
                 </th:block>

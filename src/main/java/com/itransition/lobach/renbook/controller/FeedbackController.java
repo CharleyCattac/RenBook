@@ -1,16 +1,13 @@
 package com.itransition.lobach.renbook.controller;
 
-import com.itransition.lobach.renbook.dto.CommentDto;
 import com.itransition.lobach.renbook.entity.Chapter;
 import com.itransition.lobach.renbook.entity.Comment;
 import com.itransition.lobach.renbook.entity.User;
 import com.itransition.lobach.renbook.entity.Work;
-import com.itransition.lobach.renbook.service.ChapterService;
-import com.itransition.lobach.renbook.service.CommentService;
-import com.itransition.lobach.renbook.service.UserService;
-import com.itransition.lobach.renbook.service.WorkService;
-import com.itransition.lobach.renbook.transfer.CommentTransfer;
-import com.itransition.lobach.renbook.util.EntityToDtoConverter;
+import com.itransition.lobach.renbook.enums.MessagePurpose;
+import com.itransition.lobach.renbook.service.*;
+import com.itransition.lobach.renbook.transfer.CommentIncoming;
+import com.itransition.lobach.renbook.transfer.CommentOutcoming;
 import com.itransition.lobach.renbook.util.SecurityHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -30,6 +27,9 @@ public class FeedbackController {
     private SimpMessagingTemplate messagingTemplate;
 
     @Autowired
+    private SecurityHelper securityHelper;
+
+    @Autowired
     private UserService userService;
 
     @Autowired
@@ -41,36 +41,43 @@ public class FeedbackController {
     @Autowired
     private CommentService commentService;
 
-    @MessageMapping(value = "/comment")
-    public void performAddComment(@Payload CommentTransfer comment,
+    @MessageMapping(value = "/add_comment")
+    public void performAddComment(@Payload CommentIncoming comment,
                                   @AuthenticationPrincipal Principal principal) {
+        if (principal == null) {
+         return;
+        }
 
         Work work = workService.findByName(comment.getWorkName());
         Chapter chapter = chapterService.findByWorkAndName(work, comment.getChapterName());
         User author = userService.findUserByUsername(principal.getName());
         Comment newComment = commentService.addNewComment(chapter, author, comment.getCommentText(), null);
 
-        createUrl(comment, newComment);
+        createUrl(comment, commentService.buildCommentFor(MessagePurpose.ADD.name().toLowerCase(), newComment));
     }
 
-    @MessageMapping(value = "/deletecomment")
-    public void performDeleteComment(@Payload Long commentId,
-                                  @AuthenticationPrincipal Principal principal) {
+    @MessageMapping(value = "/delete_comment")
+    public void performDeleteComment(@Payload CommentIncoming incoming,
+                                     @AuthenticationPrincipal Principal principal) {
 
-        User author = userService.findUserByUsername(principal.getName());
-        Comment comment = commentService.findById(commentId);
-        if (comment != null) {
-
+        User sender = userService.findUserByUsername(principal.getName());
+        Comment comment = commentService.findById(incoming.getCommentId());
+        if (securityHelper.isUserAdmin(sender)
+            || comment.getAuthor().getUsername().equals(sender.getUsername())
+            || comment.getChapter().getWork().getAuthor().getUsername().equals(sender.getUsername())) {
+            commentService.deleteComment(comment);
+        } else {
+            return;
         }
 
-        //createUrl(comment, newComment);
+        createUrl(incoming, commentService.buildCommentFor(MessagePurpose.DELETE.name().toLowerCase(), comment));
     }
 
-    private void createUrl(CommentTransfer comment, Comment newComment) {
+    private void createUrl(CommentIncoming comment, CommentOutcoming outcoming) {
         if (comment.getChapterCount() == 1) {
-            messagingTemplate.convertAndSend("/works/view/" + comment.getWorkName() + "?", convertComment(newComment));
+            messagingTemplate.convertAndSend("/works/view/" + comment.getWorkName() + "?", outcoming);
         } else {
-            messagingTemplate.convertAndSend("/works/view/" + comment.getWorkName() + "/" + comment.getChapterName() + "?", convertComment(newComment));
+            messagingTemplate.convertAndSend("/works/view/" + comment.getWorkName() + "/" + comment.getChapterName() + "?", outcoming);
         }
     }
 }

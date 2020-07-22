@@ -117,13 +117,13 @@ public class EntityToDtoConverter {
     }
 
     public static ChapterDto convertChapter(Chapter chapter) {
-        List<CommentDto> commentDtos = convertCommentList(chapter.getComments());
-        Collections.reverse(commentDtos);
+        //List<CommentDto> commentDtos = convertCommentList(chapter.getComments());
+        //Collections.reverse(commentDtos);
         return ChapterDto.builder()
                 .name(chapter.getName())
                 .text(chapter.getText())
                 .notes(chapter.getNotes())
-                .comments(commentDtos)
+                .comments(convertCommentList(chapter.getComments()))
                 .postTimeMillis(chapter.getPostTimeMillis())
                 .build();
     }

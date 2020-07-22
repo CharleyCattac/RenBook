@@ -34,12 +34,11 @@ public class Attributes {
     public static final String PREV_CHAPTER = "prevChapter";
     public static final String NEXT_CHAPTER = "nextChapter";
 
+    public static final String ALL_WORKS = "allWorks";
     public static final String WORKS_COUNT = "worksCount";
     public static final String TOP_WORKS_BY_UPDATE = "topWorksByUpdate";
     public static final String TOP_WORKS_BY_ASSESS = "topWorksByAssessment";
-
-    public static final String COMMENTS_COUNT = "commentsCount";
-    public static final String COMMENTS = "comments";
+    public static final String WORKS_SORT_SUBJECT = "sortSubject";
 
     public static final String MESSAGE_ERROR = "messageError";
 }

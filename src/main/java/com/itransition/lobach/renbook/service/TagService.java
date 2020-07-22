@@ -17,10 +17,14 @@ public class TagService {
     private TagRepository tagRepository;
 
     public Tag saveTag(String name) {
-        if (name != null && name.matches(TAG_PATTERN)) {
-            return tagRepository.save(Tag.builder()
-                    .name(name)
-                    .build());
+        if (name != null) { //&& name.matches(TAG_PATTERN)
+            if (!name.isBlank()) {
+                return tagRepository.save(Tag.builder()
+                        .name(name)
+                        .build());
+            } else {
+                return null;
+            }
         } else {
             return null;
         }

@@ -17,3 +17,14 @@
     color: rgba(227, 201, 245, 0.82);
     background-color: rgba(133, 69, 191, 0.76);
 }
+
+/* Style the close button (span) */
+.close {
+    cursor: pointer;
+    position: relative;
+    margin-left: 3px;
+    margin-top: -2px;
+    align-self: center;
+}
+
+.close:hover {background: #bbb;}

@@ -40,7 +40,7 @@ public class AuthenticationController {
 
     @GetMapping("/signup")
     public String showSignUp() {
-        return SIGNUP;
+        return SIGNUP_URL;
     }
 
     @PostMapping("/signup")
@@ -55,7 +55,7 @@ public class AuthenticationController {
 
         if (userFromDb != null) {
             model.addAttribute(ERROR, MessageManager.getMessage(SIGNUP_USER_EXISTS));
-            return SIGNUP;
+            return SIGNUP_URL;
         }
 
         User user = null;
@@ -64,22 +64,22 @@ public class AuthenticationController {
             user = userService.saveUser(email, username, password, avatarUrl, birthDate, description);
         } catch (RuntimeException e) {
             model.addAttribute(ERROR, MessageManager.getMessage(SIGNUP_DEFAULT));
-            return SIGNUP;
+            return SIGNUP_URL;
         } catch (ParseException e) {
             model.addAttribute(ERROR, MessageManager.getMessage(SIGNUP_DATE));
-            return SIGNUP;
+            return SIGNUP_URL;
         }
 
         //todo: email confirmation (get rid of this peace down here)
         if (user == null) {
             model.addAttribute(ERROR, "signup successful, but failed to retrieve info");
-            return SIGNUP;
+            return SIGNUP_URL;
         }
         try {
             authenticateUser(username, password);
         } catch (RuntimeException e) {
             model.addAttribute(ERROR, MessageManager.getMessage(LOGIN_INVALID_PASSWORD));
-            return LOGIN_REDIRECT;
+            return LOGIN_REDIRECT_URL;
         }
 
         return createUrl(user.getUserInfo().getPreferredLanguage());
@@ -87,7 +87,7 @@ public class AuthenticationController {
 
     @GetMapping("/login")
     public String showLogin() {
-        return LOGIN;
+        return LOGIN_URL;
     }
 
     @PostMapping("/login")
@@ -97,14 +97,14 @@ public class AuthenticationController {
         User user = userService.findUserByUsername(username);
         if (user == null) {
             model.addAttribute(ERROR, MessageManager.getMessage(LOGIN_USERNAME_NOT_EXISTS));
-            return LOGIN;
+            return LOGIN_URL;
         }
 
         try {
             authenticateUser(username, password);
         } catch (RuntimeException e) {
             model.addAttribute(ERROR, MessageManager.getMessage(LOGIN_INVALID_PASSWORD));
-            return LOGIN;
+            return LOGIN_URL;
         }
 
         return createUrl(user.getUserInfo().getPreferredLanguage());

@@ -4,7 +4,10 @@ import com.itransition.lobach.renbook.entity.Chapter;
 import com.itransition.lobach.renbook.entity.Comment;
 import com.itransition.lobach.renbook.entity.User;
 import com.itransition.lobach.renbook.entity.Work;
+import com.itransition.lobach.renbook.enums.MessagePurpose;
 import com.itransition.lobach.renbook.repository.CommentRepository;
+import com.itransition.lobach.renbook.transfer.CommentOutcoming;
+import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,5 +62,18 @@ public class CommentService {
         if (comment != null) {
             commentRepository.delete(comment);
         }
+    }
+
+    public CommentOutcoming buildCommentFor(String purpose, Comment comment) {
+        if (EnumUtils.isValidEnum(MessagePurpose.class, purpose.toUpperCase()) && comment != null) {
+            return CommentOutcoming.builder()
+                    .purpose(purpose.toLowerCase())
+                    .id(comment.getId())
+                    .authorName(comment.getAuthor().getUsername())
+                    .text(comment.getText())
+                    .postTime(comment.getPostTimeMillis())
+                    .build();
+        }
+        return null;
     }
 }

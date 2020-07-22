@@ -1,11 +1,15 @@
 package com.itransition.lobach.renbook.util;
 
+import com.itransition.lobach.renbook.entity.Role;
 import com.itransition.lobach.renbook.entity.User;
 import com.itransition.lobach.renbook.service.RoleService;
 import com.itransition.lobach.renbook.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.List;
 
 @Component
 public class SecurityHelper {
@@ -28,5 +32,14 @@ public class SecurityHelper {
 
     public boolean isLoggedUserAdmin() {
         return getLoggedUser().getRoles().contains(roleService.getAdminRole());
+    }
+
+    public boolean isUserAdmin(User user) {
+        for (Role role : user.getRoles()) {
+            if (role.getName().equalsIgnoreCase("ADMIN")) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -83,7 +83,10 @@
         function createNewCloseableItem(inputField, targetListId, hiddenInputName, fandomTypeName) {
             var input = document.getElementById(inputField);
             if (input !== null) {
-                if (input.value.length > 0 && input.value.match("^[a-zA-Zа-яА-Я0-9()& ]+")) {
+                if (input.value.length > 0
+                    && input.value !== ''
+                    //&& input.value.match("^[a-zA-Zа-яА-Я0-9()& ]+")
+                ) {
                     addCloseableItem(input.value, targetListId, hiddenInputName, fandomTypeName);
                     input.value = '';
                 } else {

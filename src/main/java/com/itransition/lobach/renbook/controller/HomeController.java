@@ -42,12 +42,12 @@ public class HomeController {
 
     @GetMapping(value = "/news")
     public String getNews(Model model) {
-        return HOME_WORKS;
+        return NOT_READY_URL;
     }
 
     @GetMapping(value = "/profile")
     public String getMyProfile(Model model) {
-        return HOME_WORKS;
+        return NOT_READY_URL;
     }
 
     @GetMapping(value = "/works")
@@ -90,11 +90,6 @@ public class HomeController {
         List<Work> works = workPage.toList();
         model.addAttribute(MY_WORKS, EntityToDtoConverter.convertWorkBasicList(works));
 
-        return HOME_WORKS;
-    }
-
-    @GetMapping(value = "/saved")
-    public String getSaved(Model model) {
         return HOME_WORKS;
     }
 
@@ -335,5 +330,10 @@ public class HomeController {
         chapterService.deleteChapter(chapter);
 
         return INDEX_REDIRECT; //todo fix redirects
+    }
+
+    @GetMapping(value = "/saved")
+    public String getSaved(Model model) {
+        return NOT_READY_URL;
     }
 }

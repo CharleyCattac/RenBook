@@ -3,7 +3,7 @@
       xmlns:th="https://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title th:text="#{navbar.home}">Title</title>
+    <title th:text="#{navbar.works}">Title</title>
     <!-- For bootstrap -->
 <!--
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -17,6 +17,7 @@
     <link rel="stylesheet" type="text/css" href="/css/base/main_panel.css">
     <link rel="stylesheet" type="text/css" href="/css/base/nav.css">
     <link rel="stylesheet" type="text/css" href="/css/input/links.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/buttons.css">
     <link rel="stylesheet" type="text/css" href="/css/items/work_item.css">
     <!-- Script to load navbar -->
     <!--<script src="js/csi.js"></script>-->
@@ -69,7 +70,7 @@
                    <th:block th:unless="${#authentication.getName().equals('anonymousUser')}">
                        <li class="dropdown">
                            <a class="dropdown-toggle" data-toggle="dropdown"
-                              th:text="${#authentication.principal.username}"
+                              th:text="${#authentication.getName()}"
                               style="cursor: pointer">
                                <!--<img th:src="${#authentication.principal.userInfo.avatarUrl}"
                                     class="img-circle img-responsive"
@@ -98,28 +99,18 @@
                <b th:if="${error}">
                    <div class="alert alert-danger" th:text="#{error.something_went_wrong}">Y</div>
                </b>
-
-               <div class="container" style="padding-top: 10px">
-                   <h2>Full search</h2>
-                   <p>Тот самый полнотекстовый поиск</p>
-               </div>
-               <!-- MOST POPULAR -->
-               <div class="container">
-                   <h2 th:text="#{mainpage.top.popular}">Топ-5(10) самых новых работ</h2>
-                   <p>Внизу ссылка на все работы с сортировкой по дате добавления</p>
-                   <p class="link link-light link-medium"><a href="#" th:text="#{mainpage.top.popular.all}">Та самая ссылка</a></p>
-               </div>
                <!-- MOST RECENT -->
                <div class="container-fluid" style="padding-bottom: 10px">
-                   <h2 th:text="#{mainpage.top.update}">Топ-5 самых популярных работ</h2>
-                   <th:block th:if="${topWorksByUpdate != null}">
-                       <th:block th:if="${topWorksByUpdate.size() > 0}">
-                           <div th:each="work : ${topWorksByUpdate}">
+                   <h2 th:text="#{mainpage.top.update.all}">Топ-5 самых популярных работ</h2>
+                   <h4 th:text="#{list.work.sorted} + ': ' + #{'list.work.sorted.' + ${sortSubject}}">Топ-5 самых популярных работ</h4>
+                   <th:block th:if="${allWorks != null}">
+                       <th:block th:if="${allWorks.size() > 0}">
+                           <div th:each="work : ${allWorks}">
                                <div class="item-panel item-panel-light">
                                    <div class="container-fluid">
                                        <div class="row">
                                            <div class="col-sm-11">
-                                               <form th:id="'open_work_form' + ${work.getName()} + ${topWorksByUpdate.indexOf(work)}" th:action="'/works/view/' + ${work.getName()}" method="get">
+                                               <form th:id="'open_work_form' + ${work.getName()} + ${allWorks.indexOf(work)}" th:action="'/works/view/' + ${work.getName()}" method="get">
                                                    <a>
                                                        <h3 class="link" style="font-weight: bold; margin-top: 0"
                                                            onclick="document.getElementById(this.parentNode.parentNode.id).submit(); return false;"
@@ -225,7 +216,7 @@
                                            </div>
                                            <div class="col-sm-1">
                                                <div sec:authorize="hasAuthority('ADMIN')">
-                                                   <form th:id="'edit_work_form' + ${topWorksByUpdate.indexOf(work)} + ${topWorksByUpdate.indexOf(work)}"
+                                                   <form th:id="'edit_work_form' + ${allWorks.indexOf(work)} + ${allWorks.indexOf(work)}"
                                                          th:action="'/home/works/' + ${work.getName()} + '/edit'" method="get">
                                                        <a class="link" onclick="document.getElementById(this.parentNode.id).submit(); return false;">
                                                            <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-pencil" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -250,14 +241,27 @@
                            </div>
                        </th:block>
                    </th:block>
-                   <th:block th:if="${topWorksByUpdate == null || topWorksByUpdate.size() <= 0}">
+                   <th:block th:if="${allWorks == null || allWorks.size() <= 0}">
                        <p></p>
                        <p class="link-medium" th:text="#{list.work.empty}">No tags</p>
                    </th:block>
-                   <th:block th:if="${worksCount > 5}">
-                       <p> </p>
-                       <p class="link link-light link-medium"><a href="/works/update" th:text="#{mainpage.top.update.all}">Та самая ссылка</a></p>
-                   </th:block>
+                   <!-- PAGES -->
+                   <div class="container-fluid" style="display: inline">
+                       <th:block th:if="${prevPage != null}">
+                           <a th:href="'/works/' + ${sortSubject} + '/' + ${prevPage}">
+                               <button class="btn btn-purple" th:text="#{list.page.prev}">B</button>
+                           </a>
+                       </th:block>
+                       <th:block th:if="${curPage!= null}">
+                           <label style="font-weight: normal"
+                                  th:text="#{list.page.page} + ' ' + ${curPage} + ' ' + #{list.page.of} + ' ' + ${pageCount}">L</label>
+                       </th:block>
+                       <th:block th:if="${nextPage != null}">
+                           <a th:href="'/works/' + ${sortSubject} + '/' + ${nextPage}">
+                               <button class="btn btn-purple" th:text="#{list.page.next}">B</button>
+                           </a>
+                       </th:block>
+                   </div>
                </div>
                <input type="hidden" id="question" th:value="#{home.delete.question}">
            </div>
