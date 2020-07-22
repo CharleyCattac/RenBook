@@ -3,10 +3,7 @@ package com.itransition.lobach.renbook.controller;
 import com.itransition.lobach.renbook.entity.Chapter;
 import com.itransition.lobach.renbook.entity.Work;
 import com.itransition.lobach.renbook.enums.FandomType;
-import com.itransition.lobach.renbook.service.ChapterService;
-import com.itransition.lobach.renbook.service.FandomService;
-import com.itransition.lobach.renbook.service.TagService;
-import com.itransition.lobach.renbook.service.WorkService;
+import com.itransition.lobach.renbook.service.*;
 import com.itransition.lobach.renbook.util.EntityToDtoConverter;
 import com.itransition.lobach.renbook.util.MessageManager;
 import org.apache.commons.lang3.EnumUtils;
@@ -42,6 +39,9 @@ public class WorksController {
 
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private CommentService commentService;
 
     @GetMapping
     public String showWorks(Model model) {
@@ -119,6 +119,7 @@ public class WorksController {
             model.addAttribute(ERROR, ERROR);
             return WORKS_URL;
         }
+        commentService.reorderComments(work);
         model.addAttribute(VIEWED_WORK, convertWorkFull(work));
         return WORK_VIEW_URL;
     }
@@ -134,6 +135,7 @@ public class WorksController {
             return WORKS_URL;
         }
         model.addAttribute(VIEWED_WORK, convertWorkBasic(work));
+        commentService.reorderComments(chapter);
         model.addAttribute(VIEWED_CHAPTER, convertChapter(chapter));
         if (work.getContent().size() > 1) {
             int chapterIndex = work.getContent().indexOf(chapter);

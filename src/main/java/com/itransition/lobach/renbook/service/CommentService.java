@@ -76,4 +76,14 @@ public class CommentService {
         }
         return null;
     }
+
+    public void reorderComments(Chapter chapter) {
+        chapter.setComments(commentRepository.findAllByChapterOrderByPostTimeMillisAsc(chapter));
+    }
+
+    public void reorderComments(Work work) {
+        for (Chapter chapter : work.getContent()) {
+            chapter.setComments(commentRepository.findAllByChapterOrderByPostTimeMillisAsc(chapter));
+        }
+    }
 }

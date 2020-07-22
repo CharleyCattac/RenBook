@@ -13,5 +13,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     //without sort (for whole work)
     List<Comment> findAllByChapter(Chapter chapter);
     //for chapter
-    List<Comment> findAllByChapterOrderByPostTimeMillisDesc(Chapter chapter);
+    List<Comment> findAllByChapterOrderByPostTimeMillisAsc(Chapter chapter);
 }
