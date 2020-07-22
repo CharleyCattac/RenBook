@@ -1,11 +1,0 @@
-
-W
-java:S1854<":Remove this useless assignment to local variable "author".(½Ç…š8¤Î·.
-g
-java:S1128"JRemove this unused import 'com.itransition.lobach.renbook.dto.CommentDto'.(€õÛğ8À²ö·.
-w
-java:S1128"URemove this unused import 'com.itransition.lobach.renbook.util.EntityToDtoConverter'.(øÙªúùÿÿÿÿ8À²ö·.
-H
-java:S1481<"+Remove this unused "author" local variable.(½Ç…š8¤Î·.
-q
-java:S1128"ORemove this unused import 'com.itransition.lobach.renbook.util.SecurityHelper'.(æåÙùÿÿÿÿÿ8À²ö·.
