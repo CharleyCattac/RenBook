@@ -25,7 +25,7 @@ public class Comment {
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     private User author;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, length = 500)
     private String text;
 
     @OneToOne

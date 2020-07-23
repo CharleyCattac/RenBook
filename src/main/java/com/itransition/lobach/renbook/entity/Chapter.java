@@ -22,7 +22,7 @@ public class Chapter {
     private String name;
 
     @Lob @Basic(fetch = FetchType.LAZY)
-    @Column(nullable = false, length = 67108864) // ~8 MB
+    @Column(nullable = false, length = 45000)
     private String text;
 
     @Column(length = 500)

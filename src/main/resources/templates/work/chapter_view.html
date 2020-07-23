@@ -266,16 +266,16 @@
                                     <div class="container-fluid comment-panel">
                                         <h4 th:text="${#authentication.getName()}" style="font-weight: bold">H</h4>
                                         <textarea class="form-control" id="comment" name="comment"
-                                                  rows="5" cols="20" maxlength="1000"
+                                                  rows="5" cols="20" maxlength="500"
                                                   th:placeholder="#{comment.form.placeholder}"
-                                                  onkeyup="textCounter(this, 'commentCounter', 1000)"
+                                                  onkeyup="textCounter(this, 'commentCounter', 500)"
                                         ></textarea>
 
                                         <div class="row" style="margin-top: 10px; vertical-align: center">
                                             <div class="col-sm-2">
                                                 <label for="commentCounter" th:text="#{signup.characters_left}"
                                                        style="font-weight: normal;">Left</label>
-                                                <input disabled  maxlength="4" size="4" value="1000" id="commentCounter" style="color: #3f1d5a;">
+                                                <input disabled  maxlength="4" size="4" value="500" id="commentCounter" style="color: #3f1d5a;">
                                             </div>
                                             <div class="col-sm-8">
                                                 <div id="emptyCommentAlert" class="alert alert-danger"

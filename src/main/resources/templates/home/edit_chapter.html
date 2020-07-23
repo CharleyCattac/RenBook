@@ -68,7 +68,7 @@
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown"
                            style="cursor: pointer"
-                           th:text="${#authentication.principal.username}">
+                           th:text="${#authentication.getName()}">
                             Username
                             <span class="caret"></span>
                         </a>
@@ -113,13 +113,13 @@
                             <div class="form-group">
                                 <label for="chapterText" th:text="#{home.add_chapter.text}">Username</label>
                                 <textarea class="form-control textarea-big" id="chapterText" name="chapterText"
-                                          cols="20" maxlength="67108864" contenteditable="true" required
-                                          onkeyup="textCounter(this, 'chapterTextCounter', 67108864)"
+                                          cols="20" maxlength="45000" contenteditable="true" required
+                                          onkeyup="textCounter(this, 'chapterTextCounter', 45000)"
                                           oninput="auto_grow(this)"
                                 ><th:block th:text="${editChapter.getText()}">R</th:block></textarea>
                                 <label for="chapterTextCounter" th:text="#{signup.characters_left}"
                                        style="font-weight: normal">Left</label>
-                                <input disabled  maxlength="9" size="9" value="67108864" id="chapterTextCounter">
+                                <input disabled  maxlength="9" size="9" value="45000" id="chapterTextCounter">
                             </div>
 
                             <div class="form-group">
