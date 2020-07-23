@@ -79,11 +79,7 @@ public class EntityToDtoConverter {
     }
 
     public static WorkDtoFull convertWorkFull(Work work) {
-        List<String> fandomList = new ArrayList<>();
         List<String> tagList = new ArrayList<>();
-        for (Fandom fandom : work.getFandoms()) {
-            fandomList.add(fandom.getName());
-        }
         for (Tag tag : work.getTags()) {
             tagList.add(tag.getName());
         }
@@ -103,6 +99,7 @@ public class EntityToDtoConverter {
                 .assessmentCount(0)
                 .averageAssessment(0.0)
                 .chapters(convertChapterList(work.getContent()))
+                .comments(convertCommentList(work.getComments()))
                 .wordsCount(0) //todo add words counting
                 .lastUpdateMillis(work.getLastUpdateMillis())
                 .build();
@@ -123,7 +120,6 @@ public class EntityToDtoConverter {
                 .name(chapter.getName())
                 .text(chapter.getText())
                 .notes(chapter.getNotes())
-                .comments(convertCommentList(chapter.getComments()))
                 .postTimeMillis(chapter.getPostTimeMillis())
                 .build();
     }

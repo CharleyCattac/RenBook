@@ -134,8 +134,8 @@ public class WorksController {
             model.addAttribute(ERROR, ERROR);
             return WORKS_URL;
         }
-        model.addAttribute(VIEWED_WORK, convertWorkBasic(work));
-        commentService.reorderComments(chapter);
+        commentService.reorderComments(work);
+        model.addAttribute(VIEWED_WORK, convertWorkFull(work));
         model.addAttribute(VIEWED_CHAPTER, convertChapter(chapter));
         if (work.getContent().size() > 1) {
             int chapterIndex = work.getContent().indexOf(chapter);

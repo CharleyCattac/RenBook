@@ -132,25 +132,26 @@ public class WorkService {
         return null;
     }
 
-    public Integer countAllNonEmptyWorks() {
-        int nonEmptyWorksCount = 0;
-        List<Work> workList = workRepository.findAll();
-        for (Work work : workList) {
-            if (!work.getContent().isEmpty()) {
-                nonEmptyWorksCount++;
-            }
+    public Page<Work> findAllNonemptyByAuthor(User author, int pageNumber) {
+        if (author != null) {
+            Pageable workRequest = PageRequest.of(pageNumber, WORKS_PER_PAGE, Sort.by(SORT_PARAM_LAST_UPDATE).descending());
+            return workRepository.findAllByAuthorAndContentNotNull(author, workRequest);
         }
-        return nonEmptyWorksCount;
+        return null;
+    }
+
+    public Integer countAllNonEmptyWorks() {
+        return workRepository.countAllByContentNotNull();
     }
 
     public List<Work> findTop5ByLastUpdate() {
         Pageable workRequest = PageRequest.of(0, 5, Sort.by(SORT_PARAM_LAST_UPDATE).descending());
-        return workRepository.findAllBy(workRequest).getContent();
+        return workRepository.findAllByContentNotNull(workRequest).getContent();
     }
 
     public Page<Work> findAllByLastUpdate(int pageNumber) {
         Pageable workRequest = PageRequest.of(pageNumber, WORKS_PER_PAGE, Sort.by(SORT_PARAM_LAST_UPDATE).descending());
-        return workRepository.findAllBy(workRequest);
+        return workRepository.findAllByContentNotNull(workRequest);
     }
 
     public Work findByName(String name) {

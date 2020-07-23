@@ -15,7 +15,6 @@ public class ChapterDto {
     private String name;
     private String text;
     private String notes;
-    private List<CommentDto> comments;
 
     private Long postTimeMillis;
 }

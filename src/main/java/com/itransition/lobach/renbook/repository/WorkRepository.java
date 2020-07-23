@@ -10,12 +10,17 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WorkRepository extends JpaRepository<Work, Long> {
 
+    int countAllByContentNotNull();
     // find by work name (unique)
     Work findByName(String name);
     // returns all works
     Page<Work> findAllBy(Pageable pageable);
+    // returns all nonempty works
+    Page<Work> findAllByContentNotNull(Pageable pageable);
     // returns all works, which belong to a particular user
     Page<Work> findAllByAuthor(User author, Pageable pageable);
+    // returns all works, which belong to a particular user
+    Page<Work> findAllByAuthorAndContentNotNull(User author, Pageable pageable);
 
     // returns all works on a particular fandom
 

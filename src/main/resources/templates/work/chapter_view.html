@@ -171,15 +171,15 @@
                                 <div class="col-sm-6">
                                     <p>
                                         <h4 th:text="#{home.add_fic.description} + ':'" style="font-weight: bold">H</h4>
-                                        <p th:text="${viewedWork.getDescription()}" id="description">
+                                        <div class="text-output" th:text="${viewedWork.getDescription()}" id="description">
                                             Type
-                                        </p>
+                                        </div>
                                     </p>
                                     <p>
                                         <h4 th:text="#{home.add_fic.comment} + ':'" style="font-weight: bold">H</h4>
-                                        <p th:text="${viewedWork.getComment()}">
+                                        <div class="text-output" th:text="${viewedWork.getComment()}">
                                             Type
-                                        </p>
+                                        </div>
                                     </p>
                                 </div>
                             </div>
@@ -223,12 +223,12 @@
                         <div class="container-fluid">
                             <h4 th:text="#{comment.comments} + ':'" style="font-weight: bold">H</h4>
 
-                            <th:block th:if="${viewedChapter.getComments().size() == 0}">
+                            <th:block th:if="${viewedWork.getComments().size() == 0}">
                                 <p id="noComments" th:text="#{comment.comments.empty}">C</p>
                             </th:block>
 
-                            <th:block th:unless="${viewedChapter.getComments().size() == 0}">
-                                <div class="comment-item" th:each="comment : ${viewedChapter.getComments()}"
+                            <th:block th:unless="${viewedWork.getComments().size() == 0}">
+                                <div class="comment-item" th:each="comment : ${viewedWork.getComments()}"
                                      th:id="'comment_' + ${comment.getId()}">
                                     <div class="container-fluid">
                                         <div class="comment-head">

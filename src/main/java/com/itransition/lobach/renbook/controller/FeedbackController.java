@@ -49,9 +49,8 @@ public class FeedbackController {
         }
 
         Work work = workService.findByName(comment.getWorkName());
-        Chapter chapter = chapterService.findByWorkAndName(work, comment.getChapterName());
         User author = userService.findUserByUsername(principal.getName());
-        Comment newComment = commentService.addNewComment(chapter, author, comment.getCommentText(), null);
+        Comment newComment = commentService.addNewComment(work, author, comment.getCommentText(), null);
 
         createUrl(comment, commentService.buildCommentFor(MessagePurpose.ADD.name().toLowerCase(), newComment));
     }
@@ -64,7 +63,7 @@ public class FeedbackController {
         Comment comment = commentService.findById(incoming.getCommentId());
         if (securityHelper.isUserAdmin(sender)
             || comment.getAuthor().getUsername().equals(sender.getUsername())
-            || comment.getChapter().getWork().getAuthor().getUsername().equals(sender.getUsername())) {
+            || comment.getWork().getAuthor().getUsername().equals(sender.getUsername())) {
             commentService.deleteComment(comment);
         } else {
             return;
@@ -74,7 +73,7 @@ public class FeedbackController {
     }
 
     private void createUrl(CommentIncoming comment, CommentOutcoming outcoming) {
-        if (comment.getChapterCount() == 1) {
+        if (comment.getChapterCount() == 1 || comment.getChapterName().equalsIgnoreCase("chapter")) {
             messagingTemplate.convertAndSend("/works/view/" + comment.getWorkName() + "?", outcoming);
         } else {
             messagingTemplate.convertAndSend("/works/view/" + comment.getWorkName() + "/" + comment.getChapterName() + "?", outcoming);

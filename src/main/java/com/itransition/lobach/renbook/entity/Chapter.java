@@ -32,8 +32,5 @@ public class Chapter {
     @JoinColumn(name = "work_id", referencedColumnName = "id")
     private Work work = new Work();
 
-    @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
-    private List<Comment> comments;
-
     private Long postTimeMillis;
 }

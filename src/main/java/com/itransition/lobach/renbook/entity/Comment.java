@@ -18,8 +18,8 @@ public class Comment {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "chapter_id", referencedColumnName = "id")
-    private Chapter chapter;
+    @JoinColumn(name = "work_id", referencedColumnName = "id")
+    private Work work;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id", referencedColumnName = "id")

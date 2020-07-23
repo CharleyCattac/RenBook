@@ -17,29 +17,29 @@ public class CommentService {
     @Autowired
     private CommentRepository commentRepository;
 
-    public Comment addNewComment(Chapter chapter,
+    public Comment addNewComment(Work work,
                                  User author,
                                  String commentText,
                                  Comment receiver) {
-        return saveComment(null, chapter, author, commentText, receiver);
+        return saveComment(null, work, author, commentText, receiver);
     }
 
     public Comment updateComment(Comment comment,
                                  User author,
                                  String commentText,
                                  Comment receiver) {
-        return saveComment(comment, comment.getChapter(), author, commentText, receiver);
+        return saveComment(comment, comment.getWork(), author, commentText, receiver);
     }
 
     private Comment saveComment(Comment comment,
-                               Chapter chapter,
+                               Work work,
                                User author,
                                String commentText,
                                Comment receiver) {
         if (author != null && !commentText.isBlank()) {
             if (comment == null) {
                 comment = Comment.builder()
-                        .chapter(chapter)
+                        .work(work)
                         .author(author)
                         .text(commentText)
                         //.receiver(receiver)
@@ -77,13 +77,7 @@ public class CommentService {
         return null;
     }
 
-    public void reorderComments(Chapter chapter) {
-        chapter.setComments(commentRepository.findAllByChapterOrderByPostTimeMillisAsc(chapter));
-    }
-
     public void reorderComments(Work work) {
-        for (Chapter chapter : work.getContent()) {
-            chapter.setComments(commentRepository.findAllByChapterOrderByPostTimeMillisAsc(chapter));
-        }
+        work.setComments(commentRepository.findAllByWorkOrderByPostTimeMillisAsc(work));
     }
 }

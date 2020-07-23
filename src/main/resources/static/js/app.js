@@ -54,7 +54,7 @@ function deleteComment(commentId) {
             'commentId': commentId,
             'workName': $("#workName").val(),
             'chapterName': $("#chapterName").val(),
-            'chapterCount': $("#chapterCount").val(),
+            'chapterCount': $("#chapterCount").val()
         }
     ));
 }

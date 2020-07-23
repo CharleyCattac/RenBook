@@ -29,6 +29,7 @@ public class WorkDtoFull {
     protected String language;
 
     private List<ChapterDto> chapters;
+    private List<CommentDto> comments;
     protected Integer wordsCount;
 
     private Long lastUpdateMillis;

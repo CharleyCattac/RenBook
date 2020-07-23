@@ -172,15 +172,15 @@
                             <div class="col-sm-6">
                                 <p>
                                     <h4 th:text="#{home.add_fic.description} + ':'" style="font-weight: bold">H</h4>
-                                    <p th:text="${viewedWork.getDescription()}" id="description">
+                                    <div class="text-output" th:text="${viewedWork.getDescription()}" id="description">
                                         Type
-                                    </p>
+                                    </div>
                                 </p>
                                 <p>
                                     <h4 th:text="#{home.add_fic.comment} + ':'" style="font-weight: bold">H</h4>
-                                    <p th:text="${viewedWork.getComment()}">
+                                    <div class="text-output" th:text="${viewedWork.getComment()}">
                                         Type
-                                    </p>
+                                    </div>
                                 </p>
                             </div>
                         </div>
@@ -217,17 +217,17 @@
                     </div>
                 </div>
                 <!-- comments -->
-                <th:block th:if="${viewedWork.getChapters().size() == 1}">
+                <th:block th:if="${viewedWork.getChapters().size() > 0}">
                     <div class="item-panel item-panel-light">
                         <div class="container-fluid">
                             <h3 th:text="#{comment.comments} + ':'" style="font-weight: bold">H</h3>
 
-                            <th:block th:if="${viewedWork.getChapters().get(0).getComments().size() == 0}">
+                            <th:block th:if="${viewedWork.getComments().size() == 0}">
                                 <p id="noComments" th:text="#{comment.comments.empty}">C</p>
                             </th:block>
 
-                            <th:block th:unless="${viewedWork.getChapters().get(0).getComments().size() == 0}">
-                                <div class="comment-item" th:each="comment : ${viewedWork.getChapters().get(0).getComments()}"
+                            <th:block th:unless="${viewedWork.getComments().size() == 0}">
+                                <div class="comment-item" th:each="comment : ${viewedWork.getComments()}"
                                      th:id="'comment_' + ${comment.getId()}">
                                     <div class="container-fluid">
                                         <div class="comment-head">
@@ -237,9 +237,9 @@
                                                 <div class="col-sm-4 secondary-text"
                                                      th:text="${#dates.format(new java.util.Date(comment.getPostTime()), 'dd.MM.YYYY HH:mm:ss')}"></div>
                                                 <div class="col-sm-1">
-                                                    <span class="secondary-text close" th:id="'span_' + ${comment.getId()}"
-                                                          style="float: right"
-                                                          sec:authorize="isAuthenticated()">X</span>
+                                                <span class="secondary-text close" th:id="'span_' + ${comment.getId()}"
+                                                      style="float: right"
+                                                      sec:authorize="isAuthenticated()">X</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -288,8 +288,8 @@
                                         </div>
 
                                         <input type="hidden" id="workName" th:value="${viewedWork.getName()}">
-                                        <input type="hidden" id="chapterCount" th:value="1">
-                                        <input type="hidden" id="chapterName" th:value="${viewedWork.getChapters().get(0).getName()}">
+                                        <input type="hidden" id="chapterCount" th:value="${viewedWork.getChapters().size()}">
+                                        <input type="hidden" id="chapterName" th:value="chapter">
                                     </div>
                                 </form>
                                 <script>
@@ -311,14 +311,7 @@
                         </div>
                     </div>
                 </th:block>
-                <th:block th:if="${viewedWork.getChapters().size() > 1}">
-                    <!-- LATER I'LL DO REVIEWS I PROMISE -->
-                    <!--<div class="item-panel item-panel-light">
-                        <div class="container-fluid">
-                            <h4 th:text="#{comment.comments} + ':'" style="font-weight: bold">H</h4>
-                        </div>
-                    </div>-->
-                </th:block>
+
             </th:block>
         </div>
     </div>
