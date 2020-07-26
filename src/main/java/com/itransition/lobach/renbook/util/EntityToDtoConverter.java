@@ -46,11 +46,15 @@ public class EntityToDtoConverter {
     }
 
     public static WorkDtoBasic convertWorkBasic(Work work) {
-        List<String> fandomList = new ArrayList<>();
+        double totalAssess = 0.0;
+        double avfAssess = 0.0;
         List<String> tagList = new ArrayList<>();
         List<String> chapterList = new ArrayList<>();
-        for (Fandom fandom : work.getFandoms()) {
-            fandomList.add(fandom.getName());
+        if (!work.getAssessmentList().isEmpty()) {
+            for (Assessment assessment : work.getAssessmentList()) {
+                totalAssess += assessment.getValue();
+            }
+            avfAssess = totalAssess / work.getAssessmentList().size();
         }
         for (Tag tag : work.getTags()) {
             tagList.add(tag.getName());
@@ -71,15 +75,23 @@ public class EntityToDtoConverter {
                 .comment(work.getComment())
                 .language(work.getLanguage())
                 .tags(tagList)
-                .assessmentCount(0)
-                .averageAssessment(0.0)
+                .assessmentCount(work.getAssessmentList().size())
+                .averageAssessment(avfAssess)
                 .chapters(chapterList)
                 .wordsCount(0) //todo add words counting
                 .build();
     }
 
     public static WorkDtoFull convertWorkFull(Work work) {
+        double totalAssess = 0.0;
+        double avfAssess = 0.0;
         List<String> tagList = new ArrayList<>();
+        if (!work.getAssessmentList().isEmpty()) {
+            for (Assessment assessment : work.getAssessmentList()) {
+                totalAssess += assessment.getValue();
+            }
+            avfAssess = totalAssess / work.getAssessmentList().size();
+        }
         for (Tag tag : work.getTags()) {
             tagList.add(tag.getName());
         }
@@ -96,8 +108,8 @@ public class EntityToDtoConverter {
                 .comment(work.getComment())
                 .language(work.getLanguage())
                 .tags(tagList)
-                .assessmentCount(0)
-                .averageAssessment(0.0)
+                .assessmentCount(work.getAssessmentList().size())
+                .averageAssessment(avfAssess)
                 .chapters(convertChapterList(work.getContent()))
                 .comments(convertCommentList(work.getComments()))
                 .wordsCount(0) //todo add words counting

@@ -22,8 +22,13 @@ function connect(stompClient, workName, chapterName) {
         subscribePostfix = subscribePostfix + '?';
         console.log('subscribe postfix: ' + subscribePostfix);
         stompClient.subscribe(subscribePostfix, function (comment) {
-            processJsonComment(comment)
+            processJsonResponse(comment)
         });
+        if (chapterName === "") {
+            stompClient.subscribe('/works/view/' + $("#principal").val() + '/' + workName + '?', function (comment) {
+                processJsonResponse(comment)
+            });
+        }
     });
     return stompClient;
 }
@@ -59,25 +64,43 @@ function deleteComment(commentId) {
     ));
 }
 
-function processJsonComment(comment) {
-    //console.log('comment body: ' + comment);
-    if (comment != null) {
-        console.log('arrived json: ' + comment.body);
-        var purpose = JSON.parse(comment.body).purpose;
+function giveAssessment(assessment) {
+    var authorName = $("#authorName").val();
+    var principalName = $("#principal").val();
+    if (authorName === principalName) {
+        document.getElementById('assess_info').style = "";
+        return;
+    }
+    stompClient.send("/dst/assessment", {}, JSON.stringify({
+            'value': assessment,
+            'workName': $("#workName").val()
+        }
+    ));
+}
+
+function processJsonResponse(response) {
+    //console.log('response body: ' + response);
+    if (response != null) {
+        console.log('arrived json: ' + response.body);
+        var purpose = JSON.parse(response.body).purpose;
         if (purpose === 'add') {
-            document.getElementById('newComments').appendChild(createNewComment(JSON.parse(comment.body).id,
-                JSON.parse(comment.body).authorName,
-                JSON.parse(comment.body).postTime,
-                JSON.parse(comment.body).text));
+            document.getElementById('newComments').appendChild(createNewComment(JSON.parse(response.body).id,
+                JSON.parse(response.body).authorName,
+                JSON.parse(response.body).postTime,
+                JSON.parse(response.body).text));
             if (document.getElementById('noComments') !== null) {
                 document.getElementById('noComments').style.display = "none";
             }
-        } if (purpose === 'delete') {
-            console.log('comment deleted: ' + comment.body);
-            document.getElementById('comment_' + JSON.parse(comment.body).id).remove();
+        } else if (purpose === 'delete') {
+            console.log('response deleted: ' + response.body);
+            document.getElementById('comment_' + JSON.parse(response.body).id).remove();
+        } else if (purpose === 'ass_suc') {
+            console.log('assessment successful');
+            document.getElementById('assess_success').style = "";
+            //document.getElementById('u_').style = "";
         }
     } else {
-        $("#newComments").append("<p>NULL COMMENT RECEIVED</p>");
+        //$("#err").append("<p>NULL COMMENT RECEIVED</p>");
     }
 }
 
@@ -97,18 +120,18 @@ function createNewComment(commentId, authorName, postTime, commentText) {
     rowDiv.style.paddingLeft = "5px";
 
     var authorNameDiv = document.createElement("DIV");
-    authorNameDiv.setAttribute("class", "col-sm-7 primary-text");
+    authorNameDiv.setAttribute("class", "col-sm-7 primary-text-comment");
     authorNameDiv.textContent = authorName;
 
     var dateTimeDiv = document.createElement("DIV");
-    dateTimeDiv.setAttribute("class", "col-sm-4 secondary-text");
+    dateTimeDiv.setAttribute("class", "col-sm-4 secondary-text-comment");
     dateTimeDiv.textContent = moment(postTime).format('DD.MM.YYYY HH:mm:ss');
 
     var spanDiv = document.createElement("DIV");
     spanDiv.setAttribute("class", "col-sm-1");
     var deleteSpan = document.createElement('SPAN');
     deleteSpan.id = 'span_' + commentId;
-    deleteSpan.className = 'secondary-text close';
+    deleteSpan.className = 'secondary-text-comment close';
     deleteSpan.style.float = "right";
     deleteSpan.textContent = 'X';
     deleteSpan.setAttribute('sec:authorize', "isAuthenticated()");

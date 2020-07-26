@@ -3,7 +3,6 @@ package com.itransition.lobach.renbook.service;
 import com.itransition.lobach.renbook.entity.*;
 import com.itransition.lobach.renbook.enums.*;
 import com.itransition.lobach.renbook.repository.WorkRepository;
-import com.itransition.lobach.renbook.util.SecurityHelper;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -127,7 +126,7 @@ public class WorkService {
     public Page<Work> findAllByAuthor(User author, int pageNumber) {
         if (author != null) {
             Pageable workRequest = PageRequest.of(pageNumber, WORKS_PER_PAGE, Sort.by(SORT_PARAM_LAST_UPDATE).descending());
-            return workRepository.findAllByAuthor(author, workRequest);
+            return workRepository.findDistinctByAuthor(author, workRequest);
         }
         return null;
     }
@@ -135,23 +134,33 @@ public class WorkService {
     public Page<Work> findAllNonemptyByAuthor(User author, int pageNumber) {
         if (author != null) {
             Pageable workRequest = PageRequest.of(pageNumber, WORKS_PER_PAGE, Sort.by(SORT_PARAM_LAST_UPDATE).descending());
-            return workRepository.findAllByAuthorAndContentNotNull(author, workRequest);
+            return workRepository.findDistinctByAuthorAndContentNotNull(author, workRequest);
         }
         return null;
     }
 
     public Integer countAllNonEmptyWorks() {
-        return workRepository.countAllByContentNotNull();
+        return workRepository.countDistinctByContentNotNull();
     }
 
     public List<Work> findTop5ByLastUpdate() {
         Pageable workRequest = PageRequest.of(0, 5, Sort.by(SORT_PARAM_LAST_UPDATE).descending());
-        return workRepository.findAllByContentNotNull(workRequest).getContent();
+        return workRepository.findDistinctByContentNotNull(workRequest).getContent();
     }
 
     public Page<Work> findAllByLastUpdate(int pageNumber) {
         Pageable workRequest = PageRequest.of(pageNumber, WORKS_PER_PAGE, Sort.by(SORT_PARAM_LAST_UPDATE).descending());
-        return workRepository.findAllByContentNotNull(workRequest);
+        return workRepository.findDistinctByContentNotNull(workRequest);
+    }
+
+    public List<Work> findTop5ByAssessment() {
+        Pageable workRequest = PageRequest.of(0, 5);
+        return workRepository.findDistinctByContentNotNullOrderByAvgAssessment(workRequest).getContent();
+    }
+
+    public Page<Work> findAllByAssessment(int pageNumber) {
+        Pageable workRequest = PageRequest.of(pageNumber, WORKS_PER_PAGE);
+        return workRepository.findDistinctByContentNotNullOrderByAvgAssessment(workRequest);
     }
 
     public Work findByName(String name) {

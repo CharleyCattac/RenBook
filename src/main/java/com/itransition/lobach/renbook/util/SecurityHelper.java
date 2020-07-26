@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,7 +22,12 @@ public class SecurityHelper {
     private RoleService roleService;
 
     public User getLoggedUser() {
-        org.springframework.security.core.userdetails.User author = (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        org.springframework.security.core.userdetails.User author;
+        try {
+            author = (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        } catch (RuntimeException e) {
+            return null;
+        }
         String loggedUserName = author.getUsername();
         return userService.findUserByUsername(loggedUserName);
     }

@@ -35,3 +35,7 @@
 form {
     display: inline-block;
 }
+
+.checked {
+    color: orange;
+}

@@ -1,20 +1,25 @@
 package com.itransition.lobach.renbook.controller;
 
+import com.itransition.lobach.renbook.entity.Assessment;
 import com.itransition.lobach.renbook.entity.Chapter;
+import com.itransition.lobach.renbook.entity.User;
 import com.itransition.lobach.renbook.entity.Work;
 import com.itransition.lobach.renbook.enums.FandomType;
 import com.itransition.lobach.renbook.service.*;
 import com.itransition.lobach.renbook.util.EntityToDtoConverter;
 import com.itransition.lobach.renbook.util.MessageManager;
+import com.itransition.lobach.renbook.util.SecurityHelper;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.security.Principal;
 import java.util.List;
 
 import static com.itransition.lobach.renbook.constants.PathConstants.*;
@@ -27,6 +32,9 @@ import static com.itransition.lobach.renbook.util.EntityToDtoConverter.*;
 @Controller
 @RequestMapping(value = "/works")
 public class WorksController {
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private WorkService workService;
@@ -42,6 +50,9 @@ public class WorksController {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private AssessmentService assessmentService;
 
     @GetMapping
     public String showWorks(Model model) {
@@ -93,6 +104,49 @@ public class WorksController {
         return WORK_UPDATE_URL;
     }
 
+    @GetMapping(value = "/popular")
+    public String showWorksByAssessment(Model model) {
+        int pageNumInt = 0;
+        Page<Work> workPage = workService.findAllByAssessment(pageNumInt);
+        model.addAttribute(PAGE_COUNT, workPage.getTotalPages());
+        model.addAttribute(CUR_PAGE,1);
+        if (1 < workPage.getTotalPages()) {
+            model.addAttribute(NEXT_PAGE,2);
+        }
+        List<Work> works = workPage.toList();
+        model.addAttribute(ALL_WORKS, EntityToDtoConverter.convertWorkBasicList(works));
+        model.addAttribute(WORKS_SORT_SUBJECT, "popular");
+
+        return WORK_UPDATE_URL;
+    }
+
+    @GetMapping(value = "/popular/{pageNumber}")
+    public String showWorksByAssessment(@PathVariable(name = "pageNumber") String pageNumber,
+                                    Model model) {
+        int pageNumInt = 1;
+        if (pageNumber != null) {
+            try {
+                pageNumInt = Integer.parseInt(pageNumber);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        Page<Work> workPage = workService.findAllByAssessment(pageNumInt - 1);
+        model.addAttribute(PAGE_COUNT, workPage.getTotalPages());
+        model.addAttribute(CUR_PAGE,1);
+        if (pageNumInt > 1) {
+            model.addAttribute(PREV_PAGE,pageNumInt - 1);
+        }
+        model.addAttribute(CUR_PAGE, pageNumInt);
+        if (pageNumInt < workPage.getTotalPages()) {
+            model.addAttribute(NEXT_PAGE,pageNumInt + 1);
+        }
+        List<Work> works = workPage.toList();
+        model.addAttribute(ALL_WORKS, EntityToDtoConverter.convertWorkBasicList(works));
+        model.addAttribute(WORKS_SORT_SUBJECT, "popular");
+
+        return WORK_UPDATE_URL;
+    }
+
     @GetMapping(value = "/{fandom_type}")
     public String showFandomsByFandomType(@PathVariable("fandom_type") String fandomType,
                                         Model model) {
@@ -113,6 +167,7 @@ public class WorksController {
 
     @GetMapping(value = "/view/{workName}")
     public String showWork(@PathVariable("workName") String workName,
+                           @AuthenticationPrincipal Principal principal,
                            Model model) {
         Work work = workService.findByName(workName);
         if (work == null) {
@@ -121,6 +176,13 @@ public class WorksController {
         }
         commentService.reorderComments(work);
         model.addAttribute(VIEWED_WORK, convertWorkFull(work));
+        if (principal != null) {
+            User loggedUser = userService.findUserByUsername(principal.getName());
+            Assessment assessment = assessmentService.findByUserAndWork(loggedUser, work);
+            if (assessment != null) {
+                model.addAttribute(USER_ASSESSMENT, assessment.getValue());
+            }
+        }
         return WORK_VIEW_URL;
     }
 

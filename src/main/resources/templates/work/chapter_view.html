@@ -15,6 +15,18 @@
     <script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <!-- Add icon library for stars-->
+    <!-- default styles -->
+    <!--<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" rel="stylesheet">-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-star-rating/4.0.6/css/star-rating.min.css" media="all" rel="stylesheet" type="text/css" />
+    <!-- optionally if you need to use a theme, then include the theme CSS file as mentioned below -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-star-rating/4.0.6/themes/krajee-svg/theme.css" media="all" rel="stylesheet" type="text/css" />
+    <!-- important mandatory libraries -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-star-rating/4.0.6/js/star-rating.min.js" type="text/javascript"></script>
+    <!-- optionally if you need to use a theme, then include the theme JS file as mentioned below -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-star-rating/4.0.6/themes/krajee-svg/theme.js"></script>
+
     <!-- Local css -->
     <link rel="stylesheet" type="text/css" href="/css/base/background.css">
     <link rel="stylesheet" type="text/css" href="/css/base/main_panel.css">
@@ -24,6 +36,7 @@
     <link rel="stylesheet" type="text/css" href="/css/input/textareas.css">
     <link rel="stylesheet" type="text/css" href="/css/items/work_item.css">
     <link rel="stylesheet" type="text/css" href="/css/items/comment_item.css">
+    <link rel="stylesheet" type="text/css" href="/css/typo/fic_typo.css">
     <!-- Scripts -->
     <script src="/js/moment.min.js"></script>
     <script src="/js/app.js"></script>
@@ -113,7 +126,31 @@
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col-sm-6">
-                                    <h3 th:text="${viewedWork.getName()}" style="margin-top: -0.01%; font-weight: bold">L</h3>
+                                    <div class="work-element row" style="display: inline-flex">
+                                        <h3 class="text-output" th:text="${viewedWork.getName()}"
+                                            style="margin-top: -0.01%; font-weight: bold">L</h3>
+                                        <div class="row" style="display: inline-flex; margin-left: 10px; margin-top: -3px; vertical-align: middle">
+                                            <input name="u_" id="u_" type="text" class="rating"
+                                                   th:value="${viewedWork.getAverageAssessment()}">
+                                            <input type="hidden" name="uas_" id="uas_"
+                                                   th:value="${viewedWork.getAssessmentCount()}">
+                                            <script>
+                                                // initialize with defaults
+                                                $('input[name^="u_"]').rating({
+                                                    size: 'sm',
+                                                    step: 0.1,
+                                                    displayOnly: true,
+                                                    showCaption: false,
+                                                    /*defaultCaption: '(' + $('input[name="uas_"]').val() + ')'*/
+                                                });
+                                            </script>
+                                            <th:block th:if="${viewedWork.getAssessmentCount() >= 0}">
+                                                <div class="secondary-text-work"
+                                                     style="margin-left: 5px; margin-top: -4px; vertical-align: middle"
+                                                     th:text="'(' + ${viewedWork.getAssessmentCount()} + ')'">a</div>
+                                            </th:block>
+                                        </div>
+                                    </div>
                                     <p class="work-element" style="margin-top: -0.5%; margin-bottom: -1%">
                                         <label for="category" th:text="#{work.author} + ':'">F</label>
                                         <a th:text="${viewedWork.getAuthorName()}" id="author">Type</a>
@@ -233,12 +270,12 @@
                                     <div class="container-fluid">
                                         <div class="comment-head">
                                             <div class="row" style="padding-left: 5px">
-                                                <div class="col-sm-7 primary-text"
+                                                <div class="col-sm-7 primary-text-comment"
                                                      th:text="${comment.getAuthorName()}">f</div>
-                                                <div class="col-sm-4 secondary-text"
+                                                <div class="col-sm-4 secondary-text-comment"
                                                      th:text="${#dates.format(new java.util.Date(comment.getPostTime()), 'dd.MM.YYYY HH:mm:ss')}"></div>
                                                 <div class="col-sm-1">
-                                                    <span class="secondary-text close" th:id="'span_' + ${comment.getId()}"
+                                                    <span class="secondary-text-comment close" th:id="'span_' + ${comment.getId()}"
                                                           style="float: right"
                                                           sec:authorize="isAuthenticated()">X</span>
                                                 </div>

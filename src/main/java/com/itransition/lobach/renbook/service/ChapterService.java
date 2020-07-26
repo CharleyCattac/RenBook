@@ -35,19 +35,21 @@ public class ChapterService {
                                 String notes) {
         if (!chapterName.isBlank() && !chapterText.isBlank() && work != null) {
             if (chapter == null) {
-                return chapterRepository.save(Chapter.builder()
+                chapter = Chapter.builder()
                         .work(work)
                         .name(chapterName)
                         .text(chapterText)
                         .notes(notes)
                         .postTimeMillis(System.currentTimeMillis())
-                        .build());
+                        .build();
             } else {
                 chapter.setName(chapterName);
                 chapter.setText(chapterText);
                 chapter.setNotes(notes);
-                return chapterRepository.save(chapter);
+                chapter.setPostTimeMillis(System.currentTimeMillis());
             }
+            work.setLastUpdateMillis(chapter.getPostTimeMillis());
+            return chapterRepository.save(chapter);
         }
         return null;
     }

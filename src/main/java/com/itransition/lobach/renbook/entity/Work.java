@@ -61,5 +61,8 @@ public class Work {
     @OneToMany(mappedBy = "work", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
+    @OneToMany(mappedBy = "work", cascade = CascadeType.ALL)
+    private List<Assessment> assessmentList;
+
     private Long lastUpdateMillis;
 }

@@ -5,19 +5,28 @@
 <head>
     <title th:text="#{navbar.home}">Title</title>
     <!-- For bootstrap -->
-<!--
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
--->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <!-- default styles -->
+    <!--<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" rel="stylesheet">-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-star-rating/4.0.6/css/star-rating.min.css" media="all" rel="stylesheet" type="text/css" />
+    <!-- optionally if you need to use a theme, then include the theme CSS file as mentioned below -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-star-rating/4.0.6/themes/krajee-svg/theme.css" media="all" rel="stylesheet" type="text/css" />
+    <!-- important mandatory libraries -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-star-rating/4.0.6/js/star-rating.min.js" type="text/javascript"></script>
+    <!-- optionally if you need to use a theme, then include the theme JS file as mentioned below -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-star-rating/4.0.6/themes/krajee-svg/theme.js"></script>
     <!-- Local css -->
     <link rel="stylesheet" type="text/css" href="/css/base/background.css">
     <link rel="stylesheet" type="text/css" href="/css/base/main_panel.css">
     <link rel="stylesheet" type="text/css" href="/css/base/nav.css">
     <link rel="stylesheet" type="text/css" href="/css/input/links.css">
     <link rel="stylesheet" type="text/css" href="/css/items/work_item.css">
+    <link rel="stylesheet" type="text/css" href="/css/typo/fic_typo.css">
     <!-- Script to load navbar -->
     <!--<script src="js/csi.js"></script>-->
 
@@ -104,10 +113,177 @@
                    <p>Тот самый полнотекстовый поиск</p>
                </div>
                <!-- MOST POPULAR -->
-               <div class="container">
+               <div class="container-fluid">
                    <h2 th:text="#{mainpage.top.popular}">Топ-5(10) самых новых работ</h2>
-                   <p>Внизу ссылка на все работы с сортировкой по дате добавления</p>
-                   <p class="link link-light link-medium"><a href="#" th:text="#{mainpage.top.popular.all}">Та самая ссылка</a></p>
+                   <th:block th:if="${topWorksByAssessment != null}">
+                       <th:block th:if="${topWorksByAssessment.size() > 0}">
+                           <div th:each="work : ${topWorksByAssessment}">
+                               <div class="item-panel item-panel-light">
+                                   <div class="container-fluid">
+                                       <div class="row">
+                                           <div class="col-sm-11">
+                                               <div class="work-element row" style="margin-bottom: -1%; display: inline-flex">
+                                                   <form th:id="'1open_work_form' + ${work.getName()} + ${topWorksByUpdate.indexOf(work)}"
+                                                         th:action="'/works/view/' + ${work.getName()}" method="get">
+                                                       <a>
+                                                           <h3 class="link text-output" style="font-weight: bold; margin-top: 0"
+                                                               onclick="document.getElementById(this.parentNode.parentNode.id).submit(); return false;"
+                                                               th:text="${work.getName()}">submit</h3>
+                                                       </a>
+                                                   </form>
+                                                   <div class="row" style="display: inline-flex; margin-left: 10px; margin-top: -3px; vertical-align: middle">
+                                                       <input th:name="'u_' + ${topWorksByUpdate.indexOf(work)}" type="text" class="rating"
+                                                              th:value="${work.getAverageAssessment()}">
+                                                       <input type="hidden" th:name="'uas_' + ${topWorksByUpdate.indexOf(work)}"
+                                                              th:value="${work.getAssessmentCount()}">
+                                                       <script>
+                                                           // initialize with defaults
+                                                           $('input[name^="u_"]').rating({
+                                                               size: 'sm',
+                                                               step: 0.1,
+                                                               displayOnly: true,
+                                                               showCaption: false
+                                                           });
+                                                       </script>
+                                                       <th:block th:if="${work.getAssessmentCount() >= 0}">
+                                                           <div class="secondary-text-work"
+                                                                style="margin-left: 5px; margin-top: -4px; vertical-align: middle"
+                                                                th:text="'(' + ${work.getAssessmentCount()} + ')'">a</div>
+                                                       </th:block>
+                                                   </div>
+                                               </div>
+                                               <p class="work-element" style="margin-bottom: -1%">
+                                                   <label for="author" th:text="#{work.author} + ':'">F</label>
+                                                   <a th:text="${work.getAuthorName()}" id="author">Type</a>
+                                               </p>
+                                               <p class="work-element" style="margin-bottom: -1%">
+                                                   <label th:text="#{work.category.types.fandom} + ':'">F</label>
+                                                   <th:block th:if="${work.getFandomType().equals('ORIGINAL')}">
+                                                       <a th:text="#{work.category.types.original}"
+                                                          data-toggle="tooltip" data-placement="top" th:title="#{'work.category.types.' + ${work.getFandomType().toLowerCase()}}">Type</a>
+                                                   </th:block>
+                                                   <th:block th:unless="${work.getFandomType().equals('ORIGINAL')}">
+                                                       <a th:each="fandom : ${work.getFandoms()}"
+                                                          data-toggle="tooltip" data-placement="top" th:title="#{'work.category.types.' + ${fandom.getType().toLowerCase()}}">
+                                                           <th:block th:text="${fandom.getName()}">T</th:block>
+                                                       </a>
+                                                   </th:block>
+                                               </p>
+                                               <th:block th:if="${work.getTags().size() > 0}">
+                                                   <p class="work-element" style="margin-bottom: -1%">
+                                                       <label th:text="#{work.tags} + ':'">F</label>
+                                                       <a th:each="tag : ${work.getTags()}">
+                                                           <a th:text="${tag}">Tag</a>
+                                                       </a>
+                                                   </p>
+                                               </th:block>
+                                               <p class="work-element" style="margin-bottom: -1%">
+                                                   <label for="category" th:text="#{work.category}">F</label>
+                                                   <a th:text="#{'work.category.' + ${work.getCategory().toLowerCase()}}" id="category">Type</a>
+                                               </p>
+                                               <p class="work-element" style="margin-bottom: -1%">
+                                                   <label for="rating" th:text="#{work.rating}">F</label>
+                                                   <a th:text="${work.getRating()}" id="rating"
+                                                      data-toggle="tooltip" data-placement="right" th:title="#{'work.rating.' + ${work.getRating().toLowerCase()}}">
+                                                   </a>
+                                               </p>
+                                               <p class="work-element" style="margin-bottom: -1%">
+                                                   <label for="status" th:text="#{work.state}">F</label>
+                                                   <th:block th:if="${work.getStatus().equals('IN_PROGRESS')}">
+                                                       <a th:text="#{work.state.in_progress}" id="status" style="color: red">Type</a>
+                                                   </th:block>
+                                                   <th:block th:if="${work.getStatus().equals('COMPLETE')}">
+                                                       <a th:text="#{work.state.complete}" id="status" style="color: green;">Type</a>
+                                                   </th:block>
+                                               </p>
+                                               <p class="work-element" style="margin-bottom: -1%">
+                                                   <label for="language" th:text="#{profile.language.label} + ':'">F</label>
+                                                   <a th:text="#{'profile.language.' + ${work.getLanguage().toLowerCase()}}" id="language">Type</a>
+                                               </p>
+                                               <div class="work-element" style="display: flex; ">
+                                                   <div sec:authorize="hasAuthority('ADMIN')">
+                                                       <label for="chapters" th:text="#{home.works.chapters} + ':'">F</label>
+                                                       <div class="column" style="margin-left:2%;">
+                                                           <form th:id="'add_chapter_form' + ${work.getName()}" th:action="'/home/works/' + ${work.getName()} + '/add'" method="get">
+                                                               <a class="link" onclick="document.getElementById(this.parentNode.id).submit(); return false;"
+                                                                  th:text="#{home.works.add_chapter}">submit</a>
+                                                           </form>
+                                                           <div class="row" id="chapters" th:each="chapter : ${work.getChapters()}" style="margin-left: 1%; width: max-content">
+                                                               <form th:id="'1show_chapter_form' + ${work.getName()} + '/' + ${chapter}"
+                                                                     th:action="'/works/view/' + ${work.getName()} + '/' + ${chapter}" method="get">
+                                                                   <a class="link" style="margin-right: 2%;"
+                                                                      onclick="document.getElementById(this.parentNode.id).submit(); return false;"
+                                                                      th:text="${chapter}">
+                                                                       S
+                                                                   </a>
+                                                               </form>
+                                                               <form th:id="'1edit_chapter_form' + ${work.getName()} + '/' + ${chapter}"
+                                                                     th:action="'/home/works/' + ${work.getName()} + '/' + ${chapter} + '/edit'" method="get">
+                                                                   <a class="link" onclick="document.getElementById(this.parentNode.id).submit(); return false;">
+                                                                       <svg width="15px" height="15px" viewBox="0 0 16 16" class="bi bi-pencil" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                                           <path fill-rule="evenodd" d="M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z"/>
+                                                                           <path fill-rule="evenodd" d="M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z"/>
+                                                                       </svg>
+                                                                   </a>
+                                                               </form>
+                                                               <form th:id="'1delete_chapter_form' + ${work.getName()} + '/' + ${chapter}"
+                                                                     th:action="'/home/works/' + ${work.getName()} + '/' + ${chapter} + '/delete'" method="post">
+                                                                   <a class="link" onclick="return formSubmitter(this.parentNode.id)">
+                                                                       <svg width="15px" height="15px" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                                           <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
+                                                                       </svg>
+                                                                   </a>
+                                                               </form>
+                                                           </div>
+                                                       </div>
+                                                   </div>
+                                                   <div sec:authorize="!hasAuthority('ADMIN')">
+                                                       <label for="size" th:text="#{work.size} + ':'">F</label>
+                                                       <label th:text="#{work.size.chapters} + ': ' + ${work.getChapters().size()} + ', ' + #{work.size.words} + ': ' + ${work.getWordsCount()}"
+                                                              id="size" style="font-weight: normal">Type</label>
+                                                   </div>
+                                               </div>
+                                               <p class="work-element text-element">
+                                               <p th:text="${work.getDescription()}" class="text-output" id="description">
+                                                   Type
+                                               </p>
+                                               </p>
+                                           </div>
+                                           <div class="col-sm-1">
+                                               <div sec:authorize="hasAuthority('ADMIN')">
+                                                   <form th:id="'1edit_work_form' + ${work.getName()} + ${topWorksByUpdate.indexOf(work)}"
+                                                         th:action="'/home/works/' + ${work.getName()} + '/edit'" method="get">
+                                                       <a class="link" onclick="document.getElementById(this.parentNode.id).submit(); return false;">
+                                                           <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-pencil" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                               <path fill-rule="evenodd" d="M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z"/>
+                                                               <path fill-rule="evenodd" d="M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z"/>
+                                                           </svg>
+                                                       </a>
+                                                   </form>
+                                                   <form th:id="'1delete_work_form' + ${work.getName()} + ${topWorksByUpdate.indexOf(work)}"
+                                                         th:action="'/home/works/' + ${work.getName()} + '/delete'" method="post">
+                                                       <a class="link" onclick="return formSubmitter(this.parentNode.id)">
+                                                           <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                               <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
+                                                           </svg>
+                                                       </a>
+                                                   </form>
+                                               </div>
+                                           </div>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                       </th:block>
+                   </th:block>
+                   <th:block th:if="${topWorksByAssessment == null || topWorksByAssessment.size() <= 0}">
+                       <p></p>
+                       <p class="link-medium" th:text="#{list.work.empty}">No tags</p>
+                   </th:block>
+                   <th:block th:if="${worksCount > 5}">
+                       <p> </p>
+                       <p class="link link-light link-medium"><a href="/works/popular" th:text="#{mainpage.top.popular.all}">Та самая ссылка</a></p>
+                   </th:block>
                </div>
                <!-- MOST RECENT -->
                <div class="container-fluid" style="padding-bottom: 10px">
@@ -119,14 +295,37 @@
                                    <div class="container-fluid">
                                        <div class="row">
                                            <div class="col-sm-11">
-                                               <form th:id="'open_work_form' + ${work.getName()} + ${topWorksByUpdate.indexOf(work)}" th:action="'/works/view/' + ${work.getName()}" method="get">
-                                                   <a>
-                                                       <h3 class="link" style="font-weight: bold; margin-top: 0"
-                                                           onclick="document.getElementById(this.parentNode.parentNode.id).submit(); return false;"
-                                                          th:text="${work.getName()}">submit</h3>
-                                                   </a>
-                                               </form>
-                                               <p class="work-element" style="margin-top: -0.5%; margin-bottom: -1%">
+                                               <div class="work-element row" style="margin-bottom: -1%; display: inline-flex">
+                                                   <form th:id="'2open_work_form' + ${work.getName()} + ${topWorksByUpdate.indexOf(work)}"
+                                                         th:action="'/works/view/' + ${work.getName()}" method="get">
+                                                       <a>
+                                                           <h3 class="link text-output" style="font-weight: bold; margin-top: 0"
+                                                               onclick="document.getElementById(this.parentNode.parentNode.id).submit(); return false;"
+                                                               th:text="${work.getName()}">submit</h3>
+                                                       </a>
+                                                   </form>
+                                                   <div class="row" style="display: inline-flex; margin-left: 10px; margin-top: -3px; vertical-align: middle">
+                                                       <input th:name="'u_' + ${topWorksByUpdate.indexOf(work)}" type="text" class="rating"
+                                                              th:value="${work.getAverageAssessment()}">
+                                                       <input type="hidden" th:name="'uas_' + ${topWorksByUpdate.indexOf(work)}"
+                                                              th:value="${work.getAssessmentCount()}">
+                                                       <script>
+                                                           // initialize with defaults
+                                                           $('input[name^="u_"]').rating({
+                                                               size: 'sm',
+                                                               step: 0.1,
+                                                               displayOnly: true,
+                                                               showCaption: false
+                                                           });
+                                                       </script>
+                                                       <th:block th:if="${work.getAssessmentCount() >= 0}">
+                                                           <div class="secondary-text-work"
+                                                                style="margin-left: 5px; margin-top: -4px; vertical-align: middle"
+                                                                th:text="'(' + ${work.getAssessmentCount()} + ')'">a</div>
+                                                       </th:block>
+                                                   </div>
+                                               </div>
+                                               <p class="work-element" style="margin-bottom: -1%">
                                                    <label for="author" th:text="#{work.author} + ':'">F</label>
                                                    <a th:text="${work.getAuthorName()}" id="author">Type</a>
                                                </p>
@@ -184,14 +383,14 @@
                                                            </form>
                                                            <div class="row" id="chapters" th:each="chapter : ${work.getChapters()}" style="margin-left: 1%; width: max-content">
                                                                <form th:id="'show_chapter_form' + ${work.getName()} + '/' + ${chapter}"
-                                                                     th:action="'/works/view/' + ${work.getName()} + '/' + ${chapter}" method="get">
+                                                                     th:action="'2/works/view/' + ${work.getName()} + '/' + ${chapter}" method="get">
                                                                    <a class="link" style="margin-right: 2%;"
                                                                       onclick="document.getElementById(this.parentNode.id).submit(); return false;"
                                                                       th:text="${chapter}">
                                                                        S
                                                                    </a>
                                                                </form>
-                                                               <form th:id="'edit_chapter_form' + ${work.getName()} + '/' + ${chapter}"
+                                                               <form th:id="'2edit_chapter_form' + ${work.getName()} + '/' + ${chapter}"
                                                                      th:action="'/home/works/' + ${work.getName()} + '/' + ${chapter} + '/edit'" method="get">
                                                                    <a class="link" onclick="document.getElementById(this.parentNode.id).submit(); return false;">
                                                                        <svg width="15px" height="15px" viewBox="0 0 16 16" class="bi bi-pencil" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -200,7 +399,7 @@
                                                                        </svg>
                                                                    </a>
                                                                </form>
-                                                               <form th:id="'delete_chapter_form' + ${work.getName()} + '/' + ${chapter}"
+                                                               <form th:id="'2delete_chapter_form' + ${work.getName()} + '/' + ${chapter}"
                                                                      th:action="'/home/works/' + ${work.getName()} + '/' + ${chapter} + '/delete'" method="post">
                                                                    <a class="link" onclick="return formSubmitter(this.parentNode.id)">
                                                                        <svg width="15px" height="15px" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -211,7 +410,7 @@
                                                            </div>
                                                        </div>
                                                    </div>
-                                                   <div sec:authorize="hasAuthority('USER')">
+                                                   <div sec:authorize="!hasAuthority('ADMIN')">
                                                        <label for="size" th:text="#{work.size} + ':'">F</label>
                                                        <label th:text="#{work.size.chapters} + ': ' + ${work.getChapters().size()} + ', ' + #{work.size.words} + ': ' + ${work.getWordsCount()}"
                                                               id="size" style="font-weight: normal">Type</label>
@@ -225,7 +424,7 @@
                                            </div>
                                            <div class="col-sm-1">
                                                <div sec:authorize="hasAuthority('ADMIN')">
-                                                   <form th:id="'edit_work_form' + ${topWorksByUpdate.indexOf(work)} + ${topWorksByUpdate.indexOf(work)}"
+                                                   <form th:id="'2edit_work_form' + ${work.getName()} + ${topWorksByUpdate.indexOf(work)}"
                                                          th:action="'/home/works/' + ${work.getName()} + '/edit'" method="get">
                                                        <a class="link" onclick="document.getElementById(this.parentNode.id).submit(); return false;">
                                                            <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-pencil" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -234,7 +433,7 @@
                                                            </svg>
                                                        </a>
                                                    </form>
-                                                   <form th:id="'delete_work_form' + ${topWorksByUpdate.indexOf(work)} + ${topWorksByUpdate.indexOf(work)}"
+                                                   <form th:id="'2delete_work_form' + ${work.getName()} + ${topWorksByUpdate.indexOf(work)}"
                                                          th:action="'/home/works/' + ${work.getName()} + '/delete'" method="post">
                                                        <a class="link" onclick="return formSubmitter(this.parentNode.id)">
                                                            <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">

@@ -30,6 +30,7 @@ public class MainController {
     public String showIndex(Model model) {
         model.addAttribute(WORKS_COUNT, workService.countAllNonEmptyWorks());
         model.addAttribute(TOP_WORKS_BY_UPDATE, convertWorkBasicList(workService.findTop5ByLastUpdate()));
+        model.addAttribute(TOP_WORKS_BY_ASSESS, convertWorkBasicList(workService.findTop5ByAssessment()));
         return INDEX;
     }
 

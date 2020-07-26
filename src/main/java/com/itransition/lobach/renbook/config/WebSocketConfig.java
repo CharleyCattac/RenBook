@@ -13,6 +13,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/works/view");
+        config.setUserDestinationPrefix("/works/view");
         config.setApplicationDestinationPrefixes("/dst"); // so endpoings will be /dst/**
     }
 

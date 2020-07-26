@@ -1,11 +1,10 @@
 package com.itransition.lobach.renbook.controller;
 
-import com.itransition.lobach.renbook.entity.Chapter;
-import com.itransition.lobach.renbook.entity.Comment;
-import com.itransition.lobach.renbook.entity.User;
-import com.itransition.lobach.renbook.entity.Work;
+import com.itransition.lobach.renbook.entity.*;
 import com.itransition.lobach.renbook.enums.MessagePurpose;
 import com.itransition.lobach.renbook.service.*;
+import com.itransition.lobach.renbook.transfer.AssessIncoming;
+import com.itransition.lobach.renbook.transfer.AssessOutcoming;
 import com.itransition.lobach.renbook.transfer.CommentIncoming;
 import com.itransition.lobach.renbook.transfer.CommentOutcoming;
 import com.itransition.lobach.renbook.util.SecurityHelper;
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
 
-import static com.itransition.lobach.renbook.util.EntityToDtoConverter.*;
+import static com.itransition.lobach.renbook.constants.OtherConstants.*;
 
 @Controller
 public class FeedbackController {
@@ -36,10 +35,10 @@ public class FeedbackController {
     private WorkService workService;
 
     @Autowired
-    private ChapterService chapterService;
+    private CommentService commentService;
 
     @Autowired
-    private CommentService commentService;
+    private AssessmentService assessmentService;
 
     @MessageMapping(value = "/add_comment")
     public void performAddComment(@Payload CommentIncoming comment,
@@ -52,7 +51,7 @@ public class FeedbackController {
         User author = userService.findUserByUsername(principal.getName());
         Comment newComment = commentService.addNewComment(work, author, comment.getCommentText(), null);
 
-        createUrl(comment, commentService.buildCommentFor(MessagePurpose.ADD.name().toLowerCase(), newComment));
+        createCommentResponseUrl(comment, commentService.buildCommentFor(MessagePurpose.ADD.name().toLowerCase(), newComment));
     }
 
     @MessageMapping(value = "/delete_comment")
@@ -69,14 +68,37 @@ public class FeedbackController {
             return;
         }
 
-        createUrl(incoming, commentService.buildCommentFor(MessagePurpose.DELETE.name().toLowerCase(), comment));
+        createCommentResponseUrl(incoming, commentService.buildCommentFor(MessagePurpose.DELETE.name().toLowerCase(), comment));
     }
 
-    private void createUrl(CommentIncoming comment, CommentOutcoming outcoming) {
+    @MessageMapping(value = "/assessment")
+    public void performSaveAssessment(@Payload AssessIncoming incoming,
+                                      @AuthenticationPrincipal Principal principal) {
+
+        User sender = userService.findUserByUsername(principal.getName());
+        Work work = workService.findByName(incoming.getWorkName());
+        if (work.getAuthor().getUsername().equals(sender.getUsername())) {
+            return;
+        }
+        Assessment processed = assessmentService.processAssessment(work, sender, incoming.getValue());
+
+        if (processed != null) {
+            messagingTemplate.convertAndSendToUser(principal.getName(),
+                    work.getName() + "?",
+                    AssessOutcoming.builder().purpose("ass_suc").build());
+        }
+    }
+
+    private void createCommentResponseUrl(CommentIncoming comment, CommentOutcoming outcoming) {
         if (comment.getChapterCount() == 1 || comment.getChapterName().equalsIgnoreCase("chapter")) {
-            messagingTemplate.convertAndSend("/works/view/" + comment.getWorkName() + "?", outcoming);
+            messagingTemplate.convertAndSend(WORK_VIEW_RESPONSE_BASE
+                    + comment.getWorkName() + "?",
+                    outcoming);
         } else {
-            messagingTemplate.convertAndSend("/works/view/" + comment.getWorkName() + "/" + comment.getChapterName() + "?", outcoming);
+            messagingTemplate.convertAndSend(WORK_VIEW_RESPONSE_BASE
+                    + comment.getWorkName() + "/"
+                    + comment.getChapterName() + "?",
+                    outcoming);
         }
     }
 }

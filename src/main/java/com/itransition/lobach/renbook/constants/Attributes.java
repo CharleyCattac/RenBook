@@ -41,4 +41,5 @@ public class Attributes {
     public static final String WORKS_SORT_SUBJECT = "sortSubject";
 
     public static final String MESSAGE_ERROR = "messageError";
+    public static final String USER_ASSESSMENT = "userAssessment";
 }

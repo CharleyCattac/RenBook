@@ -16,4 +16,6 @@ public class OtherConstants {
     public static final Integer WORKS_PER_PAGE = 10;
 
     public static final String SORT_PARAM_LAST_UPDATE = "lastUpdateMillis";
+
+    public static final String WORK_VIEW_RESPONSE_BASE = "/works/view/";
 }

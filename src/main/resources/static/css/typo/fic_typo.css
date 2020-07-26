@@ -1,3 +1,11 @@
-.h2 {
-    margin-top: -1%;
+.primary-text-comment {
+    color: #fcfcfc;
+}
+
+.secondary-text-comment {
+    color: rgba(252, 252, 252, 0.55);
+}
+
+.secondary-text-work {
+    color: rgba(82, 80, 80, 0.55);
 }
