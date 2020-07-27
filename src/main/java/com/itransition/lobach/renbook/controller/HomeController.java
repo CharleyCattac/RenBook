@@ -3,23 +3,23 @@ package com.itransition.lobach.renbook.controller;
 import com.itransition.lobach.renbook.entity.Chapter;
 import com.itransition.lobach.renbook.entity.User;
 import com.itransition.lobach.renbook.entity.Work;
-import com.itransition.lobach.renbook.service.ChapterService;
-import com.itransition.lobach.renbook.service.FandomService;
-import com.itransition.lobach.renbook.service.TagService;
-import com.itransition.lobach.renbook.service.WorkService;
+import com.itransition.lobach.renbook.service.*;
 import com.itransition.lobach.renbook.util.EntityToDtoConverter;
 import com.itransition.lobach.renbook.util.SecurityHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
-import static com.itransition.lobach.renbook.constants.PathConstants.*;
 import static com.itransition.lobach.renbook.constants.Attributes.*;
-import static com.itransition.lobach.renbook.constants.MessageConstants.*;
+import static com.itransition.lobach.renbook.constants.MessageConstants.INVALID_ACCESS;
+import static com.itransition.lobach.renbook.constants.OtherConstants.*;
+import static com.itransition.lobach.renbook.constants.PathConstants.*;
 
 @Controller
 @RequestMapping(value = "/home")
@@ -27,6 +27,9 @@ public class HomeController {
 
     @Autowired
     private SecurityHelper securityHelper;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private WorkService workService;
@@ -46,23 +49,44 @@ public class HomeController {
     }
 
     @GetMapping(value = "/profile")
-    public String getMyProfile(Model model) {
-        return NOT_READY_URL;
+    public String getEditProfile(Model model) {
+        User loggedUser = securityHelper.getLoggedUser();
+        model.addAttribute(EDIT_USER, EntityToDtoConverter.convertEditUser(loggedUser));
+        return HOME_EDIT_PROFILE;
+    }
+
+    @PostMapping(value = "/profile")
+    public String performEditProfile(@RequestParam(name = "email") String email,
+                                     @RequestParam(name = "avatarUrl") String avatarUrl,
+                                     @RequestParam(name = "birthday") String birthday,
+                                     @RequestParam(name = "description") String description,
+                                     @RequestParam(name = "language") String language,
+                                     @RequestParam(name = "theme") String theme,
+                                     Model model) {
+        User loggedUser = securityHelper.getLoggedUser();
+        User result = userService.updateUserInfo(
+                loggedUser, email, avatarUrl, birthday, description, language, theme);
+        if (result != null) {
+            return INDEX_REDIRECT + LANG_PARAM + result.getUserInfo().getPreferredLanguage();
+        }
+        model.addAttribute(EDIT_USER, EntityToDtoConverter.convertEditUser(loggedUser));
+        model.addAttribute(ERROR, ERROR);
+        return HOME_EDIT_PROFILE;
     }
 
     @GetMapping(value = "/works")
     public String getMyWorks(Model model) {
-        int pageNumInt = 0;
         User author = securityHelper.getLoggedUser();
+        int pageNumInt = 0;
         Page<Work> workPage = workService.findAllByAuthor(author, pageNumInt);
+        List<Work> works = workPage.toList();
+        model.addAttribute(MY_WORKS, EntityToDtoConverter.convertWorkBasicList(works));
+
         model.addAttribute(PAGE_COUNT, workPage.getTotalPages());
         model.addAttribute(CUR_PAGE,1);
         if (1 < workPage.getTotalPages()) {
             model.addAttribute(NEXT_PAGE,2);
         }
-        List<Work> works = workPage.toList();
-        model.addAttribute(MY_WORKS, EntityToDtoConverter.convertWorkBasicList(works));
-
         return HOME_WORKS;
     }
 
@@ -78,6 +102,9 @@ public class HomeController {
         }
         User author = securityHelper.getLoggedUser();
         Page<Work> workPage = workService.findAllByAuthor(author, pageNumInt - 1);
+        List<Work> works = workPage.toList();
+        model.addAttribute(MY_WORKS, EntityToDtoConverter.convertWorkBasicList(works));
+
         model.addAttribute(PAGE_COUNT, workPage.getTotalPages());
         if (pageNumInt > 1) {
             model.addAttribute(PREV_PAGE,pageNumInt - 1);
@@ -86,10 +113,6 @@ public class HomeController {
         if (pageNumInt < workPage.getTotalPages()) {
             model.addAttribute(NEXT_PAGE,pageNumInt + 1);
         }
-
-        List<Work> works = workPage.toList();
-        model.addAttribute(MY_WORKS, EntityToDtoConverter.convertWorkBasicList(works));
-
         return HOME_WORKS;
     }
 

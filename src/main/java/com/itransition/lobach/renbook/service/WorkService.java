@@ -143,8 +143,8 @@ public class WorkService {
         return workRepository.countDistinctByContentNotNull();
     }
 
-    public List<Work> findTop5ByLastUpdate() {
-        Pageable workRequest = PageRequest.of(0, 5, Sort.by(SORT_PARAM_LAST_UPDATE).descending());
+    public List<Work> findTopByLastUpdate() {
+        Pageable workRequest = PageRequest.of(0, WORKS_PER_TOP, Sort.by(SORT_PARAM_LAST_UPDATE).descending());
         return workRepository.findDistinctByContentNotNull(workRequest).getContent();
     }
 
@@ -153,8 +153,8 @@ public class WorkService {
         return workRepository.findDistinctByContentNotNull(workRequest);
     }
 
-    public List<Work> findTop5ByAssessment() {
-        Pageable workRequest = PageRequest.of(0, 5);
+    public List<Work> findTopByAssessment() {
+        Pageable workRequest = PageRequest.of(0, WORKS_PER_TOP);
         return workRepository.findDistinctByContentNotNullOrderByAvgAssessment(workRequest).getContent();
     }
 

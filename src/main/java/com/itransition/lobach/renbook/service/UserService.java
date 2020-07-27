@@ -10,10 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static com.itransition.lobach.renbook.constants.OtherConstants.DATE_PATTERN;
+import static com.itransition.lobach.renbook.constants.OtherConstants.USERNAME_PATTERN;
 
 @Service
 public class UserService {
@@ -78,23 +84,43 @@ public class UserService {
 
     private User saveToRepo(String email, String username, String password,
                             Set<Role> roles, UserInfo userInfo) {
-        User newUser = UserBuilder.buildUser(
-                email,
-                username,
-                passwordEncoder.encode(password),
-                roles,
-                System.currentTimeMillis(),
-                userInfo);
+        if (email != null && username != null && username.matches(USERNAME_PATTERN)
+                && password != null && userInfo != null) {
+            User newUser = UserBuilder.buildUser(
+                    email,
+                    username,
+                    passwordEncoder.encode(password),
+                    roles,
+                    System.currentTimeMillis(),
+                    userInfo);
 
-        return userRepository.save(newUser);
+            return userRepository.save(newUser);
+        } else {
+            return null;
+        }
     }
 
-    public void updateUserInfo(String username,
-                               String avatarUrl, Date birthDate, String description,
+    public User updateUserInfo(User user, String email,
+                               String avatarUrl, String birthday, String description,
                                String language, String theme) {
-        User user = userRepository.findByUsername(username);
-        UserInfo userInfo = user.getUserInfo();
-        userInfoService.saveUserInfo(userInfo, avatarUrl, birthDate, description, language, theme);
+        if (user != null) {
+            if (!user.getEmail().equals(email)) {
+                user.setEmail(email);
+            }
+            Date birthDate;
+            try {
+                birthDate = new SimpleDateFormat(DATE_PATTERN).parse(birthday);
+            }  catch (ParseException e) {
+                return null;
+            }
+            UserInfo userInfo = user.getUserInfo();
+            userInfo = userInfoService.saveUserInfo(userInfo, avatarUrl, birthDate, description, language, theme);
+            if (userInfo != null) {
+                user.setUserInfo(userInfo);
+            }
+            return userRepository.save(user);
+        }
+        return null;
     }
 
     public void blockUser(String username) {

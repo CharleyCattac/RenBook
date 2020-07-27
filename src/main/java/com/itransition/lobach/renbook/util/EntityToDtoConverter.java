@@ -4,9 +4,7 @@ import com.itransition.lobach.renbook.dto.*;
 import com.itransition.lobach.renbook.entity.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class EntityToDtoConverter {
 
@@ -159,5 +157,29 @@ public class EntityToDtoConverter {
             dtos.add(convertComment(comment));
         }
         return dtos;
+    }
+
+    public static ViewUserDto convertViewUser(User user, List<Work> works) {
+        return ViewUserDto.builder()
+                .username(user.getUsername())
+                .avatarUrl(user.getUserInfo().getAvatarUrl())
+                .lastSeenMillis(user.getMillisWhenLastLogin())
+                .birthday(user.getUserInfo().getBirthDate())
+                .description(user.getUserInfo().getDescription())
+                .works(convertWorkBasicList(works))
+                .build();
+    }
+
+    public static EditUserDto convertEditUser(User user) {
+        return EditUserDto.builder()
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .language(user.getUserInfo().getPreferredLanguage())
+                .theme(user.getUserInfo().getPreferredTheme())
+                .avatarUrl(user.getUserInfo().getAvatarUrl())
+                .birthday(user.getUserInfo().getBirthDate())
+                .description(user.getUserInfo().getDescription())
+                .lastSeenMillis(user.getMillisWhenLastLogin())
+                .build();
     }
 }

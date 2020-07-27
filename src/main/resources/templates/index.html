@@ -109,12 +109,12 @@
                </b>
 
                <div class="container" style="padding-top: 10px">
-                   <h2>Full search</h2>
+                   <h2 style="font-weight: bold">Full search</h2>
                    <p>Тот самый полнотекстовый поиск</p>
                </div>
                <!-- MOST POPULAR -->
                <div class="container-fluid">
-                   <h2 th:text="#{mainpage.top.popular}">Топ-5(10) самых новых работ</h2>
+                   <h2 th:text="#{mainpage.top.popular}" style="font-weight: bold">Топ-5(10) самых новых работ</h2>
                    <th:block th:if="${topWorksByAssessment != null}">
                        <th:block th:if="${topWorksByAssessment.size() > 0}">
                            <div th:each="work : ${topWorksByAssessment}">
@@ -152,10 +152,17 @@
                                                        </th:block>
                                                    </div>
                                                </div>
-                                               <p class="work-element" style="margin-bottom: -1%">
-                                                   <label for="author" th:text="#{work.author} + ':'">F</label>
-                                                   <a th:text="${work.getAuthorName()}" id="author">Type</a>
-                                               </p>
+                                               <div class="work-element" style="margin-top: -1%; margin-bottom: -1%">
+                                                   <div class="row" style="display: inline-flex; margin-left: 0; padding: 0">
+                                                       <label for="author" th:text="#{work.author} + ':'">F</label>
+                                                       <form th:id="'1show_author_form' + ${work.getName()} + ${topWorksByUpdate.indexOf(work)}"
+                                                             th:action="'/authors/' + ${work.getAuthorName()}" method="get">
+                                                           <a class="link text-output" style="margin-left: 5px"
+                                                              onclick="document.getElementById(this.parentNode.id).submit(); return false;"
+                                                              th:text="${work.getAuthorName()}">d</a>
+                                                       </form>
+                                                   </div>
+                                               </div>
                                                <p class="work-element" style="margin-bottom: -1%">
                                                    <label th:text="#{work.category.types.fandom} + ':'">F</label>
                                                    <th:block th:if="${work.getFandomType().equals('ORIGINAL')}">
@@ -280,14 +287,14 @@
                        <p></p>
                        <p class="link-medium" th:text="#{list.work.empty}">No tags</p>
                    </th:block>
-                   <th:block th:if="${worksCount > 5}">
+                   <th:block th:if="${worksCount > topWorksByAssessment.size()}">
                        <p> </p>
                        <p class="link link-light link-medium"><a href="/works/popular" th:text="#{mainpage.top.popular.all}">Та самая ссылка</a></p>
                    </th:block>
                </div>
                <!-- MOST RECENT -->
                <div class="container-fluid" style="padding-bottom: 10px">
-                   <h2 th:text="#{mainpage.top.update}">Топ-5 самых популярных работ</h2>
+                   <h2 th:text="#{mainpage.top.update}" style="font-weight: bold">Топ-5 самых популярных работ</h2>
                    <th:block th:if="${topWorksByUpdate != null}">
                        <th:block th:if="${topWorksByUpdate.size() > 0}">
                            <div th:each="work : ${topWorksByUpdate}">
@@ -325,15 +332,23 @@
                                                        </th:block>
                                                    </div>
                                                </div>
-                                               <p class="work-element" style="margin-bottom: -1%">
-                                                   <label for="author" th:text="#{work.author} + ':'">F</label>
-                                                   <a th:text="${work.getAuthorName()}" id="author">Type</a>
-                                               </p>
+                                               <div class="work-element" style="margin-top: -1%; margin-bottom: -1%">
+                                                   <div class="row" style="display: inline-flex; margin-left: 0; padding: 0">
+                                                       <label for="author" th:text="#{work.author} + ':'">F</label>
+                                                       <form th:id="'2show_author_form' + ${work.getName()} + ${topWorksByUpdate.indexOf(work)}"
+                                                             th:action="'/authors/' + ${work.getAuthorName()}" method="get">
+                                                           <a class="link text-output" style="margin-left: 5px"
+                                                              onclick="document.getElementById(this.parentNode.id).submit(); return false;"
+                                                              th:text="${work.getAuthorName()}">d</a>
+                                                       </form>
+                                                   </div>
+                                               </div>
                                                <p class="work-element" style="margin-bottom: -1%">
                                                    <label th:text="#{work.category.types.fandom} + ':'">F</label>
                                                    <th:block th:if="${work.getFandomType().equals('ORIGINAL')}">
                                                        <a th:text="#{work.category.types.original}"
-                                                          data-toggle="tooltip" data-placement="top" th:title="#{'work.category.types.' + ${work.getFandomType().toLowerCase()}}">Type</a>
+                                                          data-toggle="tooltip" data-placement="top"
+                                                          th:title="#{'work.category.types.' + ${work.getFandomType().toLowerCase()}}">Type</a>
                                                    </th:block>
                                                    <th:block th:unless="${work.getFandomType().equals('ORIGINAL')}">
                                                        <a th:each="fandom : ${work.getFandoms()}"
@@ -453,7 +468,7 @@
                        <p></p>
                        <p class="link-medium" th:text="#{list.work.empty}">No tags</p>
                    </th:block>
-                   <th:block th:if="${worksCount > 5}">
+                   <th:block th:if="${worksCount > topWorksByUpdate.size()}">
                        <p> </p>
                        <p class="link link-light link-medium"><a href="/works/update" th:text="#{mainpage.top.update.all}">Та самая ссылка</a></p>
                    </th:block>

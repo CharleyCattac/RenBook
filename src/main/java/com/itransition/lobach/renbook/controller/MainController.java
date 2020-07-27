@@ -29,15 +29,9 @@ public class MainController {
     @GetMapping(value = "/")
     public String showIndex(Model model) {
         model.addAttribute(WORKS_COUNT, workService.countAllNonEmptyWorks());
-        model.addAttribute(TOP_WORKS_BY_UPDATE, convertWorkBasicList(workService.findTop5ByLastUpdate()));
-        model.addAttribute(TOP_WORKS_BY_ASSESS, convertWorkBasicList(workService.findTop5ByAssessment()));
+        model.addAttribute(TOP_WORKS_BY_UPDATE, convertWorkBasicList(workService.findTopByLastUpdate()));
+        model.addAttribute(TOP_WORKS_BY_ASSESS, convertWorkBasicList(workService.findTopByAssessment()));
         return INDEX;
-    }
-
-    @GetMapping(value = "/authors")
-    public String showAuthors() {
-
-        return AUTHORS_URL;
     }
 
     @GetMapping(value = "/rules")

@@ -27,7 +27,6 @@ public class Attributes {
 
     public static final String EDITABLE_WORK = "editWork";
     public static final String EDITABLE_CHAPTER = "editChapter";
-    public static final String CURRENT_STATUS = "currentStatus";
 
     public static final String VIEWED_WORK = "viewedWork";
     public static final String VIEWED_CHAPTER = "viewedChapter";
@@ -42,4 +41,7 @@ public class Attributes {
 
     public static final String MESSAGE_ERROR = "messageError";
     public static final String USER_ASSESSMENT = "userAssessment";
+
+    public static final String VIEWED_USER = "viewedUser";
+    public static final String EDIT_USER = "editUser";
 }

@@ -26,6 +26,9 @@ public class PathConstants {
     public static final String AUTHORS_URL = "authors";
     public static final String RULES_URL = "rules";
 
+    public static final String USER_PROFILE = "user/profile";
+    public static final String HOME_EDIT_PROFILE = "home/edit_profile";
+
     public static final String HOME_WORKS = "home/my_works";
     public static final String HOME_WORKS_REDIRECT  = "redirect:/home/my_works";
 

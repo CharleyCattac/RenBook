@@ -47,8 +47,8 @@ public class UserInfoService {
                 || theme == null) {
             return null;
         } else if (!birthDate.before(new Date())
-                || !EnumUtils.isValidEnum(Language.class, language)
-                || !EnumUtils.isValidEnum(Theme.class, theme)) {
+                || !EnumUtils.isValidEnum(Language.class, language.toUpperCase())
+                || !EnumUtils.isValidEnum(Theme.class, theme.toUpperCase())) {
             return null;
         } else {
             if (userInfo == null) {
@@ -56,8 +56,8 @@ public class UserInfoService {
                         avatarUrl,
                         birthDate,
                         description,
-                        language,
-                        theme
+                        language.toUpperCase(),
+                        theme.toUpperCase()
                 );
             } else {
                 userInfo.setAvatarUrl(avatarUrl);

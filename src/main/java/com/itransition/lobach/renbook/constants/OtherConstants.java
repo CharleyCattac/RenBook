@@ -8,12 +8,14 @@ public class OtherConstants {
 
     public static final String DATE_PATTERN = "yyyy-MM-dd";
     public static final String TAG_PATTERN = "^[a-zA-Zа-яА-Я0-9()& ]+"; //^[a-zA-Z0-9()& ]*$ //[a-zA-Z]+
+    public static final String USERNAME_PATTERN = "^[a-zA-Zа-яА-Я0-9_]+";
 
     public static final String LANG_PARAM = "?lang=";
 
     public static final String FANDOM_CODE = "work.category.types.";
 
     public static final Integer WORKS_PER_PAGE = 10;
+    public static final Integer WORKS_PER_TOP = 3;
 
     public static final String SORT_PARAM_LAST_UPDATE = "lastUpdateMillis";
 

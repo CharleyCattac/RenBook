@@ -111,7 +111,13 @@
                             <div class="form-group">
                                 <label for="username" th:text="#{signup.username}">Username</label>
                                 <input type="text" class="form-control" id="username" name="username"
-                                       maxlength="255" required>
+                                       maxlength="255" pattern="^[a-zA-Zа-яА-Я0-9_]+"
+                                       data-toggle="tooltip" data-placement="bottom"
+                                       th:title="#{signup.username.hint}"
+                                       onclick="document.getElementById('usernameWarning').style.display = 'inline'; return false;"
+                                       required>
+                                <p class="alert alert-warning" id="usernameWarning" style="padding: 2px; display: none"
+                                   th:text="#{signup.username.warning}">d</p>
                             </div>
 
                             <div class="form-group">

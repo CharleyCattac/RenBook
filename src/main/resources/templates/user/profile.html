@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="https://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
-    <title th:text="#{list.work.all}">Title</title>
+    <title th:text="${viewedUser.getUsername()}">Title</title>
     <!-- For bootstrap -->
 <!--
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -12,6 +12,17 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- Local css -->
+    <link rel="stylesheet" type="text/css" href="/css/base/background.css">
+    <link rel="stylesheet" type="text/css" href="/css/base/main_panel.css">
+    <link rel="stylesheet" type="text/css" href="/css/base/nav.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/links.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/buttons.css">
+    <link rel="stylesheet" type="text/css" href="/css/input/textareas.css">
+    <link rel="stylesheet" type="text/css" href="/css/items/work_item.css">
+    <link rel="stylesheet" type="text/css" href="/css/items/comment_item.css">
+    <link rel="stylesheet" type="text/css" href="/css/items/avatar_item.css">
+    <link rel="stylesheet" type="text/css" href="/css/typo/fic_typo.css">
 
     <!-- default styles -->
     <!--<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" rel="stylesheet">-->
@@ -24,13 +35,6 @@
     <!-- optionally if you need to use a theme, then include the theme JS file as mentioned below -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-star-rating/4.0.6/themes/krajee-svg/theme.js"></script>
 
-    <!-- Local css -->
-    <link rel="stylesheet" type="text/css" href="/css/base/background.css">
-    <link rel="stylesheet" type="text/css" href="/css/base/main_panel.css">
-    <link rel="stylesheet" type="text/css" href="/css/base/nav.css">
-    <link rel="stylesheet" type="text/css" href="/css/input/links.css">
-    <link rel="stylesheet" type="text/css" href="/css/input/buttons.css">
-    <link rel="stylesheet" type="text/css" href="/css/items/work_item.css">
     <!-- Script to load navbar -->
     <!--<script src="js/csi.js"></script>-->
 
@@ -82,7 +86,7 @@
                    <th:block th:unless="${#authentication.getName().equals('anonymousUser')}">
                        <li class="dropdown">
                            <a class="dropdown-toggle" data-toggle="dropdown"
-                              th:text="${#authentication.getName()}"
+                              th:text="${#authentication.principal.username}"
                               style="cursor: pointer">
                                <!--<img th:src="${#authentication.principal.userInfo.avatarUrl}"
                                     class="img-circle img-responsive"
@@ -107,23 +111,79 @@
        <!-- Main panel -->
        <!-- ---------- -->
        <div class="container">
-           <div class="main-panel main-panel-light" style="padding: 1%">
-               <b th:if="${error}">
-                   <div class="alert alert-danger" th:text="#{error.something_went_wrong}">Y</div>
-               </b>
+           <div class="main-panel main-panel-light">
+               <!-- HEAD -->
+               <div class="comment-item">
+                   <div class="container-fluid">
+                       <div class="comment-head">
+                           <div class="row" style="padding-left: 5px">
+                               <div class="col-sm-9">
+                                   <h4 class="primary-text-comment text-output" style="margin: 1px"
+                                       th:text="${viewedUser.getUsername()}">G</h4>
+                               </div>
+                               <div class="col-sm-3 secondary-text-comment" style="float: right"
+                                    th:text="#{profile.head.last_seen} + ' '
+                                            + ${#dates.format(new java.util.Date(viewedUser.getLastSeenMillis()), 'dd.MM.YYYY HH:mm:ss')}">
+                                   d
+                               </div>
+                           </div>
+                       </div>
+                       <div class="comment-body">
+                           <div class="row" style="padding-left: 10px">
+                               <div class="col-sm-3" style="padding: 2px;">
+                                   <div style="width: 100%">
+                                       <img id="myImg" class="img-circle"
+                                            style="height: 150px; width: 150px; display: table; margin: 0 auto;"
+                                            th:src="${viewedUser.getAvatarUrl()}"
+                                            onerror="if (this.src != '/img/no-avatar.gif') this.src = '/img/no-avatar.gif';">
+                                       <!-- The Modal -->
+                                       <div id="myModal" class="modal">
+                                           <!-- The Close Button -->
+                                           <span class="close">&times;</span>
+                                           <!-- Modal Content (The Image) -->
+                                           <img class="modal-content" id="img01">
+                                       </div>
+                                   </div>
+                               </div>
+                               <div class="col-sm-5" style="padding: 2px;">
+                                   <p>
+                                   <h4 th:text="#{profile.head.birthday} + ':'" style="font-weight: bold">H</h4>
+                                   <div class="text-output" th:text="${#dates.format(viewedUser.getBirthday(), 'dd.MM.YYYY')}">
+                                       Type
+                                   </div>
+                                   </p>
+                                   <p>
+                                   <h4 th:text="#{profile.head.about} + ':'" style="font-weight: bold">H</h4>
+                                   <div class="text-output" th:text="${viewedUser.getDescription()}">
+                                       Type
+                                   </div>
+                                   </p>
+                               </div>
+                               <div class="col-sm-4" style="padding: 2px;">
+                                   <p >
+                                   <h4 th:text="#{profile.head.achievements} + ':'" style="font-weight: bold">H</h4>
+                                   <div class="text-output" th:text="#{profile.head.achievements.empty}">
+                                       Type
+                                   </div>
+                                   </p>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
                <!-- WORKS -->
-               <div class="container-fluid" style="padding-bottom: 10px">
-                   <h2 th:text="#{list.work.all}">Топ-5 самых популярных работ</h2>
-                   <h4 th:text="#{list.work.sorted} + ': ' + #{'list.work.sorted.' + ${sortSubject}}">Топ-5 самых популярных работ</h4>
-                   <th:block th:if="${allWorks != null}">
-                       <th:block th:if="${allWorks.size() > 0}">
-                           <div th:each="work : ${allWorks}">
+               <div class="container-fluid">
+                   <h3 th:text="#{profile.body.works} + ':'" style="font-weight: bold">Топ-5 самых популярных работ</h3>
+                   <!--<h4 class="secondary-text-work" th:text="#{list.work.sorted} + ': ' + #{list.work.sorted.update}">То</h4>-->
+                   <th:block th:if="${viewedUser.getWorks() != null}">
+                       <th:block th:if="${viewedUser.getWorks().size() > 0}">
+                           <div th:each="work : ${viewedUser.getWorks()}">
                                <div class="item-panel item-panel-light">
                                    <div class="container-fluid">
                                        <div class="row">
                                            <div class="col-sm-11">
                                                <div class="work-element row" style="margin-bottom: -1%; display: inline-flex">
-                                                   <form th:id="'open_work_form' + ${work.getName()} + ${allWorks.indexOf(work)}"
+                                                   <form th:id="'open_work_form' + ${work.getName()} + ${viewedUser.getWorks().indexOf(work)}"
                                                          th:action="'/works/view/' + ${work.getName()}" method="get">
                                                        <a>
                                                            <h3 class="link text-output" style="font-weight: bold; margin-top: 0"
@@ -132,9 +192,9 @@
                                                        </a>
                                                    </form>
                                                    <div class="row" style="display: inline-flex; margin-left: 10px; margin-top: -3px; vertical-align: middle">
-                                                       <input th:name="'u_' + ${allWorks.indexOf(work)}" type="text" class="rating"
+                                                       <input th:name="'u_' + ${viewedUser.getWorks().indexOf(work)}" type="text" class="rating"
                                                               th:value="${work.getAverageAssessment()}">
-                                                       <input type="hidden" th:name="'uas_' + ${allWorks.indexOf(work)}"
+                                                       <input type="hidden" th:name="'uas_' + ${viewedUser.getWorks().indexOf(work)}"
                                                               th:value="${work.getAssessmentCount()}">
                                                        <script>
                                                            // initialize with defaults
@@ -152,17 +212,10 @@
                                                        </th:block>
                                                    </div>
                                                </div>
-                                               <div class="work-element" style="margin-top: -1%; margin-bottom: -1%">
-                                                   <div class="row" style="display: inline-flex; margin-left: 0; padding: 0">
-                                                       <label for="author" th:text="#{work.author} + ':'">F</label>
-                                                       <form th:id="'2show_author_form' + ${work.getName()} + ${allWorks.indexOf(work)}"
-                                                             th:action="'/authors/' + ${work.getAuthorName()}" method="get">
-                                                           <a class="link text-output" style="margin-left: 5px"
-                                                              onclick="document.getElementById(this.parentNode.id).submit(); return false;"
-                                                              th:text="${work.getAuthorName()}">d</a>
-                                                       </form>
-                                                   </div>
-                                               </div>
+                                               <p class="work-element" style="margin-bottom: -1%">
+                                                   <label for="author" th:text="#{work.author} + ':'">F</label>
+                                                   <a th:text="${work.getAuthorName()}" id="author">Type</a>
+                                               </p>
                                                <p class="work-element" style="margin-bottom: -1%">
                                                    <label th:text="#{work.category.types.fandom} + ':'">F</label>
                                                    <th:block th:if="${work.getFandomType().equals('ORIGINAL')}">
@@ -258,7 +311,7 @@
                                            </div>
                                            <div class="col-sm-1">
                                                <div sec:authorize="hasAuthority('ADMIN')">
-                                                   <form th:id="'edit_work_form' + ${work.getName()} + ${allWorks.indexOf(work)}"
+                                                   <form th:id="'edit_work_form' + ${work.getName()} + ${viewedUser.getWorks().indexOf(work)}"
                                                          th:action="'/home/works/' + ${work.getName()} + '/edit'" method="get">
                                                        <a class="link" onclick="document.getElementById(this.parentNode.id).submit(); return false;">
                                                            <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-pencil" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -267,7 +320,7 @@
                                                            </svg>
                                                        </a>
                                                    </form>
-                                                   <form th:id="'delete_work_form' + ${work.getName()} + ${allWorks.indexOf(work)}"
+                                                   <form th:id="'delete_work_form' + ${work.getName()} + ${viewedUser.getWorks().indexOf(work)}"
                                                          th:action="'/home/works/' + ${work.getName()} + '/delete'" method="post">
                                                        <a class="link" onclick="return formSubmitter(this.parentNode.id)">
                                                            <svg width="20px" height="20px" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -283,14 +336,14 @@
                            </div>
                        </th:block>
                    </th:block>
-                   <th:block th:if="${allWorks == null || allWorks.size() <= 0}">
+                   <th:block th:if="${viewedUser.getWorks() == null || viewedUser.getWorks().size() <= 0}">
                        <p></p>
-                       <p class="link-medium" th:text="#{list.work.empty}">No tags</p>
+                       <p class="link-medium" th:text="#{profile.body.works.empty}">No tags</p>
                    </th:block>
                    <!-- PAGES -->
                    <div class="container-fluid" style="display: inline">
                        <th:block th:if="${prevPage != null}">
-                           <a th:href="'/works/' + ${sortSubject} + '/' + ${prevPage}">
+                           <a th:href="'/authors/' + ${viewedUser.getUsername()} + '/' + ${prevPage}">
                                <button class="btn btn-purple" th:text="#{list.page.prev}">B</button>
                            </a>
                        </th:block>
@@ -299,7 +352,7 @@
                                   th:text="#{list.page.page} + ' ' + ${curPage} + ' ' + #{list.page.of} + ' ' + ${pageCount}">L</label>
                        </th:block>
                        <th:block th:if="${nextPage != null}">
-                           <a th:href="'/works/' + ${sortSubject} + '/' + ${nextPage}">
+                           <a th:href="'/authors/' + ${viewedUser.getUsername()} + '/' + ${nextPage}">
                                <button class="btn btn-purple" th:text="#{list.page.next}">B</button>
                            </a>
                        </th:block>
@@ -310,6 +363,27 @@
        </div>
    </div>
 </body>
+
+<script>
+    // Get the modal
+    var modal = document.getElementById("myModal");
+
+    // Get the image and insert it inside the modal - use its "alt" text as a caption
+    var img = document.getElementById("myImg");
+    var modalImg = document.getElementById("img01");
+    img.onclick = function(){
+        modal.style.display = "flex";
+        modalImg.src = this.src;
+    }
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+</script>
 
 <script>
     function formSubmitter(formName) {

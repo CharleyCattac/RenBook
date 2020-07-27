@@ -151,10 +151,17 @@
                                         </th:block>
                                     </div>
                                 </div>
-                                <p class="work-element" style="margin-top: -0.5%; margin-bottom: -1%">
-                                    <label for="category" th:text="#{work.author} + ':'">F</label>
-                                    <a th:text="${viewedWork.getAuthorName()}" id="author">Type</a>
-                                </p>
+                                <div class="work-element" style="margin-top: -20px; margin-bottom: -1%">
+                                    <div class="row" style="display: inline-flex; margin-left: 0; padding: 0">
+                                        <label for="author" th:text="#{work.author} + ':'">F</label>
+                                        <form th:id="'show_author_form'"
+                                              th:action="'/authors/' + ${viewedWork.getAuthorName()}" method="get">
+                                            <a class="link text-output" style="margin-left: 5px"
+                                               onclick="document.getElementById(this.parentNode.id).submit(); return false;"
+                                               th:text="${viewedWork.getAuthorName()}">d</a>
+                                        </form>
+                                    </div>
+                                </div>
                                 <p class="work-element" style="margin-bottom: -1%">
                                     <label th:text="#{work.category.types.fandom} + ':'">F</label>
                                     <th:block th:if="${viewedWork.getFandomType().equals('ORIGINAL')}">
@@ -302,8 +309,14 @@
                                     <div class="container-fluid">
                                         <div class="comment-head">
                                             <div class="row" style="padding-left: 5px">
-                                                <div class="col-sm-7 primary-text-comment"
-                                                     th:text="${comment.getAuthorName()}">f</div>
+                                                <div class="col-sm-7 primary-text-comment">
+                                                    <form th:id="'show_author_form' + ${viewedWork.getComments().indexOf(comment)}"
+                                                          th:action="'/authors/' + ${viewedWork.getAuthorName()}" method="get">
+                                                        <a class="link link-dark text-output" style="margin-left: 5px"
+                                                           onclick="document.getElementById(this.parentNode.id).submit(); return false;"
+                                                           th:text="${viewedWork.getAuthorName()}">d</a>
+                                                    </form>
+                                                </div>
                                                 <div class="col-sm-4 secondary-text-comment"
                                                      th:text="${#dates.format(new java.util.Date(comment.getPostTime()), 'dd.MM.YYYY HH:mm:ss')}"></div>
                                                 <div class="col-sm-1">
