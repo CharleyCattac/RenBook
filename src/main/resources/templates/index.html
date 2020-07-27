@@ -25,6 +25,7 @@
     <link rel="stylesheet" type="text/css" href="/css/base/main_panel.css">
     <link rel="stylesheet" type="text/css" href="/css/base/nav.css">
     <link rel="stylesheet" type="text/css" href="/css/input/links.css">
+    <link rel="stylesheet" type="text/css" href="/css/home/work_edit.css">
     <link rel="stylesheet" type="text/css" href="/css/items/work_item.css">
     <link rel="stylesheet" type="text/css" href="/css/typo/fic_typo.css">
     <!-- Script to load navbar -->
@@ -108,12 +109,46 @@
                    <div class="alert alert-danger" th:text="#{error.something_went_wrong}">Y</div>
                </b>
 
-               <div class="container" style="padding-top: 10px">
+               <!--<div class="container" style="padding-top: 10px">
                    <h2 style="font-weight: bold">Full search</h2>
                    <p>Тот самый полнотекстовый поиск</p>
+               </div>-->
+               <div class="container" style="padding-bottom: 10px">
+                   <h2 th:text="#{mainpage.tags}" style="font-weight: bold">Tag</h2>
+                   <th:block th:if="${tags != null}">
+                       <th:block th:if="${tags.size() > 0}">
+                           <ul id="tagCloud">
+                               <li th:each="tag : ${tags}">
+                                   <a th:href="'/works/tag/' + ${tag.getName()} + '/1'" class="link link-light link-medium"
+                                      th:id="'a_' + ${tag.getName()}" style="margin-right: 2px">
+                                       <th:block th:text="${tag.getName()}" style="margin-right: 2px">T</th:block>
+                                       <span class="badge" style="" th:text="${tag.getWorkCount()}">3</span>
+                                       <script>
+                                           var parentId = document.currentScript.parentNode.id.split('/');
+                                           if (parentId.length > 1) {
+                                               document.currentScript.parentNode.href = '/works/tag/' + parentId[0] + '/1';
+                                           }
+                                       </script>
+                                   </a>
+                                   <!--<div sec:authorize="hasAuthority('ADMIN')">
+                                       <form th:id="'delete_tag_form' + ${tag.getName()}"
+                                             th:action="'/admin/delete_tag/' + ${tag.getName()}" method="post">
+                                           <span class="close" onclick="formSubmitter(this.parentNode.id); return false;">x</span>
+                                       </form>
+                                   </div>-->
+                               </li>
+                           </ul>
+                           <!--<p class="link link-light" th:if="${tagsTotalAmount > tags.size()}">
+                               <a href="#" th:text="#{list.tag.all}">Ссылка на список всех тегов</a>
+                           </p>-->
+                       </th:block>
+                   </th:block>
+                   <th:block th:if="${tags == null || tags.size() <= 0}">
+                       <p th:text="#{list.tag.empty}">No tags</p>
+                   </th:block>
                </div>
                <!-- MOST POPULAR -->
-               <div class="container-fluid">
+               <div class="container-fluid" style="padding-top: 10px">
                    <h2 th:text="#{mainpage.top.popular}" style="font-weight: bold">Топ-5(10) самых новых работ</h2>
                    <th:block th:if="${topWorksByAssessment != null}">
                        <th:block th:if="${topWorksByAssessment.size() > 0}">
@@ -126,7 +161,7 @@
                                                    <form th:id="'1open_work_form' + ${work.getName()} + ${topWorksByUpdate.indexOf(work)}"
                                                          th:action="'/works/view/' + ${work.getName()}" method="get">
                                                        <a>
-                                                           <h3 class="link text-output" style="font-weight: bold; margin-top: 0"
+                                                           <h3 class="link link-light text-output" style="font-weight: bold; margin-top: 0"
                                                                onclick="document.getElementById(this.parentNode.parentNode.id).submit(); return false;"
                                                                th:text="${work.getName()}">submit</h3>
                                                        </a>
@@ -157,7 +192,7 @@
                                                        <label for="author" th:text="#{work.author} + ':'">F</label>
                                                        <form th:id="'1show_author_form' + ${work.getName()} + ${topWorksByUpdate.indexOf(work)}"
                                                              th:action="'/authors/' + ${work.getAuthorName()}" method="get">
-                                                           <a class="link text-output" style="margin-left: 5px"
+                                                           <a class="link link-light text-output" style="margin-left: 5px"
                                                               onclick="document.getElementById(this.parentNode.id).submit(); return false;"
                                                               th:text="${work.getAuthorName()}">d</a>
                                                        </form>
@@ -180,7 +215,16 @@
                                                    <p class="work-element" style="margin-bottom: -1%">
                                                        <label th:text="#{work.tags} + ':'">F</label>
                                                        <a th:each="tag : ${work.getTags()}">
-                                                           <a th:text="${tag}">Tag</a>
+                                                           <a th:href="'/works/tag/' + ${tag} + '/1'" class="link link-light link-medium"
+                                                              th:id="'1a_' + ${tag}" style="margin-right: 2px">
+                                                               <th:block th:text="${tag}" style="margin-right: 2px">T</th:block>
+                                                               <script>
+                                                                   var parentId = document.currentScript.parentNode.id.split('/');
+                                                                   if (parentId.length > 1) {
+                                                                       document.currentScript.parentNode.href = '/works/tag/' + parentId[0] + '/1';
+                                                                   }
+                                                               </script>
+                                                           </a>
                                                        </a>
                                                    </p>
                                                </th:block>
@@ -306,7 +350,7 @@
                                                    <form th:id="'2open_work_form' + ${work.getName()} + ${topWorksByUpdate.indexOf(work)}"
                                                          th:action="'/works/view/' + ${work.getName()}" method="get">
                                                        <a>
-                                                           <h3 class="link text-output" style="font-weight: bold; margin-top: 0"
+                                                           <h3 class="link link-light text-output" style="font-weight: bold; margin-top: 0"
                                                                onclick="document.getElementById(this.parentNode.parentNode.id).submit(); return false;"
                                                                th:text="${work.getName()}">submit</h3>
                                                        </a>
@@ -337,7 +381,7 @@
                                                        <label for="author" th:text="#{work.author} + ':'">F</label>
                                                        <form th:id="'2show_author_form' + ${work.getName()} + ${topWorksByUpdate.indexOf(work)}"
                                                              th:action="'/authors/' + ${work.getAuthorName()}" method="get">
-                                                           <a class="link text-output" style="margin-left: 5px"
+                                                           <a class="link link-light text-output" style="margin-left: 5px"
                                                               onclick="document.getElementById(this.parentNode.id).submit(); return false;"
                                                               th:text="${work.getAuthorName()}">d</a>
                                                        </form>
@@ -361,7 +405,16 @@
                                                    <p class="work-element" style="margin-bottom: -1%">
                                                        <label th:text="#{work.tags} + ':'">F</label>
                                                        <a th:each="tag : ${work.getTags()}">
-                                                           <a th:text="${tag}">Tag</a>
+                                                           <a th:href="'/works/tag/' + ${tag} + '/1'" class="link link-light link-medium"
+                                                              th:id="'2a_' + ${tag}" style="margin-right: 2px">
+                                                               <th:block th:text="${tag}" style="margin-right: 2px">T</th:block>
+                                                               <script>
+                                                                   var parentId = document.currentScript.parentNode.id.split('/');
+                                                                   if (parentId.length > 1) {
+                                                                       document.currentScript.parentNode.href = '/works/tag/' + parentId[0] + '/1';
+                                                                   }
+                                                               </script>
+                                                           </a>
                                                        </a>
                                                    </p>
                                                </th:block>

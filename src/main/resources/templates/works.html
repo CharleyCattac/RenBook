@@ -118,27 +118,6 @@
                     </div>
                 </div>
             </div>
-            <div class="container" style="padding-bottom: 10px">
-                <h3 th:text="#{work.tags}">Tag</h3>
-                <th:block th:if="${tags != null}">
-                    <th:block th:if="${tags.size() > 0}">
-                        <ul>
-                            <li th:each="tag : ${tags}">
-                                <a href="#" class="link link-medium" th:id="'a_' + ${tag.getName()}">
-                                    <th:block th:text="${tag.getName()}" style="margin-right: 2.5%">T</th:block>
-                                    <span class="badge" style="" th:text="${tag.getWorkCount()}">3</span>
-                                </a>
-                            </li>
-                        </ul>
-                        <p class="link link-light" th:if="${tagsTotalAmount > tags.size()}">
-                            <a href="#" th:text="#{list.tag.all}">Ссылка на список всех тегов</a>
-                        </p>
-                    </th:block>
-                </th:block>
-                <th:block th:if="${tags == null || tags.size() <= 0}">
-                    <p th:text="#{list.tag.empty}">No tags</p>
-                </th:block>
-            </div>
         </div>
     </div>
 </div>

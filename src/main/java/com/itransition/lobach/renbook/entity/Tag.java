@@ -21,6 +21,6 @@ public class Tag {
     @Column(unique = true, nullable = false, length = 150)
     private String name;
 
-    @ManyToMany(mappedBy = "tags")
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.EAGER)
     private Set<Work> works;
 }

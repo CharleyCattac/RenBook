@@ -1,6 +1,7 @@
 package com.itransition.lobach.renbook.service;
 
 import com.itransition.lobach.renbook.entity.Tag;
+import com.itransition.lobach.renbook.entity.Work;
 import com.itransition.lobach.renbook.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -79,7 +80,19 @@ public class TagService {
         return tags;
     }
 
-    public List<Tag> findAllStartingWith(String s) {
-        return tagRepository.getAllByNameStartingWithOrderByNameAsc(s);
+    public List<Work> findWorksByTagName(Tag tag, int page) {
+        List<Work> works = new ArrayList<>();
+        if (tag != null) {
+            works = new ArrayList<>(tag.getWorks());
+            int toIndex = (page + 1) * WORKS_PER_PAGE > works.size() ? works.size() : (page + 1) * WORKS_PER_PAGE;
+            works = works.subList(page * WORKS_PER_PAGE, toIndex);
+        }
+        return works;
+    }
+
+    public void deleteTag(Tag tag) {
+        if (tag != null) {
+            tagRepository.delete(tag);
+        }
     }
 }

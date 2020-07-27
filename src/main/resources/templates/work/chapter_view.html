@@ -156,7 +156,7 @@
                                             <label for="author" th:text="#{work.author} + ':'">F</label>
                                             <form th:id="'show_author_form'"
                                                   th:action="'/authors/' + ${viewedWork.getAuthorName()}" method="get">
-                                                <a class="link text-output" style="margin-left: 5px"
+                                                <a class="link link-light text-output" style="margin-left: 5px"
                                                    onclick="document.getElementById(this.parentNode.id).submit(); return false;"
                                                    th:text="${viewedWork.getAuthorName()}">d</a>
                                             </form>
@@ -206,8 +206,17 @@
                                     <th:block th:if="${viewedWork.getTags().size() > 0}">
                                         <p class="work-element" style="margin-bottom: -1%">
                                             <label for="tags" th:text="#{work.tags} + ':'">F</label>
-                                            <a th:each="tag : ${viewedWork.getTags()}" id="tagInput">
-                                                <a th:text="${tag}">Tag</a>
+                                            <a th:each="tag : ${viewedWork.getTags()}">
+                                                <a th:href="'/works/tag/' + ${tag} + '/1'" class="link link-light link-medium"
+                                                   th:id="'a_' + ${tag}" style="margin-right: 2px">
+                                                    <th:block th:text="${tag}" style="margin-right: 2px">T</th:block>
+                                                    <script>
+                                                        var parentId = document.currentScript.parentNode.id.split('/');
+                                                        if (parentId.length > 1) {
+                                                            document.currentScript.parentNode.href = '/works/tag/' + parentId[0] + '/1';
+                                                        }
+                                                    </script>
+                                                </a>
                                             </a>
                                         </p>
                                     </th:block>
@@ -278,11 +287,11 @@
                                         <div class="comment-head">
                                             <div class="row" style="padding-left: 5px">
                                                 <div class="col-sm-7 primary-text-comment">
-                                                    <form th:id="'show_author_form' + ${viewedWork.getComments().indexOf(comment)}"
-                                                          th:action="'/authors/' + ${viewedWork.getAuthorName()}" method="get">
+                                                    <form th:id="'show_author_form' + ${comment.getId()}"
+                                                          th:action="'/authors/' + ${comment.getAuthorName()}" method="get">
                                                         <a class="link link-dark text-output" style="margin-left: 5px"
                                                            onclick="document.getElementById(this.parentNode.id).submit(); return false;"
-                                                           th:text="${viewedWork.getAuthorName()}">d</a>
+                                                           th:text="${comment.getAuthorName()}">d</a>
                                                     </form>
                                                 </div>
                                                 <div class="col-sm-4 secondary-text-comment"
@@ -294,13 +303,18 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <input type="hidden" id="question" th:value="#{home.delete.question}">
                                         <script th:id="'s_' + ${comment.getId()}">
                                             var commentId = document.currentScript.id.substr(2);
                                             console.log(commentId);
                                             var spanElement = document.getElementById('span_' + commentId);
                                             spanElement.addEventListener("click", function () {
-                                                var commentId = this.id.substr(5);
-                                                deleteComment(commentId);
+                                                if (confirm(document.getElementById('question').value)) {
+                                                    var commentId = this.id.substr(5);
+                                                    deleteComment(commentId);
+                                                } else {
+                                                    return false;
+                                                }
                                             });
                                         </script>
                                         <div class="comment-body text-output" th:text="${comment.getText()}">f</div>

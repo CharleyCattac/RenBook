@@ -113,8 +113,14 @@
                </b>
                <!-- WORKS -->
                <div class="container-fluid" style="padding-bottom: 10px">
-                   <h2 th:text="#{list.work.all}">Топ-5 самых популярных работ</h2>
-                   <h4 th:text="#{list.work.sorted} + ': ' + #{'list.work.sorted.' + ${sortSubject}}">Топ-5 самых популярных работ</h4>
+                   <h2 style="margin-bottom: 0" th:text="#{list.work.all}">Топ-5 самых популярных работ</h2>
+                   <th:block th:if="${!sortSubject.toLowerCase().equals('update') || !sortSubject.toLowerCase().equals('update')}">
+                       <h4 th:text="#{list.work.sorted} + ' ' + #{list.work.sorted.tag} + ': ' + ${sortSubject}">Топ-5 самых популярных работ</h4>
+                   </th:block>
+                   <th:block th:unless="${!sortSubject.toLowerCase().equals('update') || !sortSubject.toLowerCase().equals('update')}">
+                       <h4 th:text="#{list.work.sorted} + ': ' + #{'list.work.sorted.' + ${sortSubject}}">Топ-5 самых популярных работ</h4>
+                   </th:block>
+
                    <th:block th:if="${allWorks != null}">
                        <th:block th:if="${allWorks.size() > 0}">
                            <div th:each="work : ${allWorks}">
@@ -157,7 +163,7 @@
                                                        <label for="author" th:text="#{work.author} + ':'">F</label>
                                                        <form th:id="'2show_author_form' + ${work.getName()} + ${allWorks.indexOf(work)}"
                                                              th:action="'/authors/' + ${work.getAuthorName()}" method="get">
-                                                           <a class="link text-output" style="margin-left: 5px"
+                                                           <a class="link link-light text-output" style="margin-left: 5px"
                                                               onclick="document.getElementById(this.parentNode.id).submit(); return false;"
                                                               th:text="${work.getAuthorName()}">d</a>
                                                        </form>
@@ -180,7 +186,16 @@
                                                    <p class="work-element" style="margin-bottom: -1%">
                                                        <label th:text="#{work.tags} + ':'">F</label>
                                                        <a th:each="tag : ${work.getTags()}">
-                                                           <a th:text="${tag}">Tag</a>
+                                                           <a th:href="'/works/tag/' + ${tag} + '/1'" class="link link-light link-medium"
+                                                              th:id="'a_' + ${tag}" style="margin-right: 2px">
+                                                               <th:block th:text="${tag}" style="margin-right: 2px">T</th:block>
+                                                               <script>
+                                                                   var parentId = document.currentScript.parentNode.id.split('/');
+                                                                   if (parentId.length > 1) {
+                                                                       document.currentScript.parentNode.href = '/works/tag/' + parentId[0] + '/1';
+                                                                   }
+                                                               </script>
+                                                           </a>
                                                        </a>
                                                    </p>
                                                </th:block>

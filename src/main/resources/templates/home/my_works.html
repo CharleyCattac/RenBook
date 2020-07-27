@@ -143,7 +143,16 @@
                                                 <p class="work-element" style="margin-bottom: -1%">
                                                     <label th:text="#{work.tags} + ':'">F</label>
                                                     <a th:each="tag : ${work.getTags()}">
-                                                        <a th:text="${tag}">Tag</a>
+                                                        <a th:href="'/works/tag/' + ${tag} + '/1'" class="link link-light link-medium"
+                                                           th:id="'2a_' + ${tag}" style="margin-right: 2px">
+                                                            <th:block th:text="${tag}" style="margin-right: 2px">T</th:block>
+                                                            <script>
+                                                                var parentId = document.currentScript.parentNode.id.split('/');
+                                                                if (parentId.length > 1) {
+                                                                    document.currentScript.parentNode.href = '/works/tag/' + parentId[0] + '/1';
+                                                                }
+                                                            </script>
+                                                        </a>
                                                     </a>
                                                 </p>
                                             </th:block>

@@ -42,7 +42,7 @@
 /* CHOSEN TAG/FANDOM ELEMENT */
 
 /* Style the list (remove margins and bullets, etc) */
-#workTags, #workFandoms {
+#workTags, #workFandoms, #tagCloud {
     list-style-type: none;
     padding: 0;
     margin-bottom: 1%;
@@ -52,7 +52,7 @@
 }
 
 /* Style the list items */
-#workTags li, #workFandoms li {
+#workTags li, #workFandoms li,  #tagCloud li {
     border: 1px solid #ddd;
     border-radius: 5px;
     margin: 4px;
@@ -67,6 +67,6 @@
 }
 
 /* Add a light grey background color on hover */
-#workTags li:hover, #workFandoms li:hover {
+#workTags li:hover, #workFandoms li:hover, #tagCloud li:hover {
     background-color: #eee;
 }

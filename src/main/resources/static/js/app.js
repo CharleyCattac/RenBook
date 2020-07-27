@@ -121,7 +121,19 @@ function createNewComment(commentId, authorName, postTime, commentText) {
 
     var authorNameDiv = document.createElement("DIV");
     authorNameDiv.setAttribute("class", "col-sm-7 primary-text-comment");
-    authorNameDiv.textContent = authorName;
+
+    var authorForm = document.createElement("FORM");
+    authorForm.id = 'show_author_form' + commentId;
+    authorForm.setAttribute("action", '/authors/' + authorName);
+    authorForm.setAttribute("method", 'get');
+
+    var authorA = document.createElement("A");
+    authorA.setAttribute("class", "link link-dark text-output");
+    authorA.style.marginLeft = "5px";
+    authorA.addEventListener("click", function () {
+        document.getElementById(this.parentNode.id).submit(); return false;
+    });
+    authorA.textContent = authorName;
 
     var dateTimeDiv = document.createElement("DIV");
     dateTimeDiv.setAttribute("class", "col-sm-4 secondary-text-comment");
@@ -136,8 +148,12 @@ function createNewComment(commentId, authorName, postTime, commentText) {
     deleteSpan.textContent = 'X';
     deleteSpan.setAttribute('sec:authorize', "isAuthenticated()");
     deleteSpan.addEventListener("click", function () {
-        var commentId = this.id.substr(5);
-        deleteComment(commentId);
+        if (confirm(document.getElementById('question').value)) {
+            var commentId = this.id.substr(5);
+            deleteComment(commentId);
+        } else {
+            return false;
+        }
     });
 
     var commentBodyDiv = document.createElement("DIV");
@@ -145,6 +161,9 @@ function createNewComment(commentId, authorName, postTime, commentText) {
     commentBodyDiv.textContent = commentText;
 
     spanDiv.appendChild(deleteSpan);
+
+    authorForm.appendChild(authorA);
+    authorNameDiv.appendChild(authorForm);
 
     rowDiv.appendChild(authorNameDiv);
     rowDiv.appendChild(dateTimeDiv);

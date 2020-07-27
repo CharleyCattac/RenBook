@@ -1,14 +1,10 @@
 package com.itransition.lobach.renbook.controller;
 
-import com.itransition.lobach.renbook.entity.Assessment;
-import com.itransition.lobach.renbook.entity.Chapter;
-import com.itransition.lobach.renbook.entity.User;
-import com.itransition.lobach.renbook.entity.Work;
+import com.itransition.lobach.renbook.entity.*;
 import com.itransition.lobach.renbook.enums.FandomType;
 import com.itransition.lobach.renbook.service.*;
 import com.itransition.lobach.renbook.util.EntityToDtoConverter;
 import com.itransition.lobach.renbook.util.MessageManager;
-import com.itransition.lobach.renbook.util.SecurityHelper;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -56,8 +52,6 @@ public class WorksController {
 
     @GetMapping
     public String showWorks(Model model) {
-        model.addAttribute(TAGS, convertTagList(tagService.findTopFifteen()));
-        model.addAttribute(TAGS_TOTAL, tagService.findAll().size());
         return WORKS_URL;
     }
 
@@ -74,7 +68,7 @@ public class WorksController {
         model.addAttribute(ALL_WORKS, EntityToDtoConverter.convertWorkBasicList(works));
         model.addAttribute(WORKS_SORT_SUBJECT, "update");
 
-        return WORK_UPDATE_URL;
+        return WORK_LIST_URL;
     }
 
     @GetMapping(value = "/update/{pageNumber}")
@@ -101,7 +95,7 @@ public class WorksController {
         model.addAttribute(ALL_WORKS, EntityToDtoConverter.convertWorkBasicList(works));
         model.addAttribute(WORKS_SORT_SUBJECT, "update");
 
-        return WORK_UPDATE_URL;
+        return WORK_LIST_URL;
     }
 
     @GetMapping(value = "/popular")
@@ -117,7 +111,7 @@ public class WorksController {
         model.addAttribute(ALL_WORKS, EntityToDtoConverter.convertWorkBasicList(works));
         model.addAttribute(WORKS_SORT_SUBJECT, "popular");
 
-        return WORK_UPDATE_URL;
+        return WORK_LIST_URL;
     }
 
     @GetMapping(value = "/popular/{pageNumber}")
@@ -144,7 +138,7 @@ public class WorksController {
         model.addAttribute(ALL_WORKS, EntityToDtoConverter.convertWorkBasicList(works));
         model.addAttribute(WORKS_SORT_SUBJECT, "popular");
 
-        return WORK_UPDATE_URL;
+        return WORK_LIST_URL;
     }
 
     @GetMapping(value = "/{fandom_type}")
@@ -163,6 +157,50 @@ public class WorksController {
             model.addAttribute(ERROR, FANDOM_TYPE_UNDEFINED);
             return WORKS_URL;
         }
+    }
+
+    @GetMapping(value = "/tag/{tag}/{pageNum}")
+    public String showWorksByTag(@PathVariable("tag") String tagName,
+                                 @PathVariable("pageNum") String pageNumber,
+                                 Model model) {
+        int pageNumInt = 1;
+        if (pageNumber != null) {
+            try {
+                pageNumInt = Integer.parseInt(pageNumber);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        List<Work> works;
+        double pageCount;
+        if (!tagName.contains("/")) {
+            Tag tag = tagService.findByName(tagName);
+            if (tag == null) {
+                model.addAttribute(ERROR, ERROR);
+                return INDEX_REDIRECT;
+            }
+            works = tagService.findWorksByTagName(tag, pageNumInt - 1);
+            pageCount = (double) tag.getWorks().size() / WORKS_PER_PAGE;
+            model.addAttribute(WORKS_SORT_SUBJECT, tag.getName());
+        } else {
+            Page<Work> workPage = workService.findAllByLastUpdate(pageNumInt);
+            works = workPage.toList();
+            pageCount = workPage.getTotalPages();
+            model.addAttribute(WORKS_SORT_SUBJECT, "update");
+            model.addAttribute(ERROR, ERROR);
+        }
+        model.addAttribute(ALL_WORKS, EntityToDtoConverter.convertWorkBasicList(works));
+        int totalPages = pageCount - (int) pageCount > 0.01 ? (int) pageCount + 1 : (int) pageCount;
+        model.addAttribute(PAGE_COUNT, totalPages);
+        model.addAttribute(CUR_PAGE,1);
+        if (pageNumInt > 1) {
+            model.addAttribute(PREV_PAGE,pageNumInt - 1);
+        }
+        model.addAttribute(CUR_PAGE, pageNumInt);
+        if (pageNumInt < totalPages) {
+            model.addAttribute(NEXT_PAGE,pageNumInt + 1);
+        }
+
+        return WORK_LIST_URL;
     }
 
     @GetMapping(value = "/view/{workName}")

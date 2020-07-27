@@ -28,6 +28,8 @@ public class MainController {
 
     @GetMapping(value = "/")
     public String showIndex(Model model) {
+        model.addAttribute(TAGS, convertTagList(tagService.findTopFifteen()));
+        model.addAttribute(TAGS_TOTAL, tagService.findAll().size());
         model.addAttribute(WORKS_COUNT, workService.countAllNonEmptyWorks());
         model.addAttribute(TOP_WORKS_BY_UPDATE, convertWorkBasicList(workService.findTopByLastUpdate()));
         model.addAttribute(TOP_WORKS_BY_ASSESS, convertWorkBasicList(workService.findTopByAssessment()));

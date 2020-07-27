@@ -21,7 +21,7 @@ public class PathConstants {
     public static final String WORK_VIEW_URL = "work/work_view";
     public static final String CHAPTER_VIEW_URL = "work/chapter_view";
     public static final String WORK_FANDOMS_URL = "work/fandoms";
-    public static final String WORK_UPDATE_URL = "work/list";
+    public static final String WORK_LIST_URL = "work/list";
 
     public static final String AUTHORS_URL = "authors";
     public static final String RULES_URL = "rules";
